@@ -92,8 +92,6 @@ export default {
       credentials: this.credentialItems,
       previousRoute: this.prevRoute,
       connectWithCloudOAuth: true,
-      connectWithApi: false,
-      connectWithServerOAuth: false,
       clientId: "",
       clientSecret: "",
       userName: "",
