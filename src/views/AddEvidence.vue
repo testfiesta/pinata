@@ -430,6 +430,9 @@ export default {
     this.$root.$on("update-session", this.updateSession);
     this.$root.$on("update-processing", this.updateProcessing);
     this.$root.$on("save-data", this.saveData);
+    this.$root.$on("update-edit-item", this.updateEditItem);
+    this.$root.$on("update-processing", this.updateProcessing);
+    this.$root.$on("save-data", this.saveData);
   },
   watch: {
     createJiraTicket: async function (val) {
@@ -465,13 +468,9 @@ export default {
         this.comment.type = this.config.commentType;
       }
       // set templates by config
-      this.config.templates.map((item) => {
-        let temp = Object.assign({}, item);
-        if (temp.type === this.item.sessionType) {
-          this.comment.content = temp.precondition.content;
-          this.comment.text = temp.precondition.text;
-        }
-      });
+      const template = this.config.templates[this.item.sessionType];
+      this.comment.content = template.content;
+      this.comment.text = template.text;
     },
     toggleFollowUp() {
       this.followUp = !this.followUp;
@@ -514,7 +513,7 @@ export default {
       const regex = /(<([^>]+)>)/gi;
       this.comment.text = this.comment.content.replace(regex, "");
     },
-    updateSession(value) {
+    updateEditItem(value) {
       this.item = value;
     },
     updateProcessing(value) {

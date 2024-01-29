@@ -53,6 +53,7 @@ export const config = {
       return state;
     },
     hotkeys: (state) => state.hotkeys,
+    templates: (state) => state.templates,
     checklistPresessionStatus: (state) => state.checklist.presession.status,
     checklistPresessionTasks: (state) => state.checklist.presession.tasks,
     isAiAssistEnabled: (state) => state.ai?.enabled || false,

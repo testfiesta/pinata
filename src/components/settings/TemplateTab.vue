@@ -23,10 +23,10 @@
         </div>
         <div class="mb-3 precond">
           <v-tiptap
-            label="Preconditions"
-            v-model="template.precondition.content"
-            :placeholder="$t('message.define_required_precondition')"
-            ref="precondition"
+            label="Text"
+            v-model="template.content"
+            :placeholder="$t('message.default_template_text')"
+            ref="text"
             :toolbar="[
               'headings',
               '|',
@@ -43,7 +43,7 @@
               'emoji',
               'blockquote',
             ]"
-            @input="updatePrecondition"
+            @input="updateText"
           >
           </v-tiptap>
         </div>
@@ -115,6 +115,7 @@ export default {
   computed: {
     ...mapGetters({
       config: "config/fullConfig",
+      templates: "config/templates",
     }),
     currentTheme() {
       if (this.$vuetify.theme.dark) {
@@ -140,22 +141,16 @@ export default {
     this.type = this.configToChange.templates[0].type;
   },
   methods: {
-    updatePrecondition() {
+    updateText() {
       const regex = /(<([^>]+)>)/gi;
-      this.template.precondition.text =
-        this.template.precondition.content.replace(regex, "");
+      this.template.text = this.template.content.replace(regex, "");
     },
     handleTemplate() {
-      this.templatesToChange.map((item) => {
-        let temp = Object.assign({}, item);
-        if (temp.type === this.type) {
-          this.template = temp;
-        }
-      });
+      this.template = Object.assign({}, this.templatesToChange[this.type]);
     },
     handleCancel() {
-      this.type = this.templates[0].type;
-      this.template = this.templates[0];
+      this.template = Object.values(this.config.templates)[0];
+      this.type = Object.keys(this.config.templates)[0];
     },
     saveTemplate() {
       this.templatesToChange = this.templatesToChange.map((item) => {
@@ -167,6 +162,10 @@ export default {
       });
       this.configToChange.templates = this.templatesToChange;
       this.$emit("submit-config", this.configToChange);
+      this.$root.$emit(
+        "set-snackbar",
+        this.$tc("caption.successfully_saved", 1)
+      );
     },
   },
 };

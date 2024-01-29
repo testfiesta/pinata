@@ -400,14 +400,14 @@ export default {
     if (this.$isElectron) {
       this.$electronService.onActiveSession(this.activeSession);
     }
-    this.$root.$on("update-session", this.updateSession);
+    this.$root.$on("update-edit-item", this.updateEditItem);
     this.$root.$on("update-processing", this.updateProcessing);
     this.$root.$on("save-data", this.saveData);
   },
   methods: {
     activeSession(data) {
       // set theme mode
-      const isDarkMode = this.config.apperance === "dark";
+      const isDarkMode = this.config.theme === "dark";
       this.$vuetify.theme.dark = isDarkMode;
       localStorage.setItem("isDarkMode", isDarkMode);
 
@@ -432,7 +432,7 @@ export default {
     async fetchItems() {
       this.items = await this.$storageService.getItems();
     },
-    updateSession(value) {
+    updateEditItem(value) {
       this.item = value;
     },
     updateProcessing(value) {
@@ -495,17 +495,11 @@ export default {
       if (data) {
         this.item.fileName = data.fileName;
         this.item.filePath = data.filePath;
+        this.item.stepID = data.stepID;
+        this.item.attachmentID = data.attachmentID;
       }
 
-      this.items = this.items.map((item) => {
-        let temp = Object.assign({}, item);
-        if (temp.id === this.item.id) {
-          temp = this.item;
-        }
-        return temp;
-      });
-
-      await this.$storageService.updateItems(this.items);
+      await this.$storageService.updateItem(this.item);
       if (this.$isElectron) {
         await this.$electronService.closeEditWindow();
       }

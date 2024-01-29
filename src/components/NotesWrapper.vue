@@ -47,7 +47,10 @@
                     @change="handleSelected($event, item.stepID)"
                   />
                 </div>
-                <div class="image-wrapper" @dblclick="handleActiveItem(item)">
+                <div
+                  class="image-wrapper"
+                  @click="handleItemClick(item.stepID)"
+                >
                   <img
                     class="screen-img"
                     style="max-width: 100%"
@@ -158,7 +161,7 @@
                 </div>
                 <div
                   class="video-wrapper"
-                  @dblclick="handleItemClick(item.stepID)"
+                  @click="handleItemClick(item.stepID)"
                 >
                   <video
                     controls
@@ -270,7 +273,7 @@
                 </div>
                 <div
                   class="audio-wrapper"
-                  @dblclick="handleItemClick(item.stepID)"
+                  @click="handleItemClick(item.stepID)"
                 >
                   <div class="audio-wave">
                     <img :src="item.poster" />
@@ -511,7 +514,7 @@
                 </div>
                 <div
                   class="image-wrapper"
-                  @dblclick="handleItemClick(item.stepID)"
+                  @click="handleItemClick(item.stepID)"
                 >
                   <img
                     class="screen-img"

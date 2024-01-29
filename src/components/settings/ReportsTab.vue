@@ -19,7 +19,7 @@
           </div>
           <div class="flex-grow-0">
             <v-switch
-              v-model="config.summary"
+              v-model="config.summaryRequired"
               inset
               hide-details
               dense

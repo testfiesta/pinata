@@ -21,7 +21,7 @@
           {{ $t("message.connect_to_jira") }}
         </a>
       </v-col>
-      <v-col cols="12" class="border-bottom pa-4 app-role-section">
+      <!--<v-col cols="12" class="border-bottom pa-4 app-role-section">
         <div class="d-flex align-start">
           <div class="flex-grow-1">
             <p
@@ -36,7 +36,7 @@
           </div>
           <div class="flex-grow-0">
             <v-switch
-              v-model="config.useLocal"
+              v-model="config.localOnly"
               inset
               hide-details
               dense
@@ -44,7 +44,7 @@
             ></v-switch>
           </div>
         </div>
-      </v-col>
+      </v-col>-->
       <!--<v-col cols="12" class="border-bottom pa-4 color-panel-section">
         <p
           class="subtitle-1 mb-4"

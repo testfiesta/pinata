@@ -19,14 +19,15 @@
             :items="itemLists"
             :selectedItems="selected"
             :event-type="eventName"
-            @submit-session="updateActiveSession"
+            @activate-edit-session="activateEditSession"
           />
         </v-tab-item>
         <v-tab-item value="notes" :transition="false">
           <NotesWrapper
             :items="itemLists"
             :selectedItems="selected"
-            @submit-session="updateActiveSession"
+            :event-type="eventName"
+            @activate-edit-session="activateEditSession"
           />
         </v-tab-item>
       </v-tabs-items>
@@ -86,8 +87,9 @@ export default {
     };
   },
   methods: {
-    updateActiveSession(data) {
-      this.$emit("submit-session", data);
+    activateEditSession(data) {
+      // TODO - Use injection here to avoid this chain of emits
+      this.$emit("activate-edit-session", data);
     },
   },
 };

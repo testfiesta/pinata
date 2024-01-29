@@ -1,7 +1,9 @@
 <template>
   <div
     class="review-wrapper"
-    v-if="Object.keys(editSessionItem).length && editSessionItem.fileType !== 'text'"
+    v-if="
+      Object.keys(editSessionItem).length && editSessionItem.fileType !== 'text'
+    "
   >
     <div
       v-if="editSessionItem.fileType === 'image'"
@@ -28,7 +30,6 @@
     </div>
     <div v-else-if="editSessionItem.fileType === 'mindmap'">
       <mindmap-editor
-        :config-item="config"
         :nodes-data="editSessionItem.content.nodes"
         :connections-data="editSessionItem.content.connections"
         :edit="true"

@@ -560,7 +560,7 @@ export default {
       if (!window.ipc) return;
 
       await window.ipc
-        .invoke(IPC_HANDLERS.DATABASE, { func: IPC_FUNCTIONS.GET_ITEMS })
+        .invoke(IPC_HANDLERS.PERSISTENCE, { func: IPC_FUNCTIONS.GET_ITEMS })
         .then((result) => {
           this.items = result;
         });

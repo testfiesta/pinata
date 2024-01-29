@@ -100,7 +100,7 @@
                   '|',
                   '#aiAssist',
                 ]"
-                @input="updateCharter"
+                @change="updateCharter()"
               >
                 <template #aiAssist="">
                   <v-btn

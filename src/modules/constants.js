@@ -1,7 +1,7 @@
 export const IPC_HANDLERS = {
   BROWSER: "browser",
   CAPTURE: "capture",
-  DATABASE: "database",
+  PERSISTENCE: "persistence",
   FILE_SYSTEM: "fileSystem",
   STORE: "store",
   MENU: "menu",
@@ -42,11 +42,14 @@ export const IPC_FUNCTIONS = {
   MOVE_WINDOW: "moveWindow",
 
   INITIALIZE_SESSION: "initializeSession",
+  GET_CURRENT_SESSION: "getCurrentSession",
   GET_SESSION_ID: "getSessionID",
+  GET_CASE_ID: "getCaseID",
   GET_STATE: "getState",
   UPDATE_STATE: "updateState",
   ADD_ITEM: "addItem",
   GET_ITEMS: "getItems",
+  UPDATE_ITEM: "updateItem",
   UPDATE_ITEMS: "updateItems",
   DELETE_ITEMS: "deleteItems",
   GET_ITEM_BY_ID: "getItemById",
@@ -103,15 +106,6 @@ export const SESSION_STATUSES = {
   PROCEED: "proceed",
   END: "end",
 };
-
-export const SESSION_TYPES = [
-  "Screenshot",
-  "Video",
-  "Audio",
-  "Note",
-  "File",
-  "Mindmap",
-];
 
 export const HOTKEY_PAGES = [
   "general",

@@ -233,7 +233,7 @@ export default {
         this.itemLists.map((item) => {
           if (
             item.sessionType !== "Summary" &&
-            this.selectedIds.includes(item.id)
+            this.selectedIds.includes(item.stepID)
           ) {
             selectedAttachments.push(item);
           }

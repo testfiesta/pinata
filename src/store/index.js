@@ -14,6 +14,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     id: null,
+    remote: false,
     title: "",
     charter: {
       content: "",
@@ -38,6 +39,10 @@ export default new Vuex.Store({
     postSessionTasks: [],
   },
   mutations: {
+    setRemote(state, payload) {
+      state.remote = payload;
+      this._vm.$storageService.updateState(state);
+    },
     setSessionId(state, payload) {
       state.id = payload;
       this._vm.$storageService.updateState(state);
@@ -95,6 +100,7 @@ export default new Vuex.Store({
     },
     clearState(state) {
       state.id = null;
+      state.remote = false;
       state.title = "";
       state.charter = {
         content: "",
@@ -128,6 +134,7 @@ export default new Vuex.Store({
     },
     restoreState(state, payload) {
       state.id = payload.id;
+      state.remote = payload.remote || false;
       state.title = payload.title;
       state.charter.content = payload?.charter?.content || "";
       state.charter.text = payload?.charter?.text || "";

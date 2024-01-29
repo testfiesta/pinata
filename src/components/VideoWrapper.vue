@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="preview-wrapper" v-if="isProcessing">
-      <img :src="`file://${sessionItem.poster}`" />
+      <img :src="`file://${editSessionItem.poster}`" />
       <div class="progress-bar">
         <v-progress-linear
           indeterminate
@@ -20,7 +20,10 @@
           @loadedmetadata="logDuration"
           style="width: 100%"
         >
-          <source :src="`file://${sessionItem.filePath}`" type="video/webm" />
+          <source
+            :src="`file://${editSessionItem.filePath}`"
+            type="video/webm"
+          />
         </video>
       </div>
       <div class="video-control">
@@ -90,7 +93,7 @@ export default {
   },
   watch: {
     item: function (newValue) {
-      this.sessionItem = newValue;
+      this.editSessionItem = newValue;
     },
     processing: function (newValue) {
       this.isProcessing = newValue;
@@ -103,7 +106,7 @@ export default {
   },
   data() {
     return {
-      sessionItem: this.item,
+      editSessionItem: this.item,
       start: "00:00",
       end: "00:00",
       isProcessing: this.processing,
@@ -139,7 +142,7 @@ export default {
       this.handleProcessing(true);
 
       const { status, message, item } = await this.$electronService.updateVideo(
-        this.sessionItem,
+        this.editSessionItem,
         startVal,
         endVal,
         parseInt(this.duration)
@@ -149,10 +152,10 @@ export default {
         this.$root.$emit("set-snackbar", message);
         console.log(message);
       } else {
-        this.sessionItem.filePath = item.filePath;
-        this.$root.$emit("update-session", this.sessionItem);
+        this.editSessionItem.filePath = item.filePath;
+        this.$root.$emit("update-edit-item", this.editSessionItem);
         if (needCallback) {
-          this.$root.$emit("save-data", this.sessionItem);
+          this.$root.$emit("save-data", this.editSessionItem);
         }
       }
       this.handleProcessing(false);

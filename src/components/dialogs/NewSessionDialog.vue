@@ -4,7 +4,7 @@
       <v-card :style="{ backgroundColor: currentTheme.background }">
         <LogoWrapper :height="20" :width="60" />
         <v-card-text class="text" :style="{ color: currentTheme.secondary }">
-          {{ text || $t("message.confirm_delete") }}
+          {{ text }}
         </v-card-text>
         <v-card-actions>
           <v-btn

@@ -93,7 +93,7 @@ export default {
     }
 
     if (updated) {
-      await window.ipc.invoke(IPC_HANDLERS.DATABASE, {
+      await window.ipc.invoke(IPC_HANDLERS.PERSISTENCE, {
         func: IPC_FUNCTIONS.UPDATE_CREDENTIALS,
         data: newCredentials,
       });

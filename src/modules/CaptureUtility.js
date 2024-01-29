@@ -20,7 +20,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath.path);
 
 const browserUtility = require("./BrowserWindowUtility");
-const databaseUtility = require("./DatabaseUtility");
+const persistenceUtility = require("./PersistenceUtility");
 
 const { STATUSES } = require("./constants");
 
@@ -46,11 +46,11 @@ module.exports.getMediaSource = async () => {
 
 module.exports.createImage = ({ url, isPoster }) => {
   const imageType = isPoster ? "poster" : "image";
-  const { id, fileName } = generateIDAndName(imageType);
+  const { stepID, attachmentID, fileName } = generateIDAndName(imageType);
   const filePath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     fileName
   );
   const base64Data = url.replace(/^data:image\/png;base64,/, "");
@@ -67,7 +67,8 @@ module.exports.createImage = ({ url, isPoster }) => {
   return {
     status: STATUSES.SUCCESS,
     item: {
-      id,
+      stepID,
+      attachmentID,
       fileName,
       filePath,
     },
@@ -80,12 +81,12 @@ module.exports.updateImage = ({ item, url }) => {
   }
   const { fileName } = item.fileName
     ? { fileName: item.fileName }
-    : generateIDAndName("image", item.id);
+    : generateIDAndName("image", item.attachmentID);
 
   const filePath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     fileName
   );
   const base64Data = url.replace(/^data:image\/png;base64,/, "");
@@ -108,11 +109,11 @@ module.exports.updateImage = ({ item, url }) => {
 };
 
 module.exports.createVideo = ({ buffer }) => {
-  const { id, fileName } = generateIDAndName("video");
+  const { stepID, attachmentID, fileName } = generateIDAndName("video");
   const filePath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     fileName
   );
   fs.writeFileSync(filePath, Buffer.from(buffer), function (err) {
@@ -127,7 +128,8 @@ module.exports.createVideo = ({ buffer }) => {
   return {
     status: STATUSES.SUCCESS,
     item: {
-      id,
+      stepID,
+      attachmentID,
       fileName,
       filePath,
     },
@@ -142,7 +144,7 @@ module.exports.optimizeVideo = ({ filePath }) => {
   const tempPath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     tempName
   );
 
@@ -187,7 +189,7 @@ module.exports.updateVideo = ({ item, start, end, previousDuration }) => {
   const tempPath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     tempName
   );
   const duration = parseInt(end - start);
@@ -210,11 +212,11 @@ module.exports.updateVideo = ({ item, start, end, previousDuration }) => {
           }
           const { fileName } = item.fileName
             ? { fileName: item.fileName }
-            : generateIDAndName("video", item.id);
+            : generateIDAndName("video", item.attachmentID);
           const filePath = path.join(
             configDir,
             "sessions",
-            databaseUtility.getSessionID(),
+            persistenceUtility.getSessionID(),
             fileName
           );
           fs.rename(tempPath, filePath, function (err) {
@@ -238,11 +240,11 @@ module.exports.updateVideo = ({ item, start, end, previousDuration }) => {
     } else {
       const { fileName } = item.fileName
         ? { fileName: item.fileName }
-        : generateIDAndName("video", item.id);
+        : generateIDAndName("video", item.attachmentID);
       const filePath = path.join(
         configDir,
         "sessions",
-        databaseUtility.getSessionID(),
+        persistenceUtility.getSessionID(),
         fileName
       );
       if (item.filePath && item.filePath !== filePath) {
@@ -265,11 +267,11 @@ module.exports.updateVideo = ({ item, start, end, previousDuration }) => {
 };
 
 module.exports.createAudio = ({ buffer }) => {
-  const { id, fileName } = generateIDAndName("audio");
+  const { stepID, attachmentID, fileName } = generateIDAndName("audio");
   const filePath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     fileName
   );
   fs.writeFileSync(filePath, Buffer.from(buffer), function (err) {
@@ -284,7 +286,8 @@ module.exports.createAudio = ({ buffer }) => {
   return {
     status: STATUSES.SUCCESS,
     item: {
-      id,
+      stepID,
+      attachmentID,
       fileName,
       filePath,
     },
@@ -294,11 +297,11 @@ module.exports.createAudio = ({ buffer }) => {
 module.exports.updateAudio = ({ item }) => {
   const { fileName } = item.fileName
     ? { fileName: item.fileName }
-    : generateIDAndName("audio", item.id);
+    : generateIDAndName("audio", item.attachmentID);
   const filePath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     fileName
   );
 
@@ -329,11 +332,11 @@ module.exports.deleteFile = ({ filePath }) => {
 };
 
 module.exports.saveNote = (comment, fileNameToSave = "") => {
-  const { id, fileName } = generateIDAndName("text");
+  const { stepID, attachmentID, fileName } = generateIDAndName("text");
   const filePath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     fileNameToSave ? fileNameToSave : fileName
   );
 
@@ -349,7 +352,8 @@ module.exports.saveNote = (comment, fileNameToSave = "") => {
   return {
     status: STATUSES.SUCCESS,
     item: {
-      id,
+      stepID,
+      attachmentID,
       fileName: fileNameToSave ? fileNameToSave : fileName,
       filePath,
     },
@@ -369,13 +373,13 @@ module.exports.uploadEvidence = async () => {
   }
 
   // TODO - Handle multiple files uploaded
-  const id = uuidv4();
-  console.log({ id });
+  const stepID = uuidv4();
+  const attachmentID = uuidv4();
   const fileName = path.basename(filePaths[0]);
   const filePath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     fileName
   );
 
@@ -409,7 +413,8 @@ module.exports.uploadEvidence = async () => {
       return resolve({
         status: STATUSES.SUCCESS,
         item: {
-          id,
+          stepID,
+          attachmentID,
           fileType,
           fileName,
           filePath,
@@ -420,12 +425,13 @@ module.exports.uploadEvidence = async () => {
 };
 
 module.exports.dropFile = async (data) => {
-  const id = uuidv4();
+  const stepID = uuidv4();
+  const attachmentID = uuidv4();
   const fileName = data.name;
   const filePath = path.join(
     configDir,
     "sessions",
-    databaseUtility.getSessionID(),
+    persistenceUtility.getSessionID(),
     fileName
   );
 
@@ -458,7 +464,8 @@ module.exports.dropFile = async (data) => {
       return resolve({
         status: STATUSES.SUCCESS,
         item: {
-          id,
+          stepID,
+          attachmentID,
           fileType,
           fileName,
           filePath,
@@ -468,13 +475,14 @@ module.exports.dropFile = async (data) => {
   });
 };
 
-module.exports.setAppearance = ({ appearance }) => {
+module.exports.setAppearance = ({ theme }) => {
   const browserWindow = browserUtility.getBrowserWindow();
-  browserWindow.webContents.send("SET_THEME", { appearance });
+  browserWindow.webContents.send("SET_THEME", { theme });
 };
 
 const generateIDAndName = (type, uid = undefined) => {
-  let id, idStr, fileName;
+  const stepID = uuidv4();
+  let attachmentID, idStr, fileName;
   let success = false;
   let suffix;
 
@@ -497,8 +505,8 @@ const generateIDAndName = (type, uid = undefined) => {
   }
 
   while (!success) {
-    id = uuidv4();
-    idStr = id.replaceAll("-", "");
+    attachmentID = uuidv4();
+    idStr = attachmentID.replaceAll("-", "");
     for (let i = 0; i < idStr.length - 5; i++) {
       fileName = `${type}-${idStr.substring(i, 5)}.${suffix}`;
       if (
@@ -506,7 +514,7 @@ const generateIDAndName = (type, uid = undefined) => {
           path.join(
             configDir,
             "sessions",
-            databaseUtility.getSessionID(),
+            persistenceUtility.getSessionID(),
             fileName
           )
         )
@@ -517,7 +525,7 @@ const generateIDAndName = (type, uid = undefined) => {
     }
   }
   if (uid) {
-    id = uid;
+    attachmentID = uid;
   }
-  return { id, fileName };
+  return { stepID, attachmentID, fileName };
 };

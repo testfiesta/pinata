@@ -153,7 +153,8 @@ export default {
         } else {
           // Force the timeline component to update the image through a fake QS
           this.editSessionItem.filePath =
-            this.editSessionItem.filePath.substring(item.filePath.length) === "?"
+            this.editSessionItem.filePath.substring(item.filePath.length) ===
+            "?"
               ? item.filePath
               : item.filePath + "?";
           this.$root.$emit("update-edit-item", this.editSessionItem);

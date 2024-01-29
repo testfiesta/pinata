@@ -444,7 +444,7 @@ export default {
       credentials.jira = [formattedData];
     }
 
-    window.ipc.invoke(IPC_HANDLERS.DATABASE, {
+    window.ipc.invoke(IPC_HANDLERS.PERSISTENCE, {
       func: IPC_FUNCTIONS.UPDATE_CREDENTIALS,
       data: credentials,
     });

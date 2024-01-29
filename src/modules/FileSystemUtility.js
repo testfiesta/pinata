@@ -8,7 +8,7 @@ const uuidv4 = require("uuid");
 
 const configDir = (app || remote.app).getPath("userData");
 
-const databaseUtility = require("./DatabaseUtility");
+const persistenceUtility = require("./PersistenceUtility");
 const captureUtility = require("./CaptureUtility");
 const { STATUSES } = require("./constants");
 
@@ -32,7 +32,7 @@ module.exports.exportItems = async (ids) => {
       const zip = new AdmZip();
 
       ids.map((id) => {
-        const item = databaseUtility.getItemById(id);
+        const item = persistenceUtility.getItemById(id);
 
         if (item.filePath) {
           const sanitizedPath =
@@ -61,17 +61,19 @@ module.exports.exportItems = async (ids) => {
 };
 
 module.exports.createNewSession = async (state) => {
-  const dataFolder = path.join(configDir, "sessions", state.id);
+  state.sessionID = uuidv4();
+  state.caseID = uuidv4();
+  const dataFolder = path.join(configDir, "sessions", state.sessionID);
   if (!fs.existsSync(dataFolder)) {
     fs.mkdirSync(dataFolder, { recursive: true });
   }
-  databaseUtility.createNewSession(state);
+  persistenceUtility.createNewSession(state);
 };
 
 module.exports.saveSession = async (data) => {
   const notesFileName =
     "yattie-session-" + dayjs().format("YYYY-MM-DD_HH-mm-ss-ms") + "-notes.txt";
-  const notes = databaseUtility.getNotes();
+  const notes = persistenceUtility.getNotes();
   let notesFilePath = "";
   if (notes.text) {
     const notesItem = captureUtility.saveNote(notes, notesFileName)
@@ -94,7 +96,7 @@ module.exports.saveSession = async (data) => {
   }
 
   return new Promise(function (resolve) {
-    const items = databaseUtility.getItems();
+    const items = persistenceUtility.getItems();
     data.notes = notes;
     data.sessions = items;
     const metaPath = path.join(configDir, "metadata.txt");
@@ -155,7 +157,7 @@ module.exports.openSession = async () => {
   if (canceled) {
     return Promise.resolve({
       status: STATUSES.ERROR,
-      message: "No file selected",
+      message: "No file selected", // TODO i18n
     });
   }
 
@@ -170,7 +172,7 @@ module.exports.openSession = async () => {
     const encoded = fs.readFileSync(metaPath, "utf8");
     const state = JSON.parse(Buffer.from(encoded, "hex").toString());
 
-    const id = state.id;
+    const id = state.id || uuidv4();
     const dataFolder = path.join(configDir, "sessions", id);
     if (fs.existsSync(dataFolder)) {
       fs.rmSync(dataFolder, { recursive: true });
@@ -178,16 +180,16 @@ module.exports.openSession = async () => {
     fs.renameSync(target, dataFolder);
 
     const sessionDataPath = path.join(dataFolder, "sessionData.json");
-    databaseUtility.updateMetadata({ sessionDataPath });
+    persistenceUtility.updateMetadata({ sessionDataPath });
 
     // TODO - Should we restore state here or in Main and Default?
 
-    databaseUtility.updateItems(state.sessions);
+    persistenceUtility.updateItems(state.sessions);
     delete state.sessions;
 
     return Promise.resolve({
       status: STATUSES.SUCCESS,
-      message: "Session extracted successfully",
+      message: "Session extracted successfully", // TODO i18n
       state: state,
     });
   } catch (err) {
@@ -200,9 +202,9 @@ module.exports.openSession = async () => {
 
 module.exports.exportSession = async (params) => {
   const timestamp = dayjs().format("YYYY-MM-DD_HH-mm-ss-ms");
-  const id = params.id;
+  const id = persistenceUtility.getSessionID();
   const notesFileName = "yattie-session-" + timestamp + "-notes.txt";
-  const notes = databaseUtility.getNotes();
+  const notes = persistenceUtility.getNotes();
   let notesFilePath = "";
 
   if (notes.text) {
@@ -261,7 +263,7 @@ module.exports.exportSession = async (params) => {
           try {
             const zip = new AdmZip();
 
-            const items = databaseUtility.getItems();
+            const items = persistenceUtility.getItems();
 
             items.map((item) => {
               if (item.filePath) {
@@ -311,7 +313,6 @@ module.exports.exportSession = async (params) => {
 };
 
 module.exports.openConfigFile = async () => {
-  console.log("openConfigFile");
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ["openFile"],
     filters: [{ name: "Config File", extensions: ["json"] }],
@@ -333,9 +334,9 @@ module.exports.openConfigFile = async () => {
       }
     });
 
-    const metadata = databaseUtility.getMetadata();
+    const metadata = persistenceUtility.getMetadata();
     metadata.configPath = filePath;
-    databaseUtility.updateMetadata(metadata);
+    persistenceUtility.updateMetadata(metadata);
     return Promise.resolve({
       status: STATUSES.SUCCESS,
       message: "Config file imported successfully",
@@ -349,7 +350,6 @@ module.exports.openConfigFile = async () => {
 };
 
 module.exports.openCredentialsFile = async () => {
-  console.log("openCredentialsFile");
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ["openFile"],
     filters: [{ name: "Credentials File", extensions: ["json"] }],
@@ -371,9 +371,9 @@ module.exports.openCredentialsFile = async () => {
       }
     });
 
-    const metadata = databaseUtility.getMetadata();
+    const metadata = persistenceUtility.getMetadata();
     metadata.credentialsPath = filePath;
-    databaseUtility.updateMetadata(metadata);
+    persistenceUtility.updateMetadata(metadata);
     return Promise.resolve({
       status: STATUSES.SUCCESS,
       message: "Credentials file imported successfully",

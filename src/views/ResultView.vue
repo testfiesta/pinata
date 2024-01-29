@@ -19,13 +19,13 @@
       <v-divider vertical></v-divider>
       <v-col cols="6" class="wrapper">
         <div
-          v-if="Object.keys(activeSession).length"
+          v-if="Object.keys(editItem).length"
           class="d-flex flex-column"
           style="height: 100%"
         >
           <div class="flex-grow-1">
             <ReviewWrapper
-              :item="activeSession"
+              :item="editItem"
               :auto-save="autoSaveEvent"
               :configItem="config"
             />
@@ -34,12 +34,12 @@
             <div
               class="actions-wrapper mt-1 mb-2"
               v-if="
-                activeSession.fileType === 'image' ||
-                activeSession.fileType === 'video' ||
-                activeSession.fileType === 'audio'
+                editItem.fileType === 'image' ||
+                editItem.fileType === 'video' ||
+                editItem.fileType === 'audio'
               "
             >
-              <template v-if="activeSession.emoji.length">
+              <template v-if="editItem.emoji.length">
                 <v-btn
                   rounded
                   color="primary"
@@ -47,7 +47,7 @@
                   height="26"
                   min-width="45"
                   style=""
-                  v-for="(emoji, i) in activeSession.emoji"
+                  v-for="(emoji, i) in editItem.emoji"
                   :key="i"
                   @click="removeEmoji(emoji)"
                 >
@@ -102,13 +102,13 @@
                   type="checkbox"
                   name="follow_up"
                   class="item-select"
-                  v-model="activeSession.followUp"
+                  v-model="editItem.followUp"
                   @change="handleFollowUp($event)"
                 />{{ $tc("caption.required_follow_up", 1) }}
               </label>
             </div>
             <v-tiptap
-              v-model="activeSession.comment.content"
+              v-model="editItem.comment.content"
               :placeholder="$t('message.insert_comment')"
               ref="comment"
               :toolbar="[
@@ -133,7 +133,7 @@
             <vue-tags-input
               class="input-box mt-2"
               v-model="tag"
-              :tags="activeSession.tags"
+              :tags="editItem.tags"
               :max-tags="10"
               :maxlength="20"
               @tags-changed="handleTags"
@@ -141,12 +141,15 @@
             />
             <v-row class="mt-0 comment-wrapper">
               <v-col class="pr-0">
-                <div class="subtitle-2 label-text">
+                <div
+                  class="subtitle-2 label-text"
+                  :style="{ color: currentTheme.secondary }"
+                >
                   {{ $tc("caption.comment_type", 1) }}
                 </div>
                 <v-select
                   :items="commentTypes"
-                  v-model="activeSession.comment.type"
+                  v-model="editItem.comment.type"
                   :placeholder="$tc('caption.comment_type', 1)"
                   solo
                   dense
@@ -178,7 +181,7 @@
             :items="searchItems"
             :selectedItems="selected"
             event-type="click"
-            @submit-session="updateActiveSession"
+            @activate-edit-session="activateEditSession"
           />
         </div>
         <div class="footer">
@@ -229,7 +232,7 @@ export default {
       items: [],
       config: {},
       credentials: {},
-      activeSession: {},
+      editItem: {},
       commentTypes: Object.keys(TEXT_TYPES).filter(
         (item) => item !== "Summary"
       ),
@@ -252,8 +255,8 @@ export default {
   mounted() {
     this.$root.$on("submit-search", this.handleSearch);
     this.$root.$on("update-selected", this.updateSelected);
-    this.$root.$on("save-data", this.updateActiveSession);
-    this.$root.$on("update-session", this.updateActiveSession);
+    this.$root.$on("save-data", this.saveData);
+    this.$root.$on("update-edit-item", this.activateEditSession);
 
     if (this.$isElectron) {
       this.$electronService.onDataChange(this.fetchItems);
@@ -267,6 +270,13 @@ export default {
     }
   },
   computed: {
+    currentTheme() {
+      if (this.$vuetify.theme.dark) {
+        return this.$vuetify.theme.themes.dark;
+      } else {
+        return this.$vuetify.theme.themes.light;
+      }
+    },
     searchItems() {
       let tempItems = this.items;
 
@@ -295,19 +305,18 @@ export default {
     selectEmoji(emoji) {
       this.emojiMenu = false;
       if (
-        this.activeSession.emoji.filter((item) => item.data === emoji.data)
-          .length
+        this.editItem.emoji.filter((item) => item.data === emoji.data).length
       ) {
-        this.activeSession.emoji = this.activeSession.emoji.filter(
+        this.editItem.emoji = this.editItem.emoji.filter(
           (item) => item.data !== emoji.data
         );
       } else {
-        this.activeSession.emoji.push(emoji);
+        this.editItem.emoji.push(emoji);
       }
       this.saveData();
     },
     removeEmoji(emoji) {
-      this.activeSession.emoji = this.activeSession.emoji.filter(
+      this.editItem.emoji = this.editItem.emoji.filter(
         (item) => item.data !== emoji.data
       );
       this.saveData();
@@ -317,43 +326,37 @@ export default {
     },
     updateComment() {
       const regex = /(<([^>]+)>)/gi;
-      this.activeSession.comment.text =
-        this.activeSession.comment.content.replace(regex, "");
+      this.editItem.comment.text = this.editItem.comment.content.replace(
+        regex,
+        ""
+      );
       this.saveData();
     },
     handleTags(newTags) {
-      this.activeSession.tags = newTags;
+      this.editItem.tags = newTags;
       this.saveData();
     },
     handleFollowUp($event) {
-      this.activeSession.followUp = $event.target.checked;
+      this.editItem.followUp = $event.target.checked;
       this.saveData();
     },
-    updateCommentType(val) {
-      this.activeSession.commentType = val;
+    handleCommentType(val) {
+      this.editItem.commentType = val;
       this.saveData();
     },
     saveData() {
-      this.items = this.items.map((item) => {
-        let temp = Object.assign({}, item);
-        if (temp.id === this.activeSession.id) {
-          temp = this.activeSession;
-        }
-        return temp;
-      });
-
-      this.$storageService.updateItems(this.items);
+      this.$storageService.updateItem(this.editItem);
     },
     handleClear() {
-      this.activeSession.comment = "";
-      this.activeSession.commentType = "Comment";
+      this.editItem.comment = "";
+      this.editItem.commentType = "Comment";
       this.saveData();
     },
     updateSelected(value) {
       this.selected = value;
     },
-    updateActiveSession(value) {
-      this.activeSession = value;
+    activateEditSession(value) {
+      this.editItem = value;
       this.saveData();
     },
   },

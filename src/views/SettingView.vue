@@ -128,7 +128,7 @@ export default {
       localStorage.setItem("isDarkMode", isDarkMode.toString());
 
       if (this.$isElectron) {
-        this.$electronService.setAppearance(this.config.apperance);
+        this.$electronService.setAppearance(this.config.theme);
       }
     },
     async getCredentials() {

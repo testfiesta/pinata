@@ -92,7 +92,7 @@
             </template>
             <v-card tile>
               <v-list dense>
-                <v-list-item @click="exportItems()">
+                <v-list-item @click="exportItems">
                   <v-list-item-icon class="mr-4">
                     <v-icon>mdi-download</v-icon>
                   </v-list-item-icon>
@@ -138,7 +138,7 @@
                 small
                 color="default"
                 v-on="on"
-                @click="resume()"
+                @click="resume"
               >
                 <v-icon v-if="$vuetify.theme.dark === false">
                   mdi-play-circle
@@ -431,6 +431,7 @@
             <span>{{ $tc("caption.start_audio_record", 1) }}</span>
           </v-tooltip>
           <v-tooltip top v-if="recordAudioStarted">
+            <!-- CTODO test same binding for start/stop -->
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_stop_record_audio"
@@ -533,7 +534,7 @@
                 small
                 color="default"
                 v-on="on"
-                @click="minimize()"
+                @click="minimize"
               >
                 <img
                   v-if="$vuetify.theme.dark === false"
@@ -681,7 +682,7 @@
         ref="deleteConfirmDialog"
         :text="$t('message.confirm_delete')"
         :configItem="config"
-        @confirm="deleteItems()"
+        @confirm="deleteItems"
         @cancel="deleteConfirmDialog = false"
       />
       <ResetConfirmDialog
@@ -689,7 +690,7 @@
         ref="resetConfirmDialog"
         :text="$t('message.confirm_reset')"
         :configItem="config"
-        @confirm="resetSession()"
+        @confirm="resetSession"
         @cancel="resetConfirmDialog = false"
       />
       <SaveConfirmDialog
@@ -711,8 +712,8 @@
         v-model="durationConfirmDialog"
         :text="$t('message.confirm_proceed_session_time')"
         :configItem="config"
-        @end="end()"
-        @proceed="proceed()"
+        @end="end"
+        @proceed="proceed"
       />
       <AudioErrorDialog
         v-model="audioErrorDialog"
@@ -1320,7 +1321,8 @@ export default {
               console.log(message);
             } else {
               const data = {
-                id: item.id,
+                id: item.stepID,
+                attachmentID: item.attachmentID,
                 sessionType: "Screenshot",
                 fileType: "image",
                 fileName: item.fileName,
@@ -1658,7 +1660,6 @@ export default {
       const stepID = uuidv4();
       const attachmentID = uuidv4();
       const data = {
-        id,
         stepID,
         attachmentID,
         sessionType: "Mindmap",
