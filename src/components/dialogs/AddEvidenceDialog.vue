@@ -173,6 +173,7 @@
               class="input-box"
               v-model="tagText"
               :tags="tags"
+              :autocomplete-items="filteredTags"
               label="Tags"
               :max-tags="10"
               :maxlength="20"
@@ -387,6 +388,7 @@ export default {
       triggerJiraSaveTicket: false,
       jiraTicketSaved: false,
       autoSaveEvent: false,
+      allTags: [],
     };
   },
   created() {
@@ -400,7 +402,18 @@ export default {
       hotkeys: "config/hotkeys",
       config: "config/fullConfig",
       credentials: "auth/credentials",
+      defaultTags: "config/defaultTags",
+      sessionItems: "sessionItems",
     }),
+    filteredTags() {
+      return this.allTags
+        .filter((item) => {
+          return item.toLowerCase().includes(this.tagText.toLowerCase());
+        })
+        .map((item) => {
+          return { text: item };
+        });
+    },
     nameHotkey() {
       return this.$hotkeyHelpers.findBinding("evidence.name", this.hotkeys);
     },
@@ -441,6 +454,7 @@ export default {
     },
   },
   mounted() {
+    this.getAllTags();
     if (this.$isElectron) {
       // this.$electronService.onActiveSession(this.activeSession);
       // this.activeSession();
@@ -476,6 +490,21 @@ export default {
     },
   },
   methods: {
+    getAllTags() {
+      const defaultTagTexts = this.defaultTags
+        .filter((tag) => tag.text !== "")
+        .map((tag) => tag.text);
+      let sessionTagTexts = [];
+      if (this.sessionItems.length > 0) {
+        this.sessionItems.forEach((item) => {
+          if (item.tags && item.tags.length > 0) {
+            const tagTexts = item.tags.map((tag) => tag.text);
+            sessionTagTexts = sessionTagTexts.concat(tagTexts);
+          }
+        });
+      }
+      this.allTags = [...new Set([...defaultTagTexts, ...sessionTagTexts])];
+    },
     async activeSession() {
       // set theme mode
       const isDarkMode = this.config.apperance === "dark";

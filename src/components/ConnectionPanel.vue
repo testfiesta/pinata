@@ -12,26 +12,16 @@
     >
       <v-icon dark> mdi-cog </v-icon>
     </v-btn>
-    <v-menu
-      v-model="showMenu"
-      :close-on-content-click="false"
-      :nudge-width="100"
-      bottom
-      z-index="99"
-      offset-y
-    >
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn icon small v-bind="attrs" v-on="on"
-          ><img :src="profileAvatar" width="32" alt="avatar"
-        /></v-btn>
-      </template>
 
-      <v-card>
+    <template>
+      <v-card class="d-flex align-center">
         <v-list
           v-for="(credentialList, credentialType) in credentials"
           :key="credentialType"
         >
-          <div v-if="credentialList.length > 0 && credentialType !== 'yatt'">
+          <div
+            v-if="credentialList.length > 0 && credentialType === connection"
+          >
             <v-subheader
               class="text-uppercase font-weight-medium"
               style="height: 32px"
@@ -47,51 +37,66 @@
                 width="32"
                 height="32"
               >
-                <img :src="profileAvatar" alt="avatar" width="32" />
+                <img
+                  :src="
+                    credential.user.avatar
+                      ? credential.user.avatar
+                      : 'https://www.gravatar.com/avatar/' +
+                        credential.user.name
+                  "
+                  alt="avatar"
+                  width="32"
+                />
               </v-list-item-avatar>
 
-              <v-list-item-content>
+              <v-list-item-content style="width: 350px">
                 <v-list-item-title>
-                  {{
-                    credential.user.name ??
-                    credential.type.charAt(0).toUpperCase() +
-                      credential.type.substr(1).toLowerCase() +
-                      ` User`
-                  }}
+                  {{ credential.user.name }}
                 </v-list-item-title>
                 <v-list-item-subtitle>
                   {{ credential.user.email }}
                 </v-list-item-subtitle>
+                <v-list-item-subtitle>
+                  {{ credential.url }}
+                </v-list-item-subtitle>
               </v-list-item-content>
+
               <v-list-item-action>
-                <v-btn
-                  icon
-                  @click="openAccountLink(credentialType, credential)"
-                >
-                  <v-icon>mdi-open-in-new</v-icon>
-                </v-btn>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      v-on="on"
+                      icon
+                      @click="openAccountLink(credentialType, credential)"
+                    >
+                      <v-icon>mdi-open-in-new</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>{{ $tc("caption.open", 1) }}</span>
+                </v-tooltip>
               </v-list-item-action>
             </v-list-item>
           </div>
         </v-list>
 
-        <v-divider></v-divider>
-
-        <v-list>
-          <v-list-item class="px-0">
+        <v-divider vertical />
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
             <v-btn
-              block
-              large
               text
               class="logout_btn px-0"
-              style="border-radius: 0px"
+              size="x-large"
+              v-on="on"
+              style="border-radius: 50px"
               @click="logout"
-              >Log out</v-btn
             >
-          </v-list-item>
-        </v-list>
+              <v-icon>mdi-logout</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ $tc("caption.log_out", 1) }}</span>
+        </v-tooltip>
       </v-card>
-    </v-menu>
+    </template>
     <SettingsDialog
       v-model="settingsDialog"
       ref="settingsDialog"
@@ -105,14 +110,19 @@ import { mapGetters } from "vuex";
 import SettingsDialog from "@/components/dialogs/SettingsDialog.vue";
 
 export default {
-  name: "MenuPopover",
+  name: "ConnectionPanel",
   components: {
     SettingsDialog,
   },
-  props: {},
+  props: {
+    connectionType: {
+      type: String,
+      default: () => "jira",
+    },
+  },
   data() {
     return {
-      showMenu: false,
+      connection: this.connectionType,
       settingsDialog: false,
     };
   },
@@ -125,12 +135,12 @@ export default {
         if (cList.length > 0) {
           if (cList[0].user.avatar) {
             return cList[0].user.avatar;
-          } else if (cList[0].user.name) {
+          } else {
             return "https://www.gravatar.com/avatar/" + cList[0].user.name;
           }
         }
       }
-      return "https://www.gravatar.com/avatar/" + uuidv4() + "?d=robohash";
+      return "https://www.gravatar.com/avatar/" + uuidv4();
     },
   },
   methods: {
@@ -142,7 +152,6 @@ export default {
         } else {
           window.open(yattUrl, "_blank");
         }
-        this.showMenu = false;
       } else if (credentialType === "jira") {
         const jiraUrl = credential.orgs[0].url;
         if (this.$isElectron) {
@@ -150,22 +159,24 @@ export default {
         } else {
           window.open(jiraUrl, "_blank");
         }
-        this.showMenu = false;
-      } else if (credentialType === "testrail" || credentialType === "xray") {
-        const url = `https://${credential.url}`;
+      } else if (credentialType === "testrail") {
+        const testRailUrl = `https://${credential.url}`;
         if (this.$isElectron) {
-          await this.$electronService.openExternalLink(url);
+          await this.$electronService.openExternalLink(testRailUrl);
         } else {
-          window.open(url, "_blank");
+          window.open(testRailUrl, "_blank");
         }
-        this.showMenu = false;
       }
     },
     logout() {
-      this.showMenu = false;
-      const emptyCredentials = {};
-      this.$store.commit("auth/setCredentials", emptyCredentials);
-      this.$storageService.updateCredentials(emptyCredentials);
+      let credentials = {};
+      if (this.credentials.jira && this.credentials.testrail) {
+        this.connection === "jira"
+          ? (credentials.testrail = this.credentials.testrail)
+          : (credentials.jira = this.credentials.jira);
+      }
+      this.$store.commit("auth/setCredentials", credentials);
+      this.$storageService.updateCredentials(credentials);
     },
     openSettingsDialog() {
       this.settingsDialog = true;

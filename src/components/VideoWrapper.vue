@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="preview-wrapper" v-if="isProcessing">
-      <img :src="`file://${editSessionItem.poster}`" />
+      <img
+        :src="
+          $isElectron
+            ? `file://${editSessionItem.poster}`
+            : editSessionItem.poster
+        "
+      />
       <div class="progress-bar">
         <v-progress-linear
           indeterminate
@@ -21,7 +27,11 @@
           style="width: 100%"
         >
           <source
-            :src="`file://${editSessionItem.filePath}`"
+            :src="
+              $isElectron
+                ? `file://${editSessionItem.filePath}`
+                : editSessionItem.filePath
+            "
             type="video/webm"
           />
         </video>
@@ -141,25 +151,34 @@ export default {
       const endVal = this.timeInSeconds(this.end);
       this.handleProcessing(true);
 
-      const { status, message, item } = await this.$electronService.updateVideo(
-        this.editSessionItem,
-        startVal,
-        endVal,
-        parseInt(this.duration)
-      );
+      if (this.$isElectron) {
+        const { status, message, item } =
+          await this.$electronService.updateVideo(
+            this.editSessionItem,
+            startVal,
+            endVal,
+            parseInt(this.duration)
+          );
 
-      if (status === STATUSES.ERROR) {
-        this.$root.$emit("set-snackbar", message);
-        console.log(message);
+        if (status === STATUSES.ERROR) {
+          this.$root.$emit("set-snackbar", message);
+          console.log(message);
+        } else {
+          this.editSessionItem.filePath = item.filePath;
+          this.editSessionItem.fileSize = item.fileSize;
+          this.editSessionItem.fileChecksum = item.fileChecksum;
+          this.$root.$emit("update-edit-item", this.editSessionItem);
+          if (needCallback) {
+            this.$root.$emit("save-data", this.editSessionItem);
+          }
+        }
       } else {
-        this.editSessionItem.filePath = item.filePath;
-        this.editSessionItem.fileSize = item.fileSize;
-        this.editSessionItem.fileChecksum = item.fileChecksum;
         this.$root.$emit("update-edit-item", this.editSessionItem);
         if (needCallback) {
           this.$root.$emit("save-data", this.editSessionItem);
         }
       }
+
       this.handleProcessing(false);
     },
     handleProcessing(value) {

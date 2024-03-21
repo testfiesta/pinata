@@ -34,6 +34,7 @@ const defaultConfig = {
   ai: {
     enabled: false,
   },
+  defaultTags: [],
   templates: {
     image: {
       content: "",

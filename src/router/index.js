@@ -17,6 +17,7 @@ import SigninWrapper from "@/components/authentication/SigninWrapper";
 import SigninYattWrapper from "@/components/authentication/SigninYattWrapper";
 import SigninJiraWrapper from "@/components/authentication/SigninJiraWrapper";
 import SigninTestRailWrapper from "@/components/authentication/SigninTestRailWrapper";
+import SigninXrayWrapper from "@/components/authentication/SigninXrayWrapper";
 
 import SettingView from "../views/SettingView.vue";
 import ConnectionsTab from "@/components/settings/ConnectionsTab.vue";
@@ -27,6 +28,7 @@ import ConfigCheckListTab from "@/components/settings/ConfigCheckListTab.vue";
 import ReportsTab from "@/components/settings/ReportsTab.vue";
 import AddonsTab from "@/components/settings/AddonsTab.vue";
 import HotkeysTab from "@/components/settings/HotkeysTab.vue";
+import TagsTab from "@/components/settings/TagsTab.vue";
 
 import NoteEditorView from "../views/NoteEditorView.vue";
 import SummaryEditorView from "../views/SummaryEditorView.vue";
@@ -81,6 +83,12 @@ const routes = [
         path: "signinTestRail",
         name: "signinTestRail",
         component: SigninTestRailWrapper,
+        props: true,
+      },
+      {
+        path: "signinXray",
+        name: "signinXray",
+        component: SigninXrayWrapper,
         props: true,
       },
     ],
@@ -147,6 +155,12 @@ const routes = [
         component: HotkeysTab,
         props: true,
       },
+      {
+        path: "tabs",
+        name: "tabs",
+        component: TagsTab,
+        props: true,
+      },
     ],
   },
   {
@@ -210,7 +224,11 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   // This prevents us from saving store on initial load where name is null
-  if (from.matched.length > 0 && !to.path.includes("settings")) {
+  if (
+    from.matched.length > 0 &&
+    !to.path.includes("settings") &&
+    store.state.session.sessionID
+  ) {
     store.commit("setSessionPath", to.path);
   }
   next();

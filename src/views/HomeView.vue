@@ -1,7 +1,11 @@
 <template>
   <v-container class="wrapper">
     <div class="header">
-      <div class="avatar" v-if="isAuthenticated">
+      <div
+        class="avatar"
+        v-if="isAuthenticated"
+        :style="{ width: $isElectron ? 'auto' : '100%' }"
+      >
         <MenuPopover />
       </div>
     </div>
@@ -107,6 +111,30 @@
               loggedInServices.testrail
                 ? $tc("caption.logged_in_testrail", 1)
                 : $tc("caption.not_logged_in_testrail", 1)
+            }}
+          </span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <button class="social-btn">
+              <img
+                :src="require('../assets/icon/xray-logo.png')"
+                width="25"
+                v-bind="attrs"
+                v-on="on"
+              />
+              <div
+                class="overlay"
+                v-if="!loggedInServices.xray"
+                v-on="on"
+              ></div>
+            </button>
+          </template>
+          <span>
+            {{
+              loggedInServices.xray
+                ? $tc("caption.logged_in_xray", 1)
+                : $tc("caption.not_logged_in_xray", 1)
             }}
           </span>
         </v-tooltip>
@@ -245,26 +273,8 @@ export default {
         // todo Add web version handler
       }
     },
-    setInitialPreSession() {
-      this.$store.commit(
-        "setPreSessionTasks",
-        this.checklistPresessionTasks.map((task) => {
-          return { ...task, checked: false };
-        })
-      );
-    },
-    setInitialPostSession() {
-      console.log(456);
-      // this.$store.commit(
-      //   "setPostSessionTasks",
-      //   this.checklistPostsessionTasks.map((task) => {
-      //     return { ...task, checked: false };
-      //   })
-      // );
-    },
     handleQuickTest() {
-      this.$store.commit("clearState");
-      this.$store.commit("setSessionQuickTest", true);
+      this.$store.commit("startQuickTest");
       this.$router.push("/main/workspace");
     },
   },

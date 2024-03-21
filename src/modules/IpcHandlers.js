@@ -6,6 +6,7 @@ const fileSystemUtility = require("./FileSystemUtility");
 const menuUtility = require("./MenuUtility");
 const windowUtility = require("./WindowUtility");
 const serverUtility = require("./ServerUtility");
+const systemInfoUtility = require("./SystemInfoUtility");
 
 ipcMain.handle(IPC_HANDLERS.BROWSER, async (event, args) => {
   switch (args.func) {
@@ -176,3 +177,10 @@ ipcMain.handle(IPC_HANDLERS.SERVER, async (event, args) => {
       return serverUtility.stopServer(args.data);
   }
 });
+
+ipcMain.handle(IPC_HANDLERS.SYSTEMINFO, async (event, args) => {
+  switch (args.func) {
+    case IPC_FUNCTIONS.GET_SYSTEM_INFO:
+      return await systemInfoUtility.getSystemInfo();
+  }
+})

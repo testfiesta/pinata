@@ -135,8 +135,12 @@ export default {
       return FILE_TYPES[type];
     },
     async fetchItems() {
-      const sessionItems = await this.$storageService.getItems();
-      this.$store.commit("setSessionItemsFromExternalWindow", sessionItems);
+      if (this.$isElectron) {
+        const sessionItems = await this.$storageService.getItems();
+        this.$store.commit("setSessionItemsFromExternalWindow", sessionItems);
+      } else {
+        // todo check if something required for web version here
+      }
     },
     async getConfig() {
       const config = await this.$storageService.getConfig();

@@ -59,6 +59,18 @@
               {{ $tc("caption.signin_testrail", 1) }}
             </div>
           </v-btn>
+          <v-btn
+            class="mb-4 outline-btn jira"
+            block
+            outlined
+            color="white"
+            @click="signinXray"
+          >
+            <img :src="require('../../assets/icon/xray-logo.png')" width="12" />
+            <div class="btn-text" :style="{ color: currentTheme.secondary }">
+              {{ $tc("caption.signin_xray", 1) }}
+            </div>
+          </v-btn>
           <!--<v-btn class="mb-4 outline-btn" block outlined color="white">
             <img :src="require('../../assets/icon/qtest.png')" />
             <div class="btn-text" :style="{ color: currentTheme.secondary }">
@@ -177,6 +189,9 @@ export default {
     },
     signinTestRail() {
       this.$router.push({ path: "/authentication/signinTestRail" });
+    },
+    signinXray() {
+      this.$router.push({ path: "/authentication/signinXray" });
     },
   },
 };

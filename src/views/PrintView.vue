@@ -399,6 +399,54 @@
               </span>
               {{ screenWidth }} x {{ screenHeight }}
             </p>
+            <p class="item-value">
+              <span class="font-weight-bold">
+                {{ $tc("caption.current_date_time", 1) }}:
+              </span>
+              {{ this.currentDateTime }}
+            </p>
+            <p class="item-value">
+              <span class="font-weight-bold">
+                {{ $tc("caption.computer_name", 1) }}:
+              </span>
+              {{ this.computerName }}
+            </p>
+            <p class="item-value">
+              <span class="font-weight-bold">
+                {{ $tc("caption.os_system", 1) }}:
+              </span>
+              {{ this.operatingSystem }}
+            </p>
+            <p class="item-value">
+              <span class="font-weight-bold">
+                {{ $tc("caption.system_manufacturer", 1) }}:
+              </span>
+              {{ this.systemManufacturer }}
+            </p>
+            <p class="item-value">
+              <span class="font-weight-bold">
+                {{ $tc("caption.system_model", 1) }}:
+              </span>
+              {{ this.systemModel }}
+            </p>
+            <p class="item-value">
+              <span class="font-weight-bold">
+                {{ $tc("caption.bios", 1) }}:
+              </span>
+              {{ this.biosVersion }}
+            </p>
+            <p class="item-value">
+              <span class="font-weight-bold">
+                {{ $tc("caption.processor", 1) }}:
+              </span>
+              {{ this.processor }}
+            </p>
+            <p class="item-value">
+              <span class="font-weight-bold">
+                {{ $tc("caption.memory", 1) }}:
+              </span>
+              {{ this.memory }}
+            </p>
           </div>
         </v-col>
       </v-row>
@@ -447,6 +495,14 @@ export default {
       window: "",
       screenWidth: "",
       screenHeight: "",
+      currentDateTime: "",
+      computerName: "",
+      operatingSystem: "",
+      systemManufacturer: "",
+      systemModel: "",
+      biosVersion: "",
+      processor: "",
+      memory: "",
     };
   },
   created() {
@@ -567,6 +623,20 @@ export default {
     async initialize() {
       if (!window.ipc) return;
 
+      await window.ipc
+        .invoke(IPC_HANDLERS.SYSTEMINFO, {
+          func: IPC_FUNCTIONS.GET_SYSTEM_INFO,
+        })
+        .then((result) => {
+          this.currentDateTime = result.currentDateTime;
+          this.computerName = result.computerName;
+          this.operatingSystem = result.operatingSystem;
+          this.systemManufacturer = result.systemManufacturer;
+          this.systemModel = result.systemModel;
+          this.biosVersion = result.biosVersion;
+          this.processor = result.processor;
+          this.memory = result.memory;
+        });
       await window.ipc
         .invoke(IPC_HANDLERS.PERSISTENCE, { func: IPC_FUNCTIONS.GET_ITEMS })
         .then((result) => {

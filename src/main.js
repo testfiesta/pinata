@@ -11,6 +11,7 @@ import DefaultLayout from "./layouts/Default.vue";
 import MinimizeLayout from "./layouts/Minimize.vue";
 
 import VueShortkey from "vue-shortkey";
+
 import VueMask from "v-mask";
 import i18n from "./i18n";
 import StorageService from "./services/storageService";

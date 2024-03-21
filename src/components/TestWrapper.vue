@@ -26,9 +26,9 @@
                   : 'mdi-robot-outline'
                 : ''
             "
-            v-model="title"
+            :value="title"
             ref="titleTextField"
-            @change="updateTitle()"
+            @input="updateTitle"
             @click:append="handleAISuggestion('title', $event)"
           >
             <template v-slot:progress>
@@ -79,7 +79,7 @@
               </v-card>
               <v-tiptap
                 v-else
-                v-model="charter.content"
+                :value="charter.content"
                 :placeholder="$t('message.describe_test_charter')"
                 ref="charter"
                 :toolbar="[
@@ -100,7 +100,7 @@
                   '|',
                   '#aiAssist',
                 ]"
-                @input="updateCharter()"
+                @input="updateCharter"
               >
                 <template #aiAssist="">
                   <v-btn
@@ -182,7 +182,7 @@
           </v-card>
           <v-tiptap
             v-else
-            v-model="preconditions.content"
+            :value="preconditions.content"
             :placeholder="$t('message.define_required_precondition')"
             ref="preconditions"
             :toolbar="[
@@ -203,7 +203,7 @@
               '|',
               '#aiAssist',
             ]"
-            @input="updatePreconditions()"
+            @input="updatePreconditions"
           >
             <template #aiAssist="">
               <v-btn
@@ -230,6 +230,7 @@
 <script>
 import { VContainer, VRow, VCol, VTextField } from "vuetify/lib/components";
 import MindmapEditor from "./MindmapEditor.vue";
+import { debounce } from "lodash";
 
 import {
   DEFAULT_CHARTER_MAP_NODES,
@@ -353,6 +354,14 @@ export default {
       },
     },
   },
+  created() {
+    this.debouncedUpdateTitle = debounce(this.actualUpdateTitle, 500);
+    this.debouncedUpdateCharter = debounce(this.actualUpdateCharter, 500);
+    this.debouncedUpdatePreconditions = debounce(
+      this.actualUpdatePreconditions,
+      500
+    );
+  },
   mounted() {
     this.$root.$on("reset-duration", () => {
       this.duration = "";
@@ -360,18 +369,33 @@ export default {
     this.duration = this.formatDuration(this.$store.state.case.duration);
   },
   methods: {
-    updateTitle() {
-      this.$store.commit("setCaseTitle", this.title);
+    actualUpdateTitle(title) {
+      this.$store.commit("setCaseTitle", title);
     },
-    updateCharter() {
-      const regex = /(<([^>]+)>)/gi;
-      this.charter.text = this.charter.content.replace(regex, "");
-      this.$store.commit("setCaseCharter", this.charter);
+    updateTitle(title) {
+      this.debouncedUpdateTitle(title);
     },
-    updatePreconditions() {
+    actualUpdateCharter(charterContent) {
       const regex = /(<([^>]+)>)/gi;
-      this.preconditions.text = this.preconditions.content.replace(regex, "");
-      this.$store.commit("setCasePrecondition", this.preconditions);
+      const charterText = charterContent.replace(regex, "");
+      this.$store.commit("setCaseCharter", {
+        content: charterContent,
+        text: charterText,
+      });
+    },
+    updateCharter(charterContent) {
+      this.debouncedUpdateCharter(charterContent);
+    },
+    actualUpdatePreconditions(preconditionsContent) {
+      const regex = /(<([^>]+)>)/gi;
+      const preconditionsText = preconditionsContent.replace(regex, "");
+      this.$store.commit("setCasePrecondition", {
+        content: preconditionsContent,
+        text: preconditionsText,
+      });
+    },
+    updatePreconditions(preconditionsContent) {
+      this.debouncedUpdatePreconditions(preconditionsContent);
     },
     async handleAISuggestion(field, event) {
       if (

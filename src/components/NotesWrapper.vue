@@ -2,7 +2,7 @@
   <v-container class="wrapper">
     <div class="content">
       <v-tiptap
-        v-model="notes.content"
+        :value="$store.state.session.notes.content"
         :placeholder="$t('message.insert_note')"
         ref="notes"
         :toolbar="[
@@ -21,7 +21,7 @@
           'emoji',
           'blockquote',
         ]"
-        @input="handleNotes"
+        @input="updateNotes"
       >
       </v-tiptap>
       <div class="evidence-wrapper mt-3">
@@ -29,6 +29,7 @@
           v-model="itemLists"
           draggable=".draggable-item"
           class="draggable-wrapper"
+          :animation="200"
           @change="handleChange"
         >
           <transition-group class="draggable-group mb-2">
@@ -568,6 +569,7 @@ import draggable from "vuedraggable";
 import { VEmojiPicker } from "v-emoji-picker";
 
 import { FILE_TYPES } from "../modules/constants";
+import { debounce } from "lodash";
 
 export default {
   name: "NotesWrapper",
@@ -620,11 +622,16 @@ export default {
       selectedId: null,
     };
   },
+  created() {
+    this.debouncedUpdateNotes = debounce(this.actualUpdateNotes, 500);
+  },
   mounted() {
     this.itemLists.map((item) => {
       this.emojiMenu[`menu-${item.stepID}`] = false;
     });
-    this.fetchNotes();
+    if (this.$isElectron) {
+      this.fetchNotes();
+    }
     this.$refs.notes.editor.commands.focus();
   },
   computed: {
@@ -651,12 +658,22 @@ export default {
 
       await this.$store.commit("setSessionNotes", this.notes);
     },
-    async handleNotes() {
+    async actualUpdateNotes(notesContent) {
       const regex = /(<([^>]+)>)/gi;
-      this.notes.text = this.notes.content.replace(regex, "");
-
-      await this.$storageService.updateNotes(this.notes);
-      await this.$store.commit("setSessionNotes", this.notes);
+      const notesText = notesContent.replace(regex, "");
+      if (this.$isElectron) {
+        await this.$storageService.updateNotes({
+          content: notesContent,
+          text: notesText,
+        });
+      }
+      await this.$store.commit("setSessionNotes", {
+        content: notesContent,
+        text: notesText,
+      });
+    },
+    async updateNotes(notesContent) {
+      this.debouncedUpdateNotes(notesContent);
     },
     handleChange() {
       this.saveData();

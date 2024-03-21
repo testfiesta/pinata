@@ -38,6 +38,10 @@
             <img :src="require('../../assets/icon/testrail.png')" />
             <div class="btn-text">{{ $tc("caption.signup_testrail", 1) }}</div>
           </v-btn>
+          <v-btn class="mb-4 outline-btn testrail" block outlined color="white">
+            <img :src="require('../../assets/icon/xray-logo.png')" width="12" />
+            <div class="btn-text">{{ $tc("caption.signup_xray", 1) }}</div>
+          </v-btn>
           <v-btn class="mb-4 outline-btn qtest" block outlined color="white">
             <img :src="require('../../assets/icon/qtest.png')" />
             <div class="btn-text">{{ $tc("caption.signup_qtest", 1) }}</div>

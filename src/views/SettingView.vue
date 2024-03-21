@@ -1,5 +1,9 @@
 <template>
-  <v-container fluid style="min-height: 100vh" class="d-flex">
+  <v-container
+    fluid
+    :style="{ 'min-height': $isElectron ? '100vh' : '800px' }"
+    class="d-flex"
+  >
     <v-row>
       <v-col cols="auto" class="pa-0">
         <v-tabs
@@ -12,7 +16,7 @@
           <v-tab
             v-for="tab of tabs"
             :key="tab.id"
-            :to="tab.route"
+            v-bind="$isElectron ? { to: tab.route } : {}"
             :style="{ color: currentTheme.secondary }"
             exact
           >
@@ -26,15 +30,25 @@
           <v-tab-item
             v-for="tab of tabs"
             :key="tab.id"
-            :value="tab.route"
+            v-bind="$isElectron ? { value: tab.route } : {}"
             :transition="false"
           >
             <router-view
+              v-if="$isElectron"
               :metadata="metadata"
               :configItem="config"
               :credentialItems="credentials"
               @submit-config="updateConfig"
-            ></router-view>
+            />
+            <component
+              v-else
+              :is="tab.component"
+              :metadata="metadata"
+              :configItem="config"
+              :credentialItems="credentials"
+              @submit-config="updateConfig"
+            >
+            </component>
           </v-tab-item>
         </v-tabs-items>
       </v-col>
@@ -43,9 +57,26 @@
 </template>
 
 <script>
+import GeneralTab from "@/components/settings/GeneralTab.vue";
+import ConnectionsTab from "@/components/settings/ConnectionsTab.vue";
+import TemplateTab from "@/components/settings/TemplateTab.vue";
+import ConfigCheckListTab from "@/components/settings/ConfigCheckListTab.vue";
+import ReportsTab from "@/components/settings/ReportsTab.vue";
+import AddonsTab from "@/components/settings/AddonsTab.vue";
+import HotkeysTab from "@/components/settings/HotkeysTab.vue";
+import TagsTab from "@/components/settings/TagsTab.vue";
 export default {
   name: "SettingView",
-  components: {},
+  components: {
+    GeneralTab,
+    ConnectionsTab,
+    TemplateTab,
+    ConfigCheckListTab,
+    ReportsTab,
+    AddonsTab,
+    HotkeysTab,
+    TagsTab,
+  },
   computed: {
     currentTheme() {
       if (this.$vuetify.theme.dark) {
@@ -59,36 +90,53 @@ export default {
     return {
       activeTab: "/settings",
       tabs: [
-        { id: 1, name: this.$tc("caption.general", 1), route: `/settings` },
+        {
+          id: 1,
+          name: this.$tc("caption.general", 1),
+          route: `/settings`,
+          component: GeneralTab,
+        },
         {
           id: 2,
           name: this.$tc("caption.connections", 1),
           route: `/settings/connections`,
+          component: ConnectionsTab,
         },
         {
           id: 3,
           name: this.$tc("caption.templates", 1),
           route: `/settings/template`,
+          component: TemplateTab,
         },
         {
           id: 4,
           name: this.$tc("caption.checklists", 1),
           route: `/settings/checklist`,
+          component: ConfigCheckListTab,
         },
         {
           id: 5,
           name: this.$tc("caption.reports", 1),
           route: `/settings/reports`,
+          component: ReportsTab,
         },
         {
           id: 6,
           name: this.$tc("caption.addons", 1),
           route: `/settings/addons`,
+          component: AddonsTab,
         },
         {
           id: 7,
           name: this.$tc("caption.hotkeys", 1),
           route: `/settings/hotkeys`,
+          component: HotkeysTab,
+        },
+        {
+          id: 8,
+          name: this.$tc("caption.tags_tab", 1),
+          route: `/settings/tabs`,
+          component: TagsTab,
         },
         // { id: 8, name: this.$tc("caption.support", 1), route: `/settings/support` },
       ],
@@ -98,26 +146,30 @@ export default {
     };
   },
   created() {
-    this.getMetadata();
+    if (this.$isElectron) {
+      this.getMetadata();
+    }
     this.getConfig();
     this.getCredentials();
   },
   mounted() {
-    this.$root.$on("change-meta", () => {
-      this.getMetadata();
-      this.getConfig().then(() => this.updateConfig(this.config));
-      this.getCredentials().then(() =>
-        this.updateCredentials(this.credentials)
-      );
-    });
+    if (this.$isElectron) {
+      this.$root.$on("change-meta", () => {
+        this.getMetadata();
+        this.getConfig().then(() => this.updateConfig(this.config));
+        this.getCredentials().then(() =>
+          this.updateCredentials(this.credentials)
+        );
+      });
+    }
   },
   methods: {
     async getMetadata() {
       this.metadata = await this.$storageService.getMetaData();
     },
     async getConfig() {
-      const config = await this.$storageService.getConfig();
-      this.$store.commit("config/setFullConfig", config);
+      this.config = await this.$storageService.getConfig();
+      this.$store.commit("config/setFullConfig", this.config);
     },
     updateConfig(value) {
       this.config = value;
@@ -148,7 +200,6 @@ export default {
 .content {
   display: flex;
   flex-direction: column;
-  height: 100vh;
   width: 100%;
   overflow-y: auto;
 }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import dayjs from "dayjs";
 import StorageInterface from "../storageInterface";
+import store from "@/store";
 
 export default class RestApiService extends StorageInterface {
   async getState() {
@@ -34,167 +35,61 @@ export default class RestApiService extends StorageInterface {
         returnResponse.error = error.response.data.errors;
       });
 
-    returnResponse.steps.map(async (step) => {
-      if (step.uploadURL) {
-        const match = state.session.items.find(
-          (item) => item.stepID === step.external_id
-        );
-        if (match?.filePath) {
-          const fetchResponse = await fetch(match.filePath);
-          const fileBlob = await fetchResponse.blob();
-          const file = new File([fileBlob], step.uid, { type: match.fileType });
-          await axios
-            .put(step.uploadURL, file, {
-              headers: {
-                "Content-Type": match.fileType,
-                "X-Upload-Content-Length": match.fileSize,
-              },
-            })
-            .catch((error) => {
-              returnResponse.error.push(...error.response.data.errors);
+    if (returnResponse?.steps) {
+      returnResponse.steps.map(async (step) => {
+        if (step.uploadURL) {
+          const match = state.session.items.find(
+            (item) => item.stepID === step.external_id
+          );
+          if (match?.filePath) {
+            const fetchResponse = await fetch(match.filePath);
+            const fileBlob = await fetchResponse.blob();
+            const file = new File([fileBlob], step.uid, {
+              type: match.fileType,
             });
+            await axios
+              .put(step.uploadURL, file, {
+                headers: {
+                  "Content-Type": match.fileType,
+                  "X-Upload-Content-Length": match.fileSize,
+                },
+              })
+              .then((resp) => {
+                console.log("File upload response");
+                console.log(resp);
+              })
+              .catch((error) => {
+                returnResponse.error.push(...error.response.data.errors);
+              });
+          }
         }
-      }
-    });
+      });
+    }
+    if (returnResponse?.data) {
+      store.commit("setSessionIDFromBackend", returnResponse.data.sessionID);
+      store.commit("setCaseIDFromBackend", returnResponse.data.caseID);
+    }
   }
 
   async getConfig() {
-    // const response = await axios.get(`http://localhost:8082/config`);
-    // return response.data;
-    return {
-      useLocal: true,
-      apperance: "light",
-      showIssue: false,
-      appLabel: false,
-      defaultColor: "#1976D2FF",
-      commentType: "Comment",
-      audioCapture: false,
-      videoQuality: "high",
-      debugMode: false,
-      summary: false,
-      ai: {
-        enabled: false,
-      },
-      templates: [
-        {
-          type: "Screenshot",
-          precondition: {
-            content: "",
-            text: "",
-          },
-          issue: "",
-          isBug: false,
-        },
-        {
-          type: "Video",
-          precondition: {
-            content: "",
-            text: "",
-          },
-          issue: "",
-          isBug: false,
-        },
-        {
-          type: "Audio",
-          precondition: {
-            content: "",
-            text: "",
-          },
-          issue: "",
-          isBug: false,
-        },
-        {
-          type: "Note",
-          precondition: {
-            content: "",
-            text: "",
-          },
-          issue: "",
-          isBug: false,
-        },
-        {
-          type: "File",
-          precondition: {
-            content: "",
-            text: "",
-          },
-          issue: "",
-          isBug: false,
-        },
-        {
-          type: "Mindmap",
-          precondition: {
-            content: "",
-            text: "",
-          },
-          issue: "",
-          isBug: false,
-        },
-      ],
-      checklist: {
-        presession: {
-          tasks: [],
-          status: false,
-        },
-        postsession: {
-          tasks: [],
-          status: false,
-        },
-      },
-      hotkeys: {
-        general: {
-          cancel: ["ctrl", "c"],
-          save: ["ctrl", "s"],
-        },
-        home: {
-          quickTest: ["ctrl", "q"],
-          newExploratorySession: ["ctrl", "e"],
-          openExploratorySession: ["ctrl", "o"],
-        },
-        sessionPlanning: {
-          title: ["ctrl", "t"],
-          charter: ["ctrl", "h"],
-          timeLimit: ["ctrl", "l"],
-          preconditions: ["ctrl", "p"],
-          checklist: ["ctrl", "e"],
-          start: "general.save",
-        },
-        workspace: {
-          pause: ["ctrl", "p"],
-          resume: "workspace.pause",
-          stop: ["ctrl", "h"],
-          videoStart: ["ctrl", "v"],
-          videoStop: "workspace.videoStart",
-          screenshot: ["ctrl", "r"],
-          audioStart: ["ctrl", "a"],
-          audioStop: "workspace.audioStart",
-          note: ["ctrl", "n"],
-          mindmap: ["ctrl", "m"],
-          changeSource: ["ctrl", "o"],
-          createIssue: ["ctrl", "i"],
-          back: ["ctrl", "b"],
-        },
-        evidence: {
-          name: ["ctrl", "n"],
-          followUp: ["ctrl", "f"],
-          comment: ["ctrl", "d"],
-          tags: ["ctrl", "t"],
-          type: ["ctrl", "y"],
-          save: "general.save",
-          cancel: "general.cancel",
-        },
-      },
-    };
+    const response = await axios.get(
+      `http://localhost:5000/v1/app/org/2f6cb8ea-e5c0-11ee-87ec-0242ac130002/config/5e0f71ff-987d-4240-85eb-df6adf568c31`
+    );
+    console.log(response);
+    return response.data.config;
   }
 
   async updateConfig(config) {
-    console.log(config);
-    // saving credentials endpoint here
+    const response = await axios.put(
+      `http://localhost:5000/v1/app/org/2f6cb8ea-e5c0-11ee-87ec-0242ac130002//config/5e0f71ff-987d-4240-85eb-df6adf568c31`,
+      { config }
+    );
+    return response.data.config;
   }
 
   async getCredentials() {
     const { data } = await axios.get(
-      "http://localhost:5000/v1/app/signup/token"
+      "http://localhost:5000/v1/app/profile/token"
     );
     console.log(data);
     return {

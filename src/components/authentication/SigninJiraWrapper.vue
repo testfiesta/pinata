@@ -246,37 +246,23 @@ import { Buffer } from "buffer";
 import yattIntegrationHelper from "../../integrations/YattIntegrationHelpers";
 import integrationHelper from "../../integrations/IntegrationHelpers";
 import jiraIntegrationHelper from "../../integrations/JiraIntegrationHelpers";
+import { mapGetters } from "vuex";
+
 export default {
   name: "SigninJiraWrapper",
   props: {
-    configItem: {
-      type: Object,
-      default: () => {},
-    },
-    credentialItems: {
-      type: Object,
-      default: () => {},
-    },
     prevRoute: {
       type: Object,
       default: () => {},
     },
   },
   watch: {
-    configItem: function (newValue) {
-      this.config = newValue;
-    },
-    credentialItems: function (newValue) {
-      this.credentials = newValue;
-    },
     prevRoute: function (newValue) {
       this.previousRoute = newValue;
     },
   },
   data() {
     return {
-      config: this.configItem,
-      credentials: this.credentialItems,
       previousRoute: this.prevRoute,
       connectWithCloudOAuth: true,
       connectWithApi: false,
@@ -338,6 +324,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      credentials: "auth/credentials",
+    }),
     currentTheme() {
       if (this.$vuetify.theme.dark) {
         return this.$vuetify.theme.themes.dark;
@@ -533,10 +522,7 @@ export default {
           loggedInAt: date,
         };
 
-        this.credentials = yattIntegrationHelper.saveCredentials(
-          this.credentials,
-          yattData
-        );
+        yattIntegrationHelper.saveCredentials(this.credentials, yattData);
       }
 
       if (data.jira) {
@@ -577,7 +563,7 @@ export default {
                         profile: user.data,
                       };
 
-                      this.credentials = jiraIntegrationHelper.saveCredentials(
+                      jiraIntegrationHelper.saveCredentials(
                         this.credentials,
                         jiraData
                       );
@@ -635,7 +621,7 @@ export default {
                     },
                   };
 
-                  this.credentials = jiraIntegrationHelper.saveCredentials(
+                  jiraIntegrationHelper.saveCredentials(
                     this.credentials,
                     jiraData
                   );
@@ -674,7 +660,7 @@ export default {
                   },
                 };
 
-                this.credentials = jiraIntegrationHelper.saveCredentials(
+                jiraIntegrationHelper.saveCredentials(
                   this.credentials,
                   jiraData
                 );

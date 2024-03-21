@@ -9,7 +9,7 @@
         class="subtitle-1 signup-title text-center"
         :style="{ color: currentTheme.secondary }"
       >
-        <span>{{ $tc("caption.signin_testrail", 1) }}</span>
+        <span>{{ $tc("caption.signin_xray", 1) }}</span>
       </div>
     </div>
     <div class="content mt-2">
@@ -17,56 +17,56 @@
         <v-row>
           <v-col cols="12" class="d-flex justify-center pa-0">
             <img
-              :src="require('../../assets/icon/testrail.png')"
-              alt="testrail"
-              width="60"
+              :src="require('../../assets/icon/xray-logo.png')"
+              alt="xray"
+              width="50"
             />
           </v-col>
           <v-col cols="12" class="pa-0">
             <div class="subtitle-2 label-text">
-              {{ $tc("caption.user_name", 1) }}
+              {{ $tc("caption.client_id", 1) }}
             </div>
             <div class="timer-box-wrapper">
               <v-text-field
-                placeholder="test@example.com"
+                :append-icon="showClientId ? 'mdi-eye' : 'mdi-eye-off'"
                 outlined
                 dense
-                v-model="username"
+                v-model="client_id"
+                :type="showClientId ? 'text' : 'password'"
                 required
-                :rules="rules.username"
+                :rules="rules.client_id"
+                @click:append="showClientId = !showClientId"
               />
             </div>
           </v-col>
           <v-col cols="12" class="pa-0">
             <div class="subtitle-2 label-text">
-              {{ $tc("caption.api_key", 1) }}
+              {{ $tc("caption.client_secret", 1) }}
             </div>
             <div class="timer-box-wrapper">
               <v-text-field
-                :append-icon="showEye ? 'mdi-eye' : 'mdi-eye-off'"
+                :append-icon="showClientSecret ? 'mdi-eye' : 'mdi-eye-off'"
                 outlined
                 dense
-                :type="showEye ? 'text' : 'password'"
-                v-model="apiKey"
+                :type="showClientSecret ? 'text' : 'password'"
+                v-model="client_secret"
                 required
                 :rules="rules.apiKey"
-                @click:append="showEye = !showEye"
+                @click:append="showClientSecret = !showClientSecret"
               />
             </div>
           </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.testrail_instance_url", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                outlined
-                dense
-                v-model="instanceUrl"
-                placeholder="mydomain.testrail.io"
-                required
-                :rules="rules.instanceUrl"
-              />
+          <v-col cols="12" class="d-flex justify-center mb-5 pa-0 mt-2">
+            <div class="subtitle-2">
+              <a
+                @click="
+                  openExternalLink(
+                    'https://docs.getxray.app/display/XRAYCLOUD/Global+Settings%3A+API+Keys'
+                  )
+                "
+              >
+                {{ $tc("message.xray_api_keys_docs") }}
+              </a>
             </div>
           </v-col>
           <v-col cols="12" class="pa-0">
@@ -103,11 +103,11 @@
 <script>
 import axios from "axios";
 import dayjs from "dayjs";
-import testrailIntegrationHelper from "../../integrations/TestRailIntegrationHelpers";
+import xrayIntegrationHelper from "../../integrations/XrayIntegrationHelpers";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "SigninTestRailWrapper",
+  name: "SigninXrayWrapper",
   props: {
     prevRoute: {
       type: Object,
@@ -122,33 +122,23 @@ export default {
   data() {
     return {
       previousRoute: this.prevRoute,
-      username: "",
-      apiKey: "",
-      instanceUrl: "",
-      showEye: false,
+      client_id: "",
+      showClientId: false,
+      client_secret: "",
+      showClientSecret: false,
       loading: false,
       valid: true,
       rules: {
-        username: [
+        client_id: [
           (v) =>
             !!v ||
-            this.$i18n.t("message.user_name") +
-              this.$i18n.t("message.is_required"),
-          (v) =>
-            !v ||
-            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
-            "Username must be valid",
-        ],
-        apiKey: [
-          (v) =>
-            !!v ||
-            this.$i18n.t("message.api_key") +
+            this.$i18n.t("message.client_id") +
               this.$i18n.t("message.is_required"),
         ],
-        instanceUrl: [
+        client_secret: [
           (v) =>
             !!v ||
-            this.$i18n.t("message.instance_url") +
+            this.$i18n.t("message.client_secret") +
               this.$i18n.t("message.is_required"),
         ],
       },
@@ -159,9 +149,6 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      credentials: "auth/credentials",
-    }),
     currentTheme() {
       if (this.$vuetify.theme.dark) {
         return this.$vuetify.theme.themes.dark;
@@ -169,6 +156,9 @@ export default {
         return this.$vuetify.theme.themes.light;
       }
     },
+    ...mapGetters({
+      credentials: "auth/credentials",
+    }),
   },
   methods: {
     back() {
@@ -182,12 +172,9 @@ export default {
       const isValid = this.$refs.form.validate();
       if (isValid) {
         this.postLogin({
-          testrail: {
-            type: "basic",
-            accessToken: Buffer.from(
-              this.username + ":" + this.apiKey
-            ).toString("base64"),
-            url: this.instanceUrl,
+          xray: {
+            client_id: this.client_id,
+            client_secret: this.client_secret,
           },
         });
       }
@@ -197,32 +184,26 @@ export default {
 
       let header = {
         headers: {
-          Authorization: `Basic ${data.testrail.accessToken}`,
-          Accept: "application/json",
+          "Content-Type": "application/json",
         },
       };
 
       await axios
-        .get(
-          `https://${data.testrail.url}/index.php?/api/v2/get_current_user`,
+        .post(
+          `https://xray.cloud.getxray.app/api/v2/authenticate`,
+          data.xray,
           header
         )
         .then((user) => {
           const date = dayjs().format("YYYY-MM-DD HH:mm:ss");
-          const testrailData = {
-            ...data.testrail,
+          const xrayData = {
+            ...data.xray,
             loggedInAt: date,
-            profile: {
-              account_id: user.data.id,
-              email: user.data.email,
-              name: user.data.name,
-            }, //TODO - We format this here and in the integration helper. We
-          }; //         need to simplify across all integrations.
+            lastRefreshed: date,
+            auth_token: user.data,
+          };
 
-          testrailIntegrationHelper.saveCredentials(
-            this.credentials,
-            testrailData
-          );
+          xrayIntegrationHelper.saveCredentials(this.credentials, xrayData);
 
           setTimeout(() => {
             this.loading = false;
@@ -236,6 +217,11 @@ export default {
             ? error.message
             : this.$i18n.t("message.api_error");
         });
+    },
+    openExternalLink(url) {
+      if (this.$isElectron) {
+        this.$electronService.openExternalLink(url);
+      }
     },
   },
 };

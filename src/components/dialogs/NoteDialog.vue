@@ -147,6 +147,7 @@
                 class="input-box"
                 v-model="tag_text"
                 :tags="tags"
+                :autocomplete-items="filteredTags"
                 :max-tags="10"
                 :maxlength="20"
                 @tags-changed="handleTags"
@@ -220,10 +221,11 @@
 
 <script>
 import VueTagsInput from "@johmun/vue-tags-input";
-import { TEXT_TYPES, AI_ENABLED_FIELDS } from "../../modules/constants";
 import openAIIntegrationHelper from "../../integrations/OpenAIIntegrationHelpers";
+import { mapGetters } from "vuex";
 
 import { VEmojiPicker } from "v-emoji-picker";
+import { TEXT_TYPES, AI_ENABLED_FIELDS } from "../../modules/constants";
 
 export default {
   name: "NoteDialog",
@@ -232,6 +234,10 @@ export default {
     VEmojiPicker,
   },
   props: {
+    isVisible: {
+      type: Boolean,
+      require: true,
+    },
     configItem: {
       type: Object,
       default: () => {},
@@ -242,6 +248,11 @@ export default {
     },
   },
   watch: {
+    isVisible(newVal) {
+      if (newVal) {
+        this.getAllTags();
+      }
+    },
     configItem: function (newValue) {
       this.config = newValue;
       this.resetData();
@@ -280,11 +291,25 @@ export default {
       tag_text: "",
       emojiMenu: false,
       tags: [],
+      allTags: [],
       emoji: [],
       followUp: false,
     };
   },
   computed: {
+    ...mapGetters({
+      defaultTags: "config/defaultTags",
+      sessionItems: "sessionItems",
+    }),
+    filteredTags() {
+      return this.allTags
+        .filter((item) => {
+          return item.toLowerCase().includes(this.tag_text.toLowerCase());
+        })
+        .map((item) => {
+          return { text: item };
+        });
+    },
     confirmHotkey() {
       return this.$hotkeyHelpers.findBinding(
         "general.save",
@@ -309,6 +334,21 @@ export default {
     },
   },
   methods: {
+    getAllTags() {
+      const defaultTagTexts = this.defaultTags
+        .filter((tag) => tag.text !== "")
+        .map((tag) => tag.text);
+      let sessionTagTexts = [];
+      if (this.sessionItems.length > 0) {
+        this.sessionItems.forEach((item) => {
+          if (item.tags && item.tags.length > 0) {
+            const tagTexts = item.tags.map((tag) => tag.text);
+            sessionTagTexts = sessionTagTexts.concat(tagTexts);
+          }
+        });
+      }
+      this.allTags = [...new Set([...defaultTagTexts, ...sessionTagTexts])];
+    },
     resetData() {
       // set comment type by config
       if (this.config.commentType && this.config.commentType !== "") {

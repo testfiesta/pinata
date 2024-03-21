@@ -7,9 +7,11 @@ export const IPC_HANDLERS = {
   MENU: "menu",
   WINDOW: "window",
   SERVER: "server",
+  SYSTEMINFO: "systemInfo",
 };
 
 export const IPC_FUNCTIONS = {
+  GET_SYSTEM_INFO: "getSystemInfo",
   GET_MEDIA_SOURCE: "getMediaSource",
   SAVE_NOTE: "saveNote",
   CREATE_IMAGE: "createImage",

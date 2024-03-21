@@ -37,6 +37,17 @@
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
+              <div
+                v-if="this.credentials.xray && this.credentials.xray.length > 0"
+              >
+                <xray-export-session
+                  :title="$tc(`caption.export_to_xray`, 1)"
+                  :credential-items="credentials.xray"
+                  :selected="[]"
+                  :items="itemLists"
+                  @close-menu="() => (evidenceExportDestinationMenu = false)"
+                />
+              </div>
               <!-- TODO - What does it look like to export an entire session to a 3rd party service?
               <div
                 v-if="this.credentials.jira && this.credentials.jira.length > 0"
@@ -75,12 +86,14 @@
 <script>
 //import JiraExportSession from "./jira/JiraExportSession";
 //import TestRailExportSession from "./testrail/TestRailExportSession";
+import XrayExportSession from "./xray/XrayExportSession";
 
 export default {
   name: "ExportPanel",
   components: {
     //JiraExportSession,
     //TestRailExportSession,
+    XrayExportSession,
   },
   props: {
     items: {

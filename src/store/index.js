@@ -1,20 +1,28 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import VuexPersist from "vuex-persist";
 
 import {
   SESSION_STATUSES,
   DEFAULT_CHARTER_MAP_NODES,
   DEFAULT_CHARTER_MAP_CONNECTIONS,
-} from "../modules/constants";
+} from "@/modules/constants";
 import { auth } from "@/store/modules/auth";
 import { config } from "@/store/modules/config";
 
 Vue.use(Vuex);
 
+const isElectronApp = navigator.userAgent.includes("Electron");
+
+const vuexLocalStorage = new VuexPersist({
+  key: "yattie-state",
+  storage: window.localStorage,
+});
+
 const store = new Vuex.Store({
   state: {
     case: {
-      caseID: "",
+      caseID: null,
       title: "",
       charter: {
         content: "",
@@ -31,7 +39,7 @@ const store = new Vuex.Store({
       },
     },
     session: {
-      sessionID: "",
+      sessionID: null,
       status: SESSION_STATUSES.PENDING,
       timer: 0,
       started: "",
@@ -47,8 +55,15 @@ const store = new Vuex.Store({
         text: "",
       },
     },
+    savedTimer: 0,
   },
   mutations: {
+    setSessionIDFromBackend(state, payload) {
+      state.session.sessionID = payload;
+    },
+    setCaseIDFromBackend(state, payload) {
+      state.case.caseID = payload;
+    },
     setCaseID(state, payload) {
       state.case.caseID = payload;
       this._vm.$storageService.updateState(state);
@@ -120,7 +135,11 @@ const store = new Vuex.Store({
     },
     addSessionItem(state, payload) {
       state.session.items.push(payload);
-      this._vm.$storageService.addItem(payload);
+      if (Vue.prototype.$isElectron) {
+        this._vm.$storageService.addItem(payload);
+      } else {
+        this._vm.$storageService.updateState(state);
+      }
     },
     updateSessionItem(state, payload) {
       const currentItemIndex = state.session.items.findIndex(
@@ -140,10 +159,15 @@ const store = new Vuex.Store({
     setSessionNotes(state, payload) {
       state.session.notes.content = payload.content;
       state.session.notes.text = payload.text;
+      if (!this.$isElectron) {
+        this._vm.$storageService.updateState(state);
+      }
     },
     updateSession(state, payload) {
+      let isStatusChanged = false;
       if (state.session.status !== payload.status) {
         state.session.status = payload.status;
+        isStatusChanged = true;
       }
       if (state.session.timer !== payload.timer) {
         state.session.timer = payload.timer;
@@ -151,7 +175,16 @@ const store = new Vuex.Store({
       if (state.case.duration !== payload.duration) {
         state.case.duration = payload.duration;
       }
-      this._vm.$storageService.updateState(state);
+
+      if (
+        Vue.prototype.$isElectron ||
+        isStatusChanged ||
+        payload.isForce ||
+        payload.timer - state.savedTimer >= 10
+      ) {
+        state.savedTimer = payload.timer;
+        this._vm.$storageService.updateState(state);
+      }
     },
     clearState(state) {
       state.case.caseID = null;
@@ -184,6 +217,40 @@ const store = new Vuex.Store({
       };
       this._vm.$storageService.updateState(state);
     },
+
+    startQuickTest(state) {
+      state.case.caseID = null;
+      state.case.title = "";
+      state.case.charter = {
+        content: "",
+        text: "",
+      };
+      state.case.preconditions = {
+        content: "",
+        text: "",
+      };
+      state.case.duration = 0;
+      state.case.mindmap = {
+        nodes: DEFAULT_CHARTER_MAP_NODES,
+        connections: DEFAULT_CHARTER_MAP_CONNECTIONS,
+      };
+
+      state.session.sessionID = null;
+      state.session.path = "/main/workspace";
+      state.session.status = SESSION_STATUSES.PENDING;
+      state.session.timer = 0;
+      state.session.started = "";
+      state.session.ended = "";
+      state.session.quickTest = true;
+      state.session.remote = false;
+      state.session.items = [];
+      state.session.notes = {
+        content: "",
+        text: "",
+      };
+      this._vm.$storageService.updateState(state);
+    },
+
     resetState(state) {
       state.session.status = SESSION_STATUSES.PENDING;
       state.session.timer = 0;
@@ -263,6 +330,7 @@ const store = new Vuex.Store({
     auth,
     config,
   },
+  plugins: isElectronApp ? [] : [vuexLocalStorage.plugin],
   strict: process.env.NODE_ENV !== "production",
 });
 

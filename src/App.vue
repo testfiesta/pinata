@@ -43,10 +43,7 @@ export default {
 
     const credentials = await this.$storageService.getCredentials();
     this.$store.commit("auth/setCredentials", credentials);
-    if (this.$isElectron) {
-      // todo remove this check when $integrationHelpers will support REST API
-      await this.updateAuth();
-    }
+    await this.updateAuth();
   },
   async mounted() {
     if (this.renderRestoreSessionDialog && this.$isElectron) {

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="wrapper pa-0">
+  <v-container class="wrapper pa-0" fluid>
     <div
       class="top"
       v-if="this.status === 'pending' || $store.state.session.quickTest"
@@ -250,12 +250,12 @@ export default {
       );
     },
     async fetchItems() {
-      console.log("fetchItems from Main View");
-      const sessionItems = await this.$storageService.getItems();
-      this.$store.commit("setSessionItemsFromExternalWindow", sessionItems);
+      if (this.$isElectron) {
+        const sessionItems = await this.$storageService.getItems();
+        this.$store.commit("setSessionItemsFromExternalWindow", sessionItems);
+      }
     },
     addItem(newItem) {
-      // console.log("add", newItem);
       this.$store.commit("addSessionItem", newItem);
     },
     updateItem(newItem) {
@@ -294,7 +294,6 @@ export default {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  max-width: 600px;
   overflow-y: auto;
   border-left: 1px solid rgba(0, 0, 0, 0.12);
   border-right: 1px solid rgba(0, 0, 0, 0.12);

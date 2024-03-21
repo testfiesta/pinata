@@ -16,6 +16,7 @@ export const config = {
     debugMode: false,
     summary: false,
     templates: [],
+    defaultTags: [],
     checklist: {
       presession: {
         status: false,
@@ -45,6 +46,10 @@ export const config = {
       Object.keys(payload).forEach((key) => {
         Vue.set(state, key, payload[key]);
       });
+    },
+    saveDefaultTags(state, payload) {
+      state.defaultTags = payload;
+      this._vm.$storageService.updateConfig(state);
     },
     setPresessionStatus(state, payload) {
       state.checklist.presession.status = payload;
@@ -114,6 +119,7 @@ export const config = {
     fullConfig: (state) => {
       return state;
     },
+    defaultTags: (state) => state.defaultTags,
     hotkeys: (state) => state.hotkeys,
     checklistPresessionStatus: (state) => state.checklist.presession.status,
     checklistPresessionTasks: (state) => state.checklist.presession.tasks,
