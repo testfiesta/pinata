@@ -5,7 +5,6 @@ db-rest-mock.json
 
 
 # local env files
-.env.local
 .env.*.local
 
 # Log files
@@ -27,3 +26,4 @@ pnpm-debug.log*
 /dist_electron
 
 /release
+config.bat

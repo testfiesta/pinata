@@ -86,6 +86,18 @@ export default class ElectronService {
     });
   }
 
+  async startKeyboardCapture() {
+    return await window.ipc.invoke(IPC_HANDLERS.WINDOW, {
+      func: IPC_FUNCTIONS.START_KEYBOARD_CAPTURE,
+    });
+  }
+
+  stopKeyboardCapture() {
+    return window.ipc.invoke(IPC_HANDLERS.WINDOW, {
+      func: IPC_FUNCTIONS.STOP_KEYBOARD_CAPTURE,
+    });
+  }
+
   async openAddWindow(data) {
     await window.ipc.invoke(IPC_HANDLERS.WINDOW, {
       func: IPC_FUNCTIONS.OPEN_ADD_WINDOW,
@@ -289,11 +301,12 @@ export default class ElectronService {
     });
   }
 
-  async optimizeVideo(filePath) {
+  async optimizeVideo(filePath, capturedEvents) {
     return window.ipc.invoke(IPC_HANDLERS.CAPTURE, {
       func: IPC_FUNCTIONS.OPTIMIZE_VIDEO,
       data: {
         filePath,
+        capturedEvents,
       },
     });
   }

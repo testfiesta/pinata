@@ -357,6 +357,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    capturedEvents: {
+      type: Array,
+      default: () => {},
+    },
   },
   data() {
     return {
@@ -512,12 +516,11 @@ export default {
       localStorage.setItem("isDarkMode", isDarkMode);
 
       this.item = { ...this.itemData };
-
       const splitName = this.item?.fileName.split(".") || [""];
       this.name = splitName.slice(0, -1).join(".");
 
       // optimize video
-      if (this.item.fileType === "video") {
+      if (this.item.fileType === "video/mp4") {
         await this.optimizeVideo();
       } else {
         this.processing = false;
@@ -566,7 +569,8 @@ export default {
         this.processing = true;
 
         const { status, message } = await this.$electronService.optimizeVideo(
-          this.item.filePath
+          this.item.filePath,
+          this.capturedEvents
         );
 
         if (status === STATUSES.ERROR) {

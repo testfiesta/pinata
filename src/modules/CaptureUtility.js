@@ -157,7 +157,7 @@ module.exports.createVideo = ({ buffer }) => {
   };
 };
 
-module.exports.optimizeVideo = ({ filePath }) => {
+module.exports.optimizeVideo = ({ filePath, capturedEvents }) => {
   const fileFormat = DEFAULT_FILE_TYPES["video"].suffix;
   const tempName =
     "temp-optimizing-video-" +
@@ -170,12 +170,22 @@ module.exports.optimizeVideo = ({ filePath }) => {
     persistenceUtility.getSessionID(),
     tempName
   );
+  let filterString = capturedEvents
+    .map((overlay) => {
+      let backgroundColor = "black";
+      let textColor = "white";
+      let padding = 5;
+      return `drawtext=text='${overlay.text}':x=(w-text_w)/2:y=(h-text_h)/2:fontcolor=${textColor}:box=1:boxcolor=${backgroundColor}:boxborderw=${padding}:fontsize=24:fontfile=/path/to/font.ttf:enable='between(t,${overlay.start},${overlay.end})'`;
+    })
+    .join(",");
 
   return new Promise(function (resolve, reject) {
     ffmpeg(filePath)
+      .complexFilter(filterString)
       .videoCodec("libx264")
       .audioCodec("aac")
       .format(fileFormat)
+      .addOption("-preset", "ultrafast")
       .save(tempPath)
       .on("start", function (commandLine) {
         console.log("start : " + commandLine);
@@ -229,7 +239,7 @@ module.exports.updateVideo = ({ item, start, end, previousDuration }) => {
   const duration = parseInt(end - start);
 
   return new Promise(function (resolve, reject) {
-    if (previousDuration !== duration) {
+    if (previousDuration && previousDuration !== duration) {
       ffmpeg(item.filePath)
         .setStartTime(parseInt(start))
         .setDuration(duration)

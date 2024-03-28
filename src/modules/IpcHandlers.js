@@ -48,6 +48,10 @@ ipcMain.handle(IPC_HANDLERS.CAPTURE, async (event, args) => {
 
 ipcMain.handle(IPC_HANDLERS.WINDOW, async (event, args) => {
   switch (args.func) {
+    case IPC_FUNCTIONS.START_KEYBOARD_CAPTURE:
+      return windowUtility.startKeyboardCapture();
+    case IPC_FUNCTIONS.STOP_KEYBOARD_CAPTURE:
+      return windowUtility.stopKeyboardCapture();
     case IPC_FUNCTIONS.SET_DEV_MODE:
       return windowUtility.setDevMode(args.data);
     case IPC_FUNCTIONS.OPEN_ADD_WINDOW:

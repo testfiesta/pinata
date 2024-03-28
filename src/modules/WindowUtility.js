@@ -1,4 +1,5 @@
 const { app, BrowserWindow, screen } = require("electron");
+const iohook = require("iohook2");
 
 let isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -8,9 +9,61 @@ const browserUtility = require("./BrowserWindowUtility");
 const path = require("path");
 
 const { VIEW_MODE, IPC_BIND_KEYS } = require("./constants");
+let capturedEvents = [];
 
 module.exports.setDevMode = async ({ enabled }) => {
   isDevelopment = enabled;
+};
+
+module.exports.startKeyboardCapture = () => {
+  iohook.start();
+  const startingPoint = Date.now();
+  capturedEvents = [];
+
+  iohook.on("keydown", (event) => {
+    if (
+      (event.ctrl || event.shift || event.alt || event.meta) &&
+      !isControlKey(event.key)
+    ) {
+      // If Ctrl, Shift, Alt or Meta key is pressed along with a regular key
+      capturedEvents.push({
+        type: "hotkey",
+        text: `${event.ctrl ? "Ctrl+" : ""}${event.shift ? "Shift+" : ""}${
+          event.alt ? "Alt+" : ""
+        }${event.meta ? "Meta+" : ""}${event.key.toUpperCase()}`,
+        start: parseFloat((Date.now() - startingPoint) / 1000).toFixed(2),
+        end: parseFloat(((Date.now() - startingPoint) / 1000).toFixed(2)) + 1,
+      });
+    }
+  });
+
+  function isControlKey(key) {
+    // Check if the key is one of the individual control keys
+    return [
+      "leftCtrl",
+      "rightCtrl",
+      "leftAlt",
+      "rightAlt",
+      "leftShift",
+      "rightShift",
+      "leftMeta",
+      "rightMeta",
+    ].includes(key);
+  }
+
+  iohook.on("mousedown", () => {
+    capturedEvents.push({
+      type: "mouse",
+      text: "Mouse Click",
+      start: parseFloat((Date.now() - startingPoint) / 1000).toFixed(2),
+      end: parseFloat(((Date.now() - startingPoint) / 1000).toFixed(2)) + 1,
+    });
+  });
+};
+
+module.exports.stopKeyboardCapture = () => {
+  iohook.stop();
+  return capturedEvents;
 };
 
 module.exports.getMainWindow = () => {

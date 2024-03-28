@@ -758,6 +758,7 @@
         v-if="evidenceData"
         v-model="addEvidenceDialog"
         :item-data="evidenceData"
+        :captured-events="capturedEvents"
         @close="
           addEvidenceDialog = false;
           evidenceData = null;
@@ -1031,6 +1032,7 @@ export default {
       evidenceData: null,
       addEvidenceDialog: false,
       mediaStream: null,
+      capturedEvents: [],
     };
   },
   mounted() {
@@ -1513,6 +1515,7 @@ export default {
         let poster;
         let frames = [];
         mediaRecorder.onstart = () => {
+          this.$electronService.startKeyboardCapture();
           this.recordVideoStarted = true;
           const video = document.createElement("video");
           video.srcObject = stream;
@@ -1547,6 +1550,8 @@ export default {
           }
         };
         mediaRecorder.onstop = async () => {
+          this.capturedEvents =
+            await this.$electronService.stopKeyboardCapture();
           this.recordVideoStarted = false;
           const blob = new Blob(frames, { type: mimeType });
           const buffer = await blob.arrayBuffer();

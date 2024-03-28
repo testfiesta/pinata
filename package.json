@@ -45,6 +45,7 @@
     "ffprobe-static": "^3.1.0",
     "fluent-ffmpeg": "^2.1.2",
     "form-data": "^4.0.0",
+    "iohook2": "^1.0.6",
     "lodash": "^4.17.21",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "os": "^0.1.2",

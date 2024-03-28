@@ -11,6 +11,8 @@ export const IPC_HANDLERS = {
 };
 
 export const IPC_FUNCTIONS = {
+  START_KEYBOARD_CAPTURE: "startKeyboardCapture",
+  STOP_KEYBOARD_CAPTURE: "stopKeyboardCapture",
   GET_SYSTEM_INFO: "getSystemInfo",
   GET_MEDIA_SOURCE: "getMediaSource",
   CREATE_IMAGE: "createImage",
