@@ -15,6 +15,7 @@
 
 <script>
 import ResetSessionDialog from "@/components/dialogs/ResetSessionDialog.vue";
+import YjsIntegrationHelpers from "@/integrations/YjsIntegrationHelpers";
 
 const default_layout = "default";
 
@@ -47,6 +48,7 @@ export default {
 
     const credentials = await this.$storageService.getCredentials();
     this.$store.commit("auth/setCredentials", credentials);
+    YjsIntegrationHelpers.connectToRoom(credentials);
     await this.updateAuth();
   },
   async mounted() {
