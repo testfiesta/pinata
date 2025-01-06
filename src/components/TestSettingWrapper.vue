@@ -51,6 +51,7 @@
             :style="{ color: currentTheme.secondary }"
             v-shortkey="charterHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'charter')"
+            v-if="!isMindmap"
           >
             {{ $tc("caption.charter_description", 1) }}
           </div>
@@ -70,25 +71,104 @@
               :placeholder="$t('message.describe_test_charter')"
               ref="charter"
               :toolbar="[
-                'headings',
-                '|',
-                'bold',
-                'italic',
-                'underline',
-                '|',
-                'color',
-                '|',
-                'bulletList',
-                'orderedList',
-                '|',
-                'link',
-                'emoji',
-                'blockquote',
-                '|',
+                '#headings',
+                '#bold',
+                '#italic',
+                '#underline',
+                '#bulletList',
+                '#orderedList',
+                '#link',
+                '#blockquote',
                 '#aiAssist',
               ]"
               @input="updateCharter"
             >
+              <template #headings="{ editor }">
+                <v-select
+                  v-model="selectedHeading"
+                  :items="headingOptions"
+                  background-color="#F9F9FB"
+                  class="rounded-lg custom-select"
+                  item-text="text"
+                  item-value="level"
+                  width="100%"
+                  height="40px"
+                  :placeholder="$t('Heading')"
+                  append-icon="mdi-chevron-down"
+                  :menu-props="{ offsetY: true }"
+                  @change="setHeading(editor, $event)"
+                />
+              </template>
+              <template #bold="{ editor }">
+                <v-btn
+                  icon
+                  small
+                  @click="editor.chain().focus().toggleBold().run()"
+                  :class="{ 'v-btn--active': editor.isActive('bold') }"
+                >
+                  <img src="/tiptap/bold.svg" />
+                </v-btn>
+              </template>
+              <template #italic="{ editor }">
+                <v-btn
+                  icon
+                  small
+                  @click="editor.chain().focus().toggleItalic().run()"
+                  :class="{ 'v-btn--active': editor.isActive('italic') }"
+                >
+                  <img src="/tiptap/italic.svg" />
+                </v-btn>
+              </template>
+              <template #underline="{ editor }">
+                <v-btn
+                  icon
+                  small
+                  @click="editor.chain().focus().toggleUnderline().run()"
+                  :class="{ 'v-btn--active': editor.isActive('underline') }"
+                >
+                  <img src="/tiptap/underline.svg" />
+                </v-btn>
+              </template>
+              <template #bulletList="{ editor }">
+                <v-btn
+                  icon
+                  small
+                  @click="editor.chain().focus().toggleBulletList().run()"
+                  :class="{ 'v-btn--active': editor.isActive('bulletList') }"
+                >
+                  <img src="/tiptap/list.svg" />
+                </v-btn>
+              </template>
+              <template #orderedList="{ editor }">
+                <v-btn
+                  icon
+                  small
+                  @click="editor.chain().focus().toggleOrderedList().run()"
+                  :class="{ 'v-btn--active': editor.isActive('orderedList') }"
+                >
+                  <img src="/tiptap/list-number.svg" />
+                </v-btn>
+              </template>
+              <template #link="{ editor }">
+                <v-btn
+                  icon
+                  small
+                  @click="toggleLink(editor)"
+                  :class="{ 'v-btn--active': editor.isActive('link') }"
+                >
+                  <img src="/tiptap/link.svg" />
+                </v-btn>
+              </template>
+              <template #blockquote="{ editor }">
+                <v-btn
+                  icon
+                  small
+                  @click="editor.chain().focus().toggleBlockquote().run()"
+                  :class="{ 'v-btn--active': editor.isActive('blockquote') }"
+                >
+                  <img src="/tiptap/quotes.svg" />
+                </v-btn>
+              </template>
               <template #aiAssist="">
                 <v-btn
                   v-if="isAiAssistEnabled"
@@ -118,7 +198,7 @@
         </div>
         <div class="mt-4 pre-cond">
           <div
-            class="subtitle-2 label-text"
+            class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
             :style="{ color: currentTheme.secondary }"
             v-shortkey="preconditionsHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'preconditions')"
@@ -139,30 +219,110 @@
             ></v-progress-circular>
           </v-card>
           <v-tiptap
+            class="tiptap-theme"
             v-else
             :value="preconditions.content"
             :placeholder="$t('message.define_required_precondition')"
             ref="preconditions"
             :toolbar="[
-              'headings',
-              '|',
-              'bold',
-              'italic',
-              'underline',
-              '|',
-              'color',
-              '|',
-              'bulletList',
-              'orderedList',
-              '|',
-              'link',
-              'emoji',
-              'blockquote',
-              '|',
+              '#headings',
+              '#bold',
+              '#italic',
+              '#underline',
+              '#bulletList',
+              '#orderedList',
+              '#link',
+              '#blockquote',
               '#aiAssist',
             ]"
             @input="updatePreconditions"
           >
+            <template #headings="{ editor }">
+              <v-select
+                v-model="selectedHeading"
+                :items="headingOptions"
+                background-color="#F9F9FB"
+                class="rounded-lg custom-select"
+                item-text="text"
+                item-value="level"
+                width="100%"
+                height="40px"
+                :placeholder="$t('Heading')"
+                append-icon="mdi-chevron-down"
+                :menu-props="{ offsetY: true }"
+                @change="setHeading(editor, $event)"
+              />
+            </template>
+            <template #bold="{ editor }">
+              <v-btn
+                icon
+                small
+                @click="editor.chain().focus().toggleBold().run()"
+                :class="{ 'v-btn--active': editor.isActive('bold') }"
+              >
+                <img src="/tiptap/bold.svg" />
+              </v-btn>
+            </template>
+            <template #italic="{ editor }">
+              <v-btn
+                icon
+                small
+                @click="editor.chain().focus().toggleItalic().run()"
+                :class="{ 'v-btn--active': editor.isActive('italic') }"
+              >
+                <img src="/tiptap/italic.svg" />
+              </v-btn>
+            </template>
+            <template #underline="{ editor }">
+              <v-btn
+                icon
+                small
+                @click="editor.chain().focus().toggleUnderline().run()"
+                :class="{ 'v-btn--active': editor.isActive('underline') }"
+              >
+                <img src="/tiptap/underline.svg" />
+              </v-btn>
+            </template>
+            <template #bulletList="{ editor }">
+              <v-btn
+                icon
+                small
+                @click="editor.chain().focus().toggleBulletList().run()"
+                :class="{ 'v-btn--active': editor.isActive('bulletList') }"
+              >
+                <img src="/tiptap/list.svg" />
+              </v-btn>
+            </template>
+            <template #orderedList="{ editor }">
+              <v-btn
+                icon
+                small
+                @click="editor.chain().focus().toggleOrderedList().run()"
+                :class="{ 'v-btn--active': editor.isActive('orderedList') }"
+              >
+                <img src="/tiptap/list-number.svg" />
+              </v-btn>
+            </template>
+            <template #link="{ editor }">
+              <v-btn
+                icon
+                small
+                @click="toggleLink(editor)"
+                :class="{ 'v-btn--active': editor.isActive('link') }"
+              >
+                <img src="/tiptap/link.svg" />
+              </v-btn>
+            </template>
+            <template #blockquote="{ editor }">
+              <v-btn
+                icon
+                small
+                @click="editor.chain().focus().toggleBlockquote().run()"
+                :class="{ 'v-btn--active': editor.isActive('blockquote') }"
+              >
+                <img src="/tiptap/quotes.svg" />
+              </v-btn>
+            </template>
             <template #aiAssist="">
               <v-btn
                 v-if="isAiAssistEnabled"
@@ -180,22 +340,54 @@
             </template>
           </v-tiptap>
         </div>
+        <div class="mt-4">
+          <div
+            class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+            :style="{ color: currentTheme.secondary }"
+          >
+            {{ $tc("caption.privacy", 1) }}
+          </div>
+          <v-select
+            :items="privacy_modes"
+            style="width: 50%"
+            v-model="privacy"
+            :placeholder="$tc('caption.comment_type')"
+            background-color="#F9F9FB"
+            class="rounded-lg custom-select"
+            item-text="text"
+            item-value="level"
+            width="100%"
+            append-icon="mdi-chevron-down"
+            :menu-props="{ offsetY: true }"
+            solo
+            flat
+            height="40px"
+            hide-details="true"
+          />
+        </div>
         <div class="mt-4 timelimit">
           <div
-            class="subtitle-2 label-text"
+            class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
             :style="{ color: currentTheme.secondary }"
             v-shortkey="timeLimitHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'timeLimitTextField')"
           >
-            {{ $tc("caption.time_limit", 1) }}
+            {{ $tc("caption.time_limit", 1) }} ({{
+              $tc("caption.optional", 1)
+            }})
           </div>
           <div class="timer-box-wrapper">
             <v-text-field
               ref="timeLimitTextField"
               placeholder="00:00"
               v-mask="'##:##'"
-              outlined
+              autofocus
+              class="rounded-lg"
+              :background-color="inputBg"
               dense
+              height="40px"
+              flat
+              solo
               v-model="duration"
               @change="handleDuration()"
               hide-details="true"
@@ -206,23 +398,12 @@
             </span>
           </div>
         </div>
-        <div class="mt-4">
-          <div class="label-text" :style="{ color: currentTheme.secondary }">
-            {{ $tc("caption.privacy", 1) }}
-          </div>
-          <v-select
-            :items="privacy_modes"
-            color="secondary"
-            style="width: 50%"
-            v-model="privacy"
-            :placeholder="$tc('caption.comment_type')"
-            solo
-            dense
-            hide-details="true"
-          />
-        </div>
       </div>
     </div>
+    <TipTapLinkDialog
+      ref="linkModal"
+      :placeholder="$tc('caption.enter_url', 1)"
+    />
   </div>
 </template>
 
@@ -231,6 +412,7 @@ import { VTextField } from "vuetify/lib/components";
 import NewMindmapEditor from "./NewMindmapEditor.vue";
 import { debounce } from "lodash";
 import theme from "../mixins/theme";
+import TipTapLinkDialog from "./dialogs/TipTapLinkDialog.vue";
 
 import {
   DEFAULT_CHARTER_MAP_NODES,
@@ -246,6 +428,7 @@ export default {
   components: {
     VTextField,
     NewMindmapEditor,
+    TipTapLinkDialog,
   },
   props: {
     isMindmap: {
@@ -263,6 +446,13 @@ export default {
         content: this.$store.state.case.charter.content,
         text: this.$store.state.case.charter.text,
       },
+      headingOptions: [
+        { text: "Normal Text", level: 0 }, // Normal text option
+        { text: "Heading 1", level: 1 },
+        { text: "Heading 2", level: 2 },
+        { text: "Heading 3", level: 3 },
+      ],
+      selectedHeading: 0,
       previousCharter: {
         content: "",
         text: "",
@@ -375,6 +565,30 @@ export default {
     this.duration = this.formatDuration(this.$store.state.case.duration);
   },
   methods: {
+    setHeading(editor, level) {
+      if (level === 0) {
+        editor.chain().focus().setParagraph().run();
+      } else {
+        editor.chain().focus().setHeading({ level }).run();
+      }
+    },
+    async toggleLink(editor) {
+      const url = await this.$refs.linkModal.open({
+        title: "Enter URL",
+        value: editor.getAttributes("link").href || "",
+      });
+
+      if (url === null) {
+        return;
+      }
+
+      if (url === "") {
+        editor.chain().focus().unsetLink().run();
+        return;
+      }
+
+      editor.chain().focus().setLink({ href: url }).run();
+    },
     actualUpdateTitle(title) {
       this.$store.commit("setCaseTitle", title);
     },
@@ -564,7 +778,6 @@ export default {
   border-top-right-radius: 4px !important;
 }
 .mindmap-wrapper {
-  border: 1px solid #d1d5db;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 }

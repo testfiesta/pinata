@@ -67,6 +67,7 @@
       </div>
     </v-app-bar>
     <div
+      class="mt-4"
       :class="
         activeTab === `/main` && this.quickTest
           ? 'content-container'

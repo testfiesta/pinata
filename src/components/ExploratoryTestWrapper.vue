@@ -17,7 +17,7 @@
       </v-btn>
     </div>
     <div class="text-left" style="height: 100%">
-      <div style="height: 100%; overflow-y: auto">
+      <div style="height: 100%; overflow-y: auto" class="py-5">
         <div class="fs-30 font-weight-semibold mt-4 mb-6">
           {{ $tc("caption.exploratory_session", 1) }}
         </div>
@@ -42,39 +42,36 @@
         <v-tabs-items v-model="activeTab">
           <v-tab-item :transition="false" value="textDescription">
             <TestSettingWrapper :isMindmap="false" />
-            <v-col cols="6" class="mt-4" style="float: right">
+            <div class="d-flex justify-end mt-4">
               <v-btn
                 id="btn_new_session"
-                class="text-capitalize font-weight-regular"
-                fill
-                small
-                block
-                :color="currentTheme.primary"
+                class="text-capitalize rounded-lg font-weight-regular white--text"
+                color="#0C2FF3"
+                depressed
+                height="40px"
                 :style="{ color: currentTheme.white }"
-                :height="30"
+                max-width="94px"
                 @click="startNewSession"
               >
                 {{ $tc("caption.continue", 1) }}
               </v-btn>
-            </v-col>
+            </div>
           </v-tab-item>
           <v-tab-item :transition="false" value="mindMap">
             <TestSettingWrapper :isMindmap="true" />
-            <v-col cols="6" class="mt-4" style="float: right">
+            <div class="d-flex justify-end mt-4">
               <v-btn
                 id="btn_new_session"
-                class="text-capitalize font-weight-regular"
-                fill
-                small
-                block
-                :color="currentTheme.primary"
+                class="text-capitalize rounded-lg font-weight-regular white--text"
+                color="#0C2FF3"
+                depressed
+                height="40px"
                 :style="{ color: currentTheme.white }"
-                :height="30"
                 @click="startNewSession"
               >
                 {{ $tc("caption.start_session", 1) }}
               </v-btn>
-            </v-col>
+            </div>
           </v-tab-item>
         </v-tabs-items>
       </div>
@@ -90,7 +87,6 @@
 </template>
 
 <script>
-import { VCol } from "vuetify/lib/components";
 import TestSettingWrapper from "./TestSettingWrapper.vue";
 import { mapGetters } from "vuex";
 import ResetConfirmDialog from "./dialogs/ResetConfirmDialog.vue";
@@ -98,7 +94,6 @@ import ResetConfirmDialog from "./dialogs/ResetConfirmDialog.vue";
 export default {
   name: "ExploratoryTestWrapper",
   components: {
-    VCol,
     ResetConfirmDialog,
     TestSettingWrapper,
   },

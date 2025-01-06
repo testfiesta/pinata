@@ -37,6 +37,34 @@ body {
   border-top-left-radius: 8px !important;
   border-top-right-radius: 8px !important;
 }
+.tiptap-theme .v-select__selection--comma {
+  margin: 0px;
+}
+.tiptap-theme .v-select {
+  padding: 6px 12px 6px 0px !important;
+}
+.tiptap-theme .v-select__selection {
+  max-width: 95%;
+}
+.tiptap-theme .v-toolbar__content {
+  padding: 4px 0px;
+}
+.tiptap-theme .v-select .v-input__slot {
+  margin-bottom: 0px !important;
+}
+.tiptap-theme .ProseMirror {
+  background-color: #f9f9fb;
+  border-radius: 8px;
+}
+.tiptap-theme .v-toolbar__content {
+  padding: 4px 0px !important;
+}
+.v-tiptap .v-toolbar__content .v-select {
+  padding: 6px 12px !important;
+}
+.custom-select .v-input__slot {
+  margin-bottom: 0px !important;
+}
 .tiptap-theme header.v-toolbar.grey.lighten-4 {
   background-color: transparent !important;
 }
