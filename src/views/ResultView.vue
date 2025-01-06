@@ -5,7 +5,7 @@
         <div class="header">
           <LogoWrapper :height="34" :width="120" />
         </div>
-        <div class="content">
+        <div class="content white rounded-lg overflow-hidden">
           <TestWrapper :config-item="config" :credential-items="credentials" />
         </div>
         <div class="footer">

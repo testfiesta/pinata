@@ -12,7 +12,7 @@
         <router-link to="/">
           <img :src="pinataLogo" alt="logo" />
         </router-link>
-        <div class="tabs" style="display: none">
+        <div class="tabs">
           <v-tabs
             class="tabs"
             centered
@@ -374,8 +374,8 @@ export default {
   font-weight: 500;
 }
 .v-tab.v-tab--active {
-  background: #0a26c3;
-  border: 1px solid #586af3;
+  background: rgb(12, 47, 243);
+  border: 1px solid rgb(12, 47, 243);
   color: #fff;
 }
 .v-tab.test-tab {
@@ -388,8 +388,8 @@ export default {
 }
 .theme--light.v-tabs .v-tabs-bar .v-tab--disabled,
 .theme--light.v-tabs .v-tabs-bar .v-tab:not(.v-tab--active) {
-  color: #0a26c3;
-  border: 1px solid #596def;
+  color: rgb(12, 47, 243);
+  border: 1px solid rgb(12, 47, 243);
 }
 .theme--dark.v-tabs .v-tabs-bar .v-tab--disabled,
 .theme--dark.v-tabs .v-tabs-bar .v-tab:not(.v-tab--active) {

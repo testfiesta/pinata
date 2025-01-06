@@ -8,10 +8,11 @@
         </v-card-text>
         <v-card-actions>
           <v-btn
-            small
+            depressed
+            height="40px"
             ref="confirmBtn"
             :color="currentTheme.primary"
-            class="text-capitalize btn"
+            class="text-capitalize btn rounded-lg"
             :style="{ color: currentTheme.white }"
             v-shortkey="confirmHotkey"
             @shortkey="handleConfirm()"
@@ -20,9 +21,10 @@
             {{ $tc("confirm", 1) }}
           </v-btn>
           <v-btn
-            small
+            depressed
+            height="40px"
             :color="currentTheme.background"
-            class="text-capitalize btn"
+            class="text-capitalize btn rounded-lg"
             :style="{ color: currentTheme.secondary }"
             v-shortkey="cancelHotkey"
             @shortkey="handleCancel()"

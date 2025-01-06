@@ -77,6 +77,25 @@ body {
 .w-full {
   width: 100%;
 }
+.icon-checkbox-on {
+  background-image: url("/public/icon/checkbox-on.svg");
+}
+.icon-checkbox-off {
+  background-image: url("/public/icon/checkbox-off.svg");
+}
+.icon-indeterminate {
+  background-image: url("/public/icon/indeterminate.svg");
+}
+.field-theme .v-input--selection-controls__input {
+  margin-right: 0px !important;
+}
+.field-theme .v-input--selection-controls {
+  margin-top: 8px !important;
+}
+.field-theme .v-input--selection-controls__input {
+  height: 1rem;
+  margin-top: 1.75px;
+}
 .app-height-global {
   min-height: calc(100vh - 24px);
   height: 100%;
