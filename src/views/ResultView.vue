@@ -2,9 +2,6 @@
   <v-container fluid style="min-height: 100vh" class="d-flex">
     <v-row class="flex justify-space-between px-6">
       <v-col cols="6" class="wrapper pa-0">
-        <div class="header">
-          <LogoWrapper :height="34" :width="120" />
-        </div>
         <div class="content white rounded-lg overflow-hidden">
           <TestWrapper :config-item="config" :credential-items="credentials" />
         </div>
@@ -48,7 +45,6 @@ import TestWrapper from "../components/ExploratoryTestWrapper.vue";
 import WorkspaceWrapper from "../components/WorkspaceWrapper.vue";
 import ControlPanel from "../components/ControlPanel.vue";
 import ExportPanel from "../components/ExportPanel.vue";
-import LogoWrapper from "../components/LogoWrapper.vue";
 
 import { TEXT_TYPES, FILE_TYPES } from "@/modules/constants";
 import { mapGetters } from "vuex";
@@ -61,7 +57,6 @@ export default {
     WorkspaceWrapper,
     ControlPanel,
     ExportPanel,
-    LogoWrapper,
   },
   props: {},
   watch: {},

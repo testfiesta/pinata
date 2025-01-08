@@ -10,10 +10,20 @@
           Test Tree
         </v-tab>
 
-        <v-tab class="timeline-tab" @click="currentTab = 'timeline'">
+        <v-tab
+          class="timeline-tab"
+          @click="currentTab = 'timeline'"
+          :style="{ color: currentTheme.secondary }"
+        >
           Timeline
         </v-tab>
-        <v-tab class="notes-tab" @click="currentTab = 'notes'"> Notes </v-tab>
+        <v-tab
+          class="notes-tab"
+          @click="currentTab = 'notes'"
+          :style="{ color: currentTheme.secondary }"
+        >
+          Notes
+        </v-tab>
       </v-tabs>
     </div>
     <div class="tab-content">

@@ -388,7 +388,7 @@
                         :key="i"
                         class="tag"
                         small
-                        color="#fee2e2"
+                        :color="currentTheme.secondary"
                         text-color="#991b1b"
                       >
                         {{ tag.text }}
@@ -400,8 +400,8 @@
                           rounded
                           color="primary"
                           class="pa-0 mb-1"
-                          height="26"
-                          min-width="45"
+                          height="32"
+                          min-width="32"
                           style=""
                           v-for="(emoji, i) in item.emoji"
                           :key="i"
@@ -969,6 +969,7 @@ import {
   select,
 } from "d3";
 import { mapGetters } from "vuex";
+import theme from "../mixins/theme";
 
 export default {
   name: "TimelineWrapper",
@@ -1017,6 +1018,7 @@ export default {
       this.eventName = newValue;
     },
   },
+  mixins: [theme],
   data() {
     return {
       itemLists: [],

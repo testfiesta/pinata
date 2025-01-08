@@ -297,7 +297,6 @@ export default {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: #f2f4f7;
   overflow-y: auto;
   border-left: 1px solid rgba(0, 0, 0, 0.12);
   border-right: 1px solid rgba(0, 0, 0, 0.12);

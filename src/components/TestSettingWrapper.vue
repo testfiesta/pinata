@@ -4,7 +4,7 @@
       <div>
         <div>
           <div
-            class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+            class="d-flex fs-14 mb-1 font-weight-medium"
             :style="{ color: currentTheme.secondary }"
             v-shortkey="titleHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'titleTextField')"
@@ -47,7 +47,7 @@
         </div>
         <div class="mt-4">
           <div
-            class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+            class="d-flex fs-14 mb-1 font-weight-medium"
             :style="{ color: currentTheme.secondary }"
             v-shortkey="charterHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'charter')"
@@ -87,7 +87,8 @@
                 <v-select
                   v-model="selectedHeading"
                   :items="headingOptions"
-                  background-color="#F9F9FB"
+                  :background-color="inputBg"
+                  :color="currentTheme.secondary"
                   class="rounded-lg custom-select"
                   item-text="text"
                   item-value="level"
@@ -198,7 +199,7 @@
         </div>
         <div class="mt-4 pre-cond">
           <div
-            class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+            class="d-flex fs-14 mb-1 font-weight-medium"
             :style="{ color: currentTheme.secondary }"
             v-shortkey="preconditionsHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'preconditions')"
@@ -241,7 +242,8 @@
               <v-select
                 v-model="selectedHeading"
                 :items="headingOptions"
-                background-color="#F9F9FB"
+                :background-color="inputBg"
+                :color="currentTheme.secondary"
                 class="rounded-lg custom-select"
                 item-text="text"
                 item-value="level"
@@ -342,7 +344,7 @@
         </div>
         <div class="mt-4">
           <div
-            class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+            class="d-flex fs-14 mb-1 font-weight-medium"
             :style="{ color: currentTheme.secondary }"
           >
             {{ $tc("caption.privacy", 1) }}
@@ -352,7 +354,8 @@
             style="width: 50%"
             v-model="privacy"
             :placeholder="$tc('caption.comment_type')"
-            background-color="#F9F9FB"
+            :background-color="inputBg"
+            :color="currentTheme.secondary"
             class="rounded-lg custom-select"
             item-text="text"
             item-value="level"
@@ -367,7 +370,7 @@
         </div>
         <div class="mt-4 timelimit">
           <div
-            class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+            class="d-flex fs-14 mb-1 font-weight-medium"
             :style="{ color: currentTheme.secondary }"
             v-shortkey="timeLimitHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'timeLimitTextField')"
@@ -388,6 +391,7 @@
               height="40px"
               flat
               solo
+              :color="currentTheme.secondary"
               v-model="duration"
               @change="handleDuration()"
               hide-details="true"

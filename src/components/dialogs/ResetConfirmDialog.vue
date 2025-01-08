@@ -5,7 +5,8 @@
         <v-card-text class="text pt-0">
           <div class="d-flex justify-space-between align-start">
             <p
-              class="font-weight-bold text-h6 text-sm-h5 text-start black--text"
+              class="font-weight-bold text-h6 text-sm-h5 text-start"
+              :style="{ color: currentTheme.secondary }"
             >
               {{ $t("message.go_back") }}
             </p>

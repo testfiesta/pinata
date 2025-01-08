@@ -35,7 +35,7 @@
                 </v-card>
                 <div v-else>
                   <div
-                    class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+                    class="d-flex fs-14 mb-1 font-weight-medium"
                     :style="{ color: currentTheme.secondary }"
                   >
                     {{ $tc("caption.comment", 1) }}
@@ -62,7 +62,8 @@
                       <v-select
                         v-model="selectedHeading"
                         :items="headingOptions"
-                        background-color="#F9F9FB"
+                        :background-color="inputBg"
+                        :color="currentTheme.secondary"
                         class="rounded-lg custom-select"
                         item-text="text"
                         item-value="level"
@@ -193,7 +194,8 @@
                   solo
                   dense
                   flat
-                  background-color="#F9F9FB"
+                  :color="currentTheme.secondary"
+                  :background-color="inputBg"
                   class="rounded-lg custom-select"
                   append-icon="mdi-chevron-down"
                   :menu-props="{ offsetY: true }"

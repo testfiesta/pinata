@@ -8,7 +8,7 @@
       max-width="900px"
       eager
     >
-      <v-sheet outlined rounded>
+      <v-sheet outlined rounded :style="{ backgroundColor: mainBg }">
         <div class="content">
           <div class="content-top">
             <ReviewWrapper
@@ -98,9 +98,11 @@
                 on-icon="icon-checkbox-on"
               >
                 <template v-slot:label>
-                  <span class="fs-14 text-theme-label">{{
-                    $tc("caption.required_follow_up", 1)
-                  }}</span>
+                  <span
+                    class="fs-14"
+                    :style="{ color: currentTheme.secondary }"
+                    >{{ $tc("caption.required_follow_up", 1) }}</span
+                  >
                 </template>
               </v-checkbox>
             </div>
@@ -109,7 +111,7 @@
               @shortkey="$hotkeyHelpers.focusField($refs, 'nameTextField')"
             >
               <div
-                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+                class="d-flex fs-14 mb-1 font-weight-medium"
                 :style="{ color: currentTheme.secondary }"
               >
                 {{ $tc("caption.filename", 1) }}
@@ -141,7 +143,7 @@
               @shortkey="$hotkeyHelpers.focusField($refs, 'comment')"
             >
               <div
-                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+                class="d-flex fs-14 mb-1 font-weight-medium"
                 :style="{ color: currentTheme.secondary }"
               >
                 {{ $tc("caption.comment", 1) }}
@@ -168,7 +170,8 @@
                   <v-select
                     v-model="selectedHeading"
                     :items="headingOptions"
-                    background-color="#F9F9FB"
+                    :background-color="inputBg"
+                    :color="currentTheme.secondary"
                     class="rounded-lg custom-select"
                     item-text="text"
                     item-value="level"
@@ -272,7 +275,7 @@
               @shortkey="$hotkeyHelpers.focusField($refs, 'tags')"
             >
               <div
-                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+                class="d-flex fs-14 mb-1 font-weight-medium"
                 :style="{ color: currentTheme.secondary }"
               >
                 {{ $tc("caption.tags_tab", 1) }}
@@ -280,6 +283,10 @@
               <vue-tags-input
                 ref="tags"
                 class="input-box tags-theme"
+                :class="{
+                  dark: $vuetify.theme.dark,
+                  light: !$vuetify.theme.dark,
+                }"
                 v-model="tagText"
                 :tags="tags"
                 :autocomplete-items="filteredTags"
@@ -294,7 +301,7 @@
 
             <div class="flex flex-column">
               <div
-                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+                class="d-flex fs-14 mb-1 font-weight-medium"
                 :style="{ color: currentTheme.secondary }"
               >
                 {{ $tc("caption.create_new_issue", 1) }}
@@ -398,7 +405,8 @@
                 height="40px"
                 :menu-props="{ offsetY: true }"
                 elevation="0"
-                background-color="#F9F9FB"
+                :background-color="inputBg"
+                :color="currentTheme.secondary"
                 class="rounded-lg custom-select"
                 hide-details="true"
               ></v-select>
@@ -412,7 +420,6 @@
             :color="btnBg"
             class="text-capitalize rounded-lg"
             depressed
-            :style="{ color: currentTheme.black }"
             @click="handleClear"
           >
             {{ $tc("caption.clear", 1) }}
@@ -425,7 +432,6 @@
               depressed
               class="text-capitalize mr-2 rounded-lg"
               :disabled="processing"
-              :style="{ color: currentTheme.black }"
               v-shortkey="cancelHotkey"
               @shortkey="handleDiscard()"
               @click="handleDiscard()"
@@ -1030,7 +1036,6 @@ export default {
   border-radius: 8px;
   border: none !important;
   max-width: 100% !important;
-  background-color: #f9fafb !important;
 }
 .tags-theme .ti-input {
   padding: 0.4rem !important;
@@ -1038,6 +1043,18 @@ export default {
 .tags-theme .ti-new-tag-input-wrapper input {
   font-size: 14px;
   padding: 0px 8px;
+}
+.tags-theme.dark {
+  background-color: #4b5563 !important;
+}
+.tags-theme.light {
+  background-color: #f9fafb !important;
+}
+.tags-theme.dark .ti-new-tag-input {
+  color: #fff !important;
+}
+.tags-theme.light .ti-new-tag-input {
+  color: #000 !important;
 }
 .tags-theme .ti-tags .ti-tag {
   background: #fff !important;

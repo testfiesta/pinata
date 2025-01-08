@@ -32,7 +32,7 @@
                 </v-card>
                 <div v-else>
                   <div
-                    class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+                    class="d-flex fs-14 mb-1 font-weight-medium"
                     :style="{ color: currentTheme.secondary }"
                   >
                     {{ $tc("caption.comment", 1) }}
@@ -59,7 +59,8 @@
                       <v-select
                         v-model="selectedHeading"
                         :items="headingOptions"
-                        background-color="#F9F9FB"
+                        :background-color="inputBg"
+                        :color="currentTheme.secondary"
                         class="rounded-lg custom-select"
                         item-text="text"
                         item-value="level"
@@ -238,16 +239,18 @@
                 on-icon="icon-checkbox-on"
               >
                 <template v-slot:label>
-                  <span class="fs-14 text-theme-label">{{
-                    $tc("caption.required_follow_up", 1)
-                  }}</span>
+                  <span
+                    class="fs-14"
+                    :style="{ color: currentTheme.secondary }"
+                    >{{ $tc("caption.required_follow_up", 1) }}</span
+                  >
                 </template>
               </v-checkbox>
             </div>
             <v-row class="mt-0">
               <v-col cols="12">
                 <div
-                  class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+                  class="d-flex fs-14 mb-1 font-weight-medium"
                   :style="{ color: currentTheme.secondary }"
                 >
                   {{ $tc("caption.tags_tab", 1) }}
@@ -256,6 +259,10 @@
                   class="input-box tags-theme"
                   v-model="tag_text"
                   :tags="tags"
+                  :class="{
+                    dark: $vuetify.theme.dark,
+                    light: !$vuetify.theme.dark,
+                  }"
                   :autocomplete-items="filteredTags"
                   :max-tags="10"
                   :maxlength="20"
@@ -267,7 +274,7 @@
             <v-row class="mt-0">
               <v-col class="pr-0">
                 <div
-                  class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+                  class="d-flex fs-14 mb-1 font-weight-medium"
                   :style="{ color: currentTheme.secondary }"
                 >
                   {{ $tc("caption.note_type", 1) }}
@@ -282,7 +289,8 @@
                   height="40px"
                   :menu-props="{ offsetY: true }"
                   elevation="0"
-                  background-color="#F9F9FB"
+                  :background-color="inputBg"
+                  :color="currentTheme.secondary"
                   hide-details="true"
                 ></v-select>
               </v-col>

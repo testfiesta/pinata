@@ -2,36 +2,53 @@
   <v-dialog v-bind="$attrs" v-on="$listeners" persistent width="350">
     <v-sheet outlined rounded>
       <v-card :style="{ backgroundColor: currentTheme.background }">
-        <LogoWrapper :height="20" :width="60" />
-        <v-card-text class="text" :style="{ color: currentTheme.secondary }">
-          {{ text || $t("message.confirm_delete") }}
+        <v-card-text class="text">
+          <div class="d-flex justify-space-between align-start">
+            <p
+              class="font-weight-medium fs-14 text-start"
+              :style="{ color: currentTheme.secondary }"
+            >
+              {{ text || $t("message.confirm_delete") }}
+            </p>
+            <button @click="handleCancel">
+              <v-icon>mdi-close</v-icon>
+            </button>
+          </div>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-            depressed
-            height="40px"
-            ref="confirmBtn"
-            :color="currentTheme.primary"
-            class="text-capitalize btn rounded-lg"
-            :style="{ color: currentTheme.white }"
-            v-shortkey="confirmHotkey"
-            @shortkey="handleConfirm()"
-            @click="handleConfirm()"
-          >
-            {{ $tc("confirm", 1) }}
-          </v-btn>
-          <v-btn
-            depressed
-            height="40px"
-            :color="currentTheme.background"
-            class="text-capitalize btn rounded-lg"
-            :style="{ color: currentTheme.secondary }"
-            v-shortkey="cancelHotkey"
-            @shortkey="handleCancel()"
-            @click="handleCancel()"
-          >
-            {{ $tc("cancel", 1) }}
-          </v-btn>
+          <div class="row">
+            <v-col cols="6">
+              <v-btn
+                depressed
+                height="40px"
+                width="100%"
+                :color="btnBg"
+                class="text-capitalize btn rounded-lg"
+                :style="{ color: currentTheme.secondary }"
+                v-shortkey="cancelHotkey"
+                @shortkey="handleCancel()"
+                @click="handleCancel()"
+              >
+                {{ $tc("cancel", 1) }}
+              </v-btn>
+            </v-col>
+            <v-col cols="6">
+              <v-btn
+                depressed
+                height="40px"
+                width="100%"
+                ref="confirmBtn"
+                :color="currentTheme.primary"
+                class="text-capitalize btn rounded-lg"
+                :style="{ color: currentTheme.white }"
+                v-shortkey="confirmHotkey"
+                @shortkey="handleConfirm()"
+                @click="handleConfirm()"
+              >
+                {{ $tc("confirm", 1) }}
+              </v-btn>
+            </v-col>
+          </div>
         </v-card-actions>
       </v-card>
     </v-sheet>
@@ -39,17 +56,15 @@
 </template>
 
 <script>
-import LogoWrapper from "../LogoWrapper.vue";
 import { mapGetters } from "vuex";
+import theme from "../../mixins/theme";
 export default {
   name: "ResetSessionDialog",
-  components: {
-    LogoWrapper,
-  },
   props: {
     title: String,
     text: String,
   },
+  mixins: [theme],
   data() {
     return {};
   },

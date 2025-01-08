@@ -8,6 +8,7 @@
         >
         <div class="progress">
           <v-slider
+            class="slider-theme"
             v-model="currentProgress"
             max="100"
             min="0"
@@ -17,7 +18,8 @@
             :thumb-size="20"
             hide-details
             hide-spin-buttons
-            track-color="#D1D5DB"
+            track-color="#F2F4F7"
+            thumb-color="#FFFFFF"
             @change="syncSlideWithAudio"
           ></v-slider>
         </div>
@@ -88,14 +90,16 @@
           </div>
           <div class="volume-progress">
             <v-slider
+              class="slider-theme"
               v-model="volume"
               color="primary"
               step="1"
               thumb-label
+              track-color="#F2F4F7"
+              thumb-color="#FFFFFF"
               :thumb-size="20"
               hide-details
               hide-spin-buttons
-              track-color="#D1D5DB"
               @change="setVolume()"
             ></v-slider>
           </div>

@@ -26,6 +26,9 @@ body {
 .fs-24 {
   font-size: 24px !important;
 }
+.theme--dark.v-tabs > .v-tabs-bar, .theme--dark.v-tabs-items, .theme--dark.v-card {
+  background-color: initial;
+}
 .tiptap-theme .v-card {
   border: none !important;
 }
@@ -34,8 +37,7 @@ body {
   min-height: 80px;
 }
 .tiptap-theme header.v-toolbar {
-  border-top-left-radius: 8px !important;
-  border-top-right-radius: 8px !important;
+  border-radius: 8px !important;
 }
 .tiptap-theme .v-select__selection--comma {
   margin: 0px;
@@ -85,6 +87,14 @@ body {
 }
 .icon-indeterminate {
   background-image: url("/public/icon/indeterminate.svg");
+}
+.slider-theme .v-slider__track-container {
+  height: 8px !important;
+}
+.slider-theme .v-slider__thumb {
+  height: 16px !important;
+  width: 16px !important;
+  border: solid 2px #0c2ff3 !important;
 }
 .field-theme .v-input--selection-controls__input {
   margin-right: 0px !important;

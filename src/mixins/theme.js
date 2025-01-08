@@ -16,5 +16,8 @@ export default {
     inputBg() {
       return this.$vuetify.theme.dark ? "#4B5563" : "#F9F9FB";
     },
+    btnColor() {
+      return this.$vuetify.theme.dark ? "#FFFFFF" : "#000000";
+    },
   },
 };

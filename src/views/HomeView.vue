@@ -478,8 +478,6 @@ export default {
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
-  background: #f2f4f7;
   justify-content: flex-start;
 }
 .header {

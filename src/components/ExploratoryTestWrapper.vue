@@ -1,10 +1,10 @@
 <template>
-  <div class="pa-6" style="height: 100%">
+  <div class="pa-6" style="height: 100%" :style="{ backgroundColor: mainBg }">
     <div class="top">
       <v-btn
         class="text-capitalize pa-0 back-btn"
         plain
-        color="#475467"
+        :color="btnColor"
         solid
         v-shortkey="backHotkey"
         @shortkey="handleResetConfirmDialog"
@@ -90,6 +90,7 @@
 import TestSettingWrapper from "./TestSettingWrapper.vue";
 import { mapGetters } from "vuex";
 import ResetConfirmDialog from "./dialogs/ResetConfirmDialog.vue";
+import theme from "../mixins/theme";
 
 export default {
   name: "ExploratoryTestWrapper",
@@ -97,6 +98,7 @@ export default {
     ResetConfirmDialog,
     TestSettingWrapper,
   },
+  mixins: [theme],
   data() {
     return {
       resetConfirmDialog: false,
@@ -187,6 +189,10 @@ export default {
 .charter-tab .v-tab.v-tab--active {
   color: #0a26c3 !important;
   border-bottom: solid 2px #0a26c3;
+}
+.charter-tab.theme--dark .v-tab.v-tab--active {
+  color: #fff !important;
+  border-bottom: solid 2px #fff;
 }
 .charter-tab {
   border-bottom: solid 1px #eaecf0;

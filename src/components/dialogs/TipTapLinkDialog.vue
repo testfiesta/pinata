@@ -3,7 +3,7 @@
     v-model="dialog"
     persistent
     width="480px"
-    content-class="rounded-lg link-dialog"
+    content-class="rounded-lg link-dialog overflow-hidden"
   >
     <v-sheet outlined class="rounded-lg">
       <v-card>

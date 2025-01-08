@@ -8,7 +8,7 @@
     max-width="900px"
     eager
   >
-    <v-sheet outlined rounded>
+    <v-sheet outlined rounded :style="{ backgroundColor: mainBg }">
       <div class="content">
         <div
           class="content-top"
@@ -312,7 +312,7 @@ import VueTagsInput from "@johmun/vue-tags-input";
 import { VEmojiPicker } from "v-emoji-picker";
 
 import { TEXT_TYPES, AI_ENABLED_FIELDS, FILE_TYPES } from "@/modules/constants";
-
+import theme from "../../mixins/theme";
 import openAIIntegrationHelper from "../../integrations/OpenAIIntegrationHelpers";
 import { mapGetters } from "vuex";
 
@@ -329,6 +329,7 @@ export default {
       default: () => {},
     },
   },
+  mixins: [theme],
   data() {
     return {
       item: {},
