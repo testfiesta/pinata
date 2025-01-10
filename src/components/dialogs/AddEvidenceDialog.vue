@@ -844,7 +844,7 @@ export default {
 
       tempItems.forEach((item) => {
         item.id = item.stepID;
-        updatedNodes.push({ ...item, content: item.comment.text });
+        updatedNodes.push({ ...item, content: item?.comment?.text ?? "" });
       });
 
       if (this.nodes.length > 0) {

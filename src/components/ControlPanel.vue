@@ -22,8 +22,10 @@
         <v-col cols="6" class="pa-1">
           <v-btn
             id="btn_delete"
+            class="rounded-lg text-capitalize"
             fill
-            small
+            depressed
+            height="40px"
             block
             :color="currentTheme.primary"
             :style="{ color: currentTheme.white }"
@@ -45,7 +47,9 @@
                   <v-btn
                     id="btn_download"
                     fill
-                    small
+                    class="rounded-lg text-capitalize"
+                    depressed
+                    height="40px"
                     block
                     color="white"
                     :style="{ color: currentTheme.black }"
