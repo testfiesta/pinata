@@ -1,89 +1,107 @@
 <template>
   <v-container class="wrapper">
-    <div class="header py-4">
-      <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
-        <v-icon class="ma-0">mdi-chevron-left</v-icon>
-        {{ $tc("caption.back", 1) }}
-      </v-btn>
-      <div
-        class="subtitle-1 signup-title text-center"
-        :style="{ color: currentTheme.secondary }"
-      >
-        <span>{{ $tc("caption.signin_xray", 1) }}</span>
+    <div
+      class="d-flex justify-center align-center flex-column pa-6 rounded-lg login-wrapper mt-16"
+      :style="{ backgroundColor: mainBg }"
+    >
+      <div class="d-flex justify-space-between align-center w-full">
+        <v-btn class="text-capitalize pa-0 back-btn" plain @click="back">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
+        <img
+          :src="require('../../assets/icon/xray-logo.png')"
+          alt="xray"
+          height="42"
+        />
+        <v-btn class="text-capitalize pa-0 back-btn invisible">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
       </div>
-    </div>
-    <div class="content mt-2">
-      <v-form ref="form" v-model="valid" lazy-validation>
-        <v-row>
-          <v-col cols="12" class="d-flex justify-center pa-0">
-            <img
-              :src="require('../../assets/icon/xray-logo.png')"
-              alt="xray"
-              width="50"
-            />
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.client_id", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                :append-icon="showClientId ? 'mdi-eye' : 'mdi-eye-off'"
-                outlined
-                dense
-                v-model="client_id"
-                :type="showClientId ? 'text' : 'password'"
-                required
-                :rules="rules.client_id"
-                @click:append="showClientId = !showClientId"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.client_secret", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                :append-icon="showClientSecret ? 'mdi-eye' : 'mdi-eye-off'"
-                outlined
-                dense
-                :type="showClientSecret ? 'text' : 'password'"
-                v-model="client_secret"
-                required
-                :rules="rules.apiKey"
-                @click:append="showClientSecret = !showClientSecret"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="d-flex justify-center mb-5 pa-0 mt-2">
-            <div class="subtitle-2">
-              <a
-                @click="
-                  openExternalLink(
-                    'https://docs.getxray.app/display/XRAYCLOUD/Global+Settings%3A+API+Keys'
-                  )
-                "
+      <div class="fs-30 font-weight-semibold mt-4 mb-6">
+        {{ $tc("caption.signin_xray", 1) }}
+      </div>
+      <div class="w-full position-relative">
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-row>
+            <v-col cols="12">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
               >
-                {{ $tc("message.xray_api_keys_docs") }}
-              </a>
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <v-btn
-              class="text-capitalize btn_signup"
-              color="primary"
-              fill
-              small
-              block
-              :loading="loading"
-              @click="signIn()"
-            >
-              {{ $tc("caption.sign_in", 1) }}
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
+                {{ $tc("caption.client_id", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  :append-icon="showClientId ? 'mdi-eye' : 'mdi-eye-off'"
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="client_id"
+                  :type="showClientId ? 'text' : 'password'"
+                  required
+                  :rules="rules.client_id"
+                  @click:append="showClientId = !showClientId"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.client_secret", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  :append-icon="showClientSecret ? 'mdi-eye' : 'mdi-eye-off'"
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  :type="showClientSecret ? 'text' : 'password'"
+                  v-model="client_secret"
+                  required
+                  :rules="rules.apiKey"
+                  @click:append="showClientSecret = !showClientSecret"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="d-flex justify-center mt-2">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                <a
+                  @click="
+                    openExternalLink(
+                      'https://docs.getxray.app/display/XRAYCLOUD/Global+Settings%3A+API+Keys'
+                    )
+                  "
+                >
+                  {{ $tc("message.xray_api_keys_docs") }}
+                </a>
+              </div>
+            </v-col>
+            <v-col cols="12">
+              <v-btn
+                class="text-capitalize btn_signup rounded-lg mb-5 white--text"
+                color="#0C2FF3"
+                block
+                depressed
+                height="40px"
+                :loading="loading"
+                @click="signIn()"
+              >
+                {{ $tc("caption.sign_in", 1) }}
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+      </div>
     </div>
     <v-snackbar v-model="snackBar.enabled" timeout="3000">
       {{ snackBar.message }}
@@ -105,6 +123,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import xrayIntegrationHelper from "../../integrations/XrayIntegrationHelpers";
 import { mapGetters } from "vuex";
+import theme from "../../mixins/theme";
 
 export default {
   name: "SigninXrayWrapper",
@@ -119,6 +138,7 @@ export default {
       this.previousRoute = newValue;
     },
   },
+  mixins: [theme],
   data() {
     return {
       previousRoute: this.prevRoute,

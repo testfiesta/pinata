@@ -34,19 +34,29 @@
             </v-tab>
           </v-tabs>
         </div>
-        <div class="avatar" style="display: none">
+        <div class="avatar">
           <div v-if="isAuthenticated">
             <MenuPopover />
           </div>
           <div v-else>
-            <v-menu :nudge-width="100" bottom z-index="99999" offset-y>
+            <v-menu
+              :nudge-width="100"
+              bottom
+              z-index="99999"
+              offset-y
+              min-width="280px"
+              class="rounded-lg"
+              content-class="shadow-theme"
+            >
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   fab
                   small
                   color="primary"
-                  height="32"
-                  width="32"
+                  height="40"
+                  width="40"
+                  depressed
+                  offset-y
                   v-bind="attrs"
                   v-on="on"
                 >
@@ -55,7 +65,9 @@
               </template>
               <v-list>
                 <v-list-item link to="/authentication/signin">
-                  <v-list-item-title>Log In</v-list-item-title>
+                  <v-list-item-title class="fs-16 font-weight-medium">{{
+                    $tc("caption.login", 1)
+                  }}</v-list-item-title>
                 </v-list-item>
                 <!--<v-list-item link to="/authentication/signupMain">
                 <v-list-item-title>Register</v-list-item-title>
@@ -395,5 +407,10 @@ export default {
   border-color: #4b5563;
   background-color: #374151;
   color: #ffffff;
+}
+</style>
+<style>
+.shadow-theme {
+  box-shadow: 0px 16px 40px 0px rgba(0, 0, 0, 0.0588235294) !important;
 }
 </style>

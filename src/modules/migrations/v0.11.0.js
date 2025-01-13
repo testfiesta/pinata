@@ -74,7 +74,7 @@ export const migrationStruct = {
         let newTemplates = [];
         for (const [type, content] of Object.entries(templates)) {
           let oldType;
-          switch (template.type) {
+          switch (type) {
             case "image":
               oldType = "Screenshot";
               break;

@@ -131,7 +131,7 @@
             </v-col>
             <v-col cols="12" class="py-0">
               <v-btn
-                class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+                class="my-4 text-capitalize btn_signup rounded-lg white--text"
                 color="#0C2FF3"
                 block
                 depressed
@@ -233,7 +233,7 @@
             </v-col>
             <v-col cols="12" class="py-0">
               <v-btn
-                class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+                class="my-4 text-capitalize btn_signup rounded-lg white--text"
                 color="#0C2FF3"
                 block
                 depressed

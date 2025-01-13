@@ -20,8 +20,8 @@
       <div class="fs-30 font-weight-semibold mt-4 mb-6">
         {{ $tc("caption.log_in") }}
       </div>
-      <v-row>
-        <v-col cols="12">
+      <v-row class="w-full">
+        <v-col cols="12" class="px-0">
           <v-btn
             class="mb-4 text-capitalize btn_signup rounded-lg white--text"
             :color="btnBg"
@@ -59,44 +59,56 @@
             </div>
           </v-btn>
           <v-btn
-            class="mb-4 outline-btn jira"
+            class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+            :color="btnBg"
             block
-            outlined
-            color="white"
+            height="40px"
+            depressed
             @click="signinXray"
           >
             <img :src="require('../../assets/icon/xray-logo.png')" width="12" />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
+            <div
+              class="btn-text fs-14 ml-2"
+              :style="{ color: currentTheme.secondary }"
+            >
               {{ $tc("caption.signin_xray", 1) }}
             </div>
           </v-btn>
           <v-btn
-            class="mb-4 outline-btn jira"
+            class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+            :color="btnBg"
             block
-            outlined
-            color="white"
+            height="40px"
+            depressed
             @click="signinZephyrSquad"
           >
             <img
               :src="require('../../assets/icon/zephyr-squad.png')"
               width="16"
             />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
+            <div
+              class="btn-text fs-14 ml-2"
+              :style="{ color: currentTheme.secondary }"
+            >
               {{ $tc("caption.signin_zephyr_squad", 1) }}
             </div>
           </v-btn>
           <v-btn
-            class="mb-4 outline-btn jira"
+            class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+            :color="btnBg"
             block
-            outlined
-            color="white"
+            height="40px"
+            depressed
             @click="signinZephyrScale"
           >
             <img
               :src="require('../../assets/icon/zephyr-scale.png')"
               width="16"
             />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
+            <div
+              class="btn-text fs-14 ml-2"
+              :style="{ color: currentTheme.secondary }"
+            >
               {{ $tc("caption.signin_zephyr_scale", 1) }}
             </div>
           </v-btn>
