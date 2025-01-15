@@ -1,22 +1,20 @@
 <template>
-  <v-container class="search-wrapper">
-    <v-row>
-      <v-col cols="12">
-        <v-text-field
-          :placeholder="$tc('caption.search', 1)"
-          class="rounded-lg"
-          :background-color="inputBg"
-          dense
-          height="40px"
-          flat
-          solo
-          v-model="search"
-          hide-details="true"
-          @input="handleSearch"
-        ></v-text-field>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-text-field
+    :placeholder="$tc('caption.search', 1)"
+    class="rounded-lg"
+    :background-color="inputBg"
+    dense
+    height="40px"
+    flat
+    solo
+    v-model="search"
+    hide-details
+    @input="handleSearch"
+  >
+    <template v-slot:prepend-inner>
+      <img src="../assets/icon/search.svg" alt="search" class="icon" />
+    </template>
+  </v-text-field>
 </template>
 
 <script>
@@ -38,8 +36,8 @@ export default {
   },
 };
 </script>
-<style scoped>
-.search-wrapper {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+<style>
+.v-input__slot {
+  font-size: 14px;
 }
 </style>

@@ -12,7 +12,7 @@
         <router-link to="/">
           <img :src="pinataLogo" alt="logo" />
         </router-link>
-        <div class="tabs">
+        <div class="tabs" style="display: none">
           <v-tabs
             class="tabs"
             centered
@@ -78,22 +78,13 @@
         </div>
       </div>
     </v-app-bar>
-    <div
-      class="mt-4"
-      :class="
-        activeTab === `/main` && this.quickTest
-          ? 'content-container'
-          : 'content-container vh-full'
-      "
-    >
-      <div
-        :class="
-          activeTab === `/main` && this.quickTest
-            ? 'content w-400'
-            : 'content h-full w-60'
-        "
-      >
-        <v-tabs-items v-model="activeTab" style="height: 100%">
+    <div class="mt-3">
+      <div>
+        <v-tabs-items
+          v-model="activeTab"
+          style="height: 100%"
+          class="tabs-items-theme"
+        >
           <v-tab-item
             value="/main"
             :transition="false"
@@ -117,19 +108,22 @@
               :items="items"
               :selectedItems="selected"
               event-type="dblclick"
-            />
+            >
+              <template v-slot:control-panel>
+                <ControlPanel
+                  @add-item="addItem"
+                  @update-item="updateItem"
+                  :selectedItems="selected"
+                  :preSessionRequirementsMet="presessionValid"
+                  view-mode="normal"
+                />
+              </template>
+            </WorkspaceWrapper>
           </v-tab-item>
         </v-tabs-items>
       </div>
     </div>
     <div class="footer">
-      <ControlPanel
-        @add-item="addItem"
-        @update-item="updateItem"
-        :selectedItems="selected"
-        :preSessionRequirementsMet="presessionValid"
-        view-mode="normal"
-      />
       <TimeCounter v-if="$store.state.session.status !== 'pending'" />
     </div>
   </v-container>
@@ -412,5 +406,8 @@ export default {
 <style>
 .shadow-theme {
   box-shadow: 0px 16px 40px 0px rgba(0, 0, 0, 0.0588235294) !important;
+}
+.v-tabs-items.tabs-items-theme {
+  background-color: initial;
 }
 </style>

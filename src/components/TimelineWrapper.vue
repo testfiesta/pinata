@@ -1,20 +1,7 @@
 <template>
   <v-container class="timeline-wrapper">
     <v-row>
-      <v-col cols="12">
-        <div
-          class="d-flex fs-14 mb-1 font-weight-medium"
-          :style="{ color: currentTheme.secondary }"
-        >
-          {{ $tc("caption.session_started", 1) }}
-        </div>
-        <div class="mt-2 date-text">
-          <v-icon>mdi-calendar-minus-outline</v-icon>
-          <span v-if="$store.state.session.started">{{
-            $store.state.session.started
-          }}</span>
-          <span v-else>{{ current }}</span>
-        </div>
+      <v-col cols="12" class="pa-0">
         <div
           class="timeline-wrap pt-3"
           @dragenter="dragEnter($event)"
@@ -22,16 +9,30 @@
           @dragover="dragOver($event)"
           @drop="dropFile($event)"
         >
-          <v-timeline align-top dense class="pt-0">
-            <v-timeline-item
-              class="timeline-item"
-              color="primary"
-              icon="mdi-play-circle"
-              fill-dot
-            >
+          <v-timeline align-top dense class="pt-0 timeline-theme">
+            <v-timeline-item class="timeline-item" fill-dot large>
+              <template v-slot:icon>
+                <div class="start-end-wrapper">
+                  <img
+                    src="../assets/icon/timeline-icon/play.svg"
+                    alt="play"
+                    class="icon"
+                  />
+                </div>
+              </template>
               <div class="duration-text">
-                <v-icon>mdi-clock-outline</v-icon>
-                <span>{{ formatTime(0) }}</span>
+                <div
+                  class="d-flex fs-14 mb-1 font-weight-semibold"
+                  :style="{ color: currentTheme.secondary }"
+                >
+                  {{ $tc("caption.session_started", 1) }}
+                </div>
+                <div class="date-text">
+                  <span v-if="$store.state.session.started">{{
+                    formatDate($store.state.session.started)
+                  }}</span>
+                  <span v-else>{{ formatDate(current) }}</span>
+                </div>
               </div>
             </v-timeline-item>
             <draggable
@@ -1173,6 +1174,31 @@ export default {
 
       return hours + ":" + minutes + ":" + seconds;
     },
+    formatDate(stringDate) {
+      const localDate = new Date(stringDate);
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      const month = months[localDate.getMonth()];
+      const day = String(localDate.getDate()).padStart(2, "0");
+      const year = localDate.getFullYear();
+      const hours = String(localDate.getHours()).padStart(2, "0");
+      const minutes = String(localDate.getMinutes()).padStart(2, "0");
+      const seconds = String(localDate.getSeconds()).padStart(2, "0");
+      return `${month} ${day}, ${year} ${hours}:${minutes}:${seconds}`;
+    },
     async uploadEvidence() {
       // todo add relative handler for web app
       if (this.$isElectron) {
@@ -1374,6 +1400,22 @@ export default {
 };
 </script>
 <style scoped>
+.timeline-theme .v-timeline-item__dot .v-timeline-item__inner-dot {
+  background-color: transparent;
+  border-color: transparent;
+}
+.timeline-theme .v-timeline-item__dot {
+  box-shadow: none !important;
+  width: 48px;
+  height: 56px;
+}
+.v-timeline.timeline-theme::before {
+  left: calc(24px - 1px) !important;
+  background: #eaecf0 !important;
+}
+.timeline-theme .timeline-item {
+  align-items: start;
+}
 ::v-deep .options {
   display: none !important;
 }
@@ -1536,6 +1578,26 @@ export default {
 }
 .pointerEventsDisable {
   pointer-events: none;
+}
+.start-end-wrapper {
+  background-color: #475467;
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+.duration-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.date-text {
+  font-size: 12px;
+  font-weight: 400;
+  color: #475467;
 }
 </style>
 <style>

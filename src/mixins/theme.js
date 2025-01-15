@@ -19,5 +19,8 @@ export default {
     btnColor() {
       return this.$vuetify.theme.dark ? "#FFFFFF" : "#000000";
     },
+    mainBgReverse() {
+      return this.$vuetify.theme.dark ? "#F2F4F7" : "#161B26";
+    },
   },
 };

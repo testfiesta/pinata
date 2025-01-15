@@ -26,6 +26,26 @@ body {
 .fs-24 {
   font-size: 24px !important;
 }
+input::placeholder, 
+textarea::placeholder, 
+select::placeholder {
+  color: #667085 !important;
+  opacity: 1 !important; 
+}
+
+/* Specific styles for input types if needed */
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder {
+  color: #667085 !important; 
+}
+.app-height-global {
+  min-height: calc(100vh - 24px);
+  height: 100%;
+}
+.rounded-12px {
+  border-radius: 12px;
+}
 .theme--dark.v-tabs > .v-tabs-bar, .theme--dark.v-tabs-items, .theme--dark.v-card {
   background-color: initial;
 }
@@ -285,11 +305,6 @@ body {
 
 .flex {
   display: flex;
-}
-.control-btn {
-  border: 1px solid #d1d5db;
-  color: #6b7280;
-  background-color: #fff;
 }
 .cursor-pointer {
   cursor: pointer;

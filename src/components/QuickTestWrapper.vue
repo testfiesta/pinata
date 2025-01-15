@@ -1,6 +1,6 @@
 <template>
   <v-container
-    class="quick_test_wrapper pa-6"
+    class="quick_test_wrapper pa-6 w-400"
     :style="{ backgroundColor: mainBg }"
   >
     <div class="top">

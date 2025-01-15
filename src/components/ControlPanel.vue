@@ -17,7 +17,11 @@
         @show-source-picker="showSourcePickerDialog()"
       />
     </div>
-    <div className="nml-ctrl-wrapper" v-if="viewMode === 'normal'">
+    <div
+      className="nml-ctrl-wrapper"
+      class="d-flex justify-center"
+      v-if="viewMode === 'normal'"
+    >
       <v-row class="mb-1" v-if="selected.length > 0">
         <v-col cols="6" class="pa-1">
           <v-btn
@@ -42,7 +46,7 @@
             v-model="evidenceExportDestinationMenu"
           >
             <template v-slot:activator="{ on: evidenceExportDestinationMenu }">
-              <v-tooltip top>
+              <v-tooltip open-on-hover top>
                 <template v-slot:activator="{ on: onTooltip }">
                   <v-btn
                     id="btn_download"
@@ -136,15 +140,19 @@
           </v-menu>
         </v-col>
       </v-row>
-      <v-row class="text-center control-btn-wrapper" v-if="status === 'end'">
+      <v-row
+        class="text-center control-btn-wrapper rounded-12px"
+        :style="{ backgroundColor: mainBgReverse }"
+        v-if="status === 'end'"
+      >
         <v-col cols="12" class="d-flex justify-center px-0">
-          <v-tooltip top v-if="status !== 'pause'">
+          <!-- <v-tooltip open-on-hover top v-if="status !== 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_resume"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -159,13 +167,13 @@
             <span>{{ $tc("caption.resume_session", 1) }}</span>
           </v-tooltip>
 
-          <v-tooltip top v-if="status !== 'pause'">
+          <v-tooltip open-on-hover top v-if="status !== 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_save"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -179,13 +187,13 @@
             </template>
             <span>{{ $tc("caption.save_session") }}</span>
           </v-tooltip>
-          <v-tooltip top v-if="status !== 'pause'">
+          <v-tooltip open-on-hover top v-if="status !== 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_reset"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -199,13 +207,13 @@
             </template>
             <span>{{ $tc("caption.restart_session", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top v-if="status !== 'pause'">
+          <v-tooltip open-on-hover top v-if="status !== 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_reset"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -218,21 +226,22 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.finish_session", 1) }}</span>
-          </v-tooltip>
+          </v-tooltip> -->
         </v-col>
       </v-row>
       <v-row
-        class="text-center control-btn-wrapper"
+        class="text-center control-btn-wrapper control-btn-shadow rounded-12px"
+        :style="{ backgroundColor: mainBgReverse }"
         v-if="status !== 'pending' && status !== 'end'"
       >
-        <v-col cols="12" class="d-flex justify-center px-0">
-          <v-tooltip top v-if="status !== 'pause'">
-            <template v-slot:activator="{ on }">
+        <v-col cols="12" class="d-flex justify-center px-0 py-1">
+          <!-- <v-tooltip open-on-hover top v-if="status !== 'pause'"> -->
+          <!-- <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_pause_session"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -255,14 +264,14 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.pause_session", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top v-if="status === 'pause'">
+          </v-tooltip> -->
+          <!-- <v-tooltip open-on-hover top v-if="status === 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_resume_session"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -285,14 +294,14 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.resume_session", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top>
+          </v-tooltip> -->
+          <!-- <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_end_session"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -315,76 +324,14 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.end_session", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top v-if="!recordVideoStarted">
-            <template v-slot:activator="{ on }">
-              <v-btn
-                id="btn_start_record_video"
-                class="control-btn mx-1"
-                fab
-                outlined
-                small
-                color="default"
-                :disabled="status === 'pause'"
-                v-on="on"
-                v-shortkey="startVideoHotkey"
-                @shortkey="startRecordVideo()"
-                @click="startRecordVideo()"
-              >
-                <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/video-solid.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/video-solid-gray.svg')"
-                  width="24"
-                  height="24"
-                />
-              </v-btn>
-            </template>
-            <span>{{ $tc("caption.start_video_record", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top v-if="recordVideoStarted">
-            <template v-slot:activator="{ on }">
-              <v-btn
-                id="btn_stop_record_video"
-                class="control-btn mx-1"
-                fab
-                outlined
-                small
-                color="default"
-                :disabled="status === 'pause'"
-                v-on="on"
-                v-shortkey="stopVideoHotkey"
-                @shortkey="stopRecordVideo()"
-                @click="stopRecordVideo()"
-              >
-                <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/video-slash-solid.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/video-slash-solid-gray.svg')"
-                  width="24"
-                  height="24"
-                />
-              </v-btn>
-            </template>
-            <span>{{ $tc("caption.stop_video_record", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top>
+          </v-tooltip> -->
+          <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_screenshot"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 :disabled="status === 'pause'"
@@ -394,14 +341,7 @@
                 @click="handleScreenshot()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/camera.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/camera-gray.svg')"
+                  :src="require('../assets/icon/control-panel-icon/camera.svg')"
                   width="24"
                   height="24"
                 />
@@ -409,13 +349,61 @@
             </template>
             <span>{{ $tc("caption.screenshot", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top v-if="!recordAudioStarted">
+          <v-tooltip open-on-hover top v-if="!recordVideoStarted">
+            <template v-slot:activator="{ on }">
+              <v-btn
+                id="btn_start_record_video"
+                class="control-btn mx-1"
+                fab
+                icon
+                small
+                color="default"
+                :disabled="status === 'pause'"
+                v-on="on"
+                v-shortkey="startVideoHotkey"
+                @shortkey="startRecordVideo()"
+                @click="startRecordVideo()"
+              >
+                <img
+                  :src="require('../assets/icon/control-panel-icon/video.svg')"
+                  width="24"
+                  height="24"
+                />
+              </v-btn>
+            </template>
+            <span>{{ $tc("caption.start_video_record", 1) }}</span>
+          </v-tooltip>
+          <v-tooltip open-on-hover top v-if="recordVideoStarted">
+            <template v-slot:activator="{ on }">
+              <v-btn
+                id="btn_stop_record_video"
+                class="control-btn mx-1"
+                fab
+                icon
+                small
+                color="default"
+                :disabled="status === 'pause'"
+                v-on="on"
+                v-shortkey="stopVideoHotkey"
+                @shortkey="stopRecordVideo()"
+                @click="stopRecordVideo()"
+              >
+                <img
+                  :src="require('../assets/icon/control-panel-icon/video.svg')"
+                  width="24"
+                  height="24"
+                />
+              </v-btn>
+            </template>
+            <span>{{ $tc("caption.stop_video_record", 1) }}</span>
+          </v-tooltip>
+          <v-tooltip open-on-hover top v-if="!recordAudioStarted">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_start_record_audio"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 :disabled="status === 'pause'"
@@ -425,29 +413,24 @@
                 @click="startRecordAudio()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/microphone-solid.svg')"
-                  width="28"
-                  height="28"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/microphone-solid-gray.svg')"
-                  width="28"
-                  height="28"
+                  :src="
+                    require('../assets/icon/control-panel-icon/microphone.svg')
+                  "
+                  width="24"
+                  height="24"
                 />
               </v-btn>
             </template>
             <span>{{ $tc("caption.start_audio_record", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top v-if="recordAudioStarted">
+          <v-tooltip open-on-hover top v-if="recordAudioStarted">
             <!-- TODO test same binding for start/stop -->
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_stop_record_audio"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -457,30 +440,23 @@
                 @click="stopRecordAudio()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/microphone-slash-solid.svg')"
-                  width="28"
-                  height="28"
-                />
-                <img
-                  v-else
                   :src="
-                    require('../assets/icon/microphone-slash-solid-gray.svg')
+                    require('../assets/icon/control-panel-icon/microphone.svg')
                   "
-                  width="28"
-                  height="28"
+                  width="24"
+                  height="24"
                 />
               </v-btn>
             </template>
             <span>{{ $tc("caption.stop_audio_record", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top>
+          <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_note"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 :disabled="status === 'pause'"
@@ -490,14 +466,9 @@
                 @click="showNoteDialog()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/pencil.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/pencil-gray.svg')"
+                  :src="
+                    require('../assets/icon/control-panel-icon/notification.svg')
+                  "
                   width="24"
                   height="24"
                 />
@@ -505,12 +476,12 @@
             </template>
             <span>{{ $tc("caption.note", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top>
+          <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 :disabled="status === 'pause'"
@@ -520,14 +491,9 @@
                 @click="addMindmap()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/connect.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/connect-gray.svg')"
+                  :src="
+                    require('../assets/icon/control-panel-icon/mindmap.svg')
+                  "
                   width="24"
                   height="24"
                 />
@@ -535,13 +501,13 @@
             </template>
             <span>{{ $tc("caption.mind_map", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top>
+          <!-- <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 class="control-btn mx-1"
                 v-if="$isElectron"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -562,14 +528,14 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.minimize", 1) }}</span>
-          </v-tooltip>
-          <v-menu offset-y>
+          </v-tooltip> -->
+          <!-- <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 id="btn_change_source"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -605,7 +571,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-list>
-          </v-menu>
+          </v-menu> -->
         </v-col>
         <v-col
           cols="12"
@@ -622,26 +588,21 @@
             v-model="issueCreateDestinationMenu"
           >
             <template v-slot:activator="{ on: issueCreateDestinationMenu }">
-              <v-tooltip top>
+              <v-tooltip open-on-hover top>
                 <template v-slot:activator="{ on: onTooltip }">
                   <v-btn
                     id="btn__bug"
                     class="control-btn mx-1"
                     fab
-                    outlined
+                    icon
                     small
                     color="default"
                     v-on="{ ...issueCreateDestinationMenu, ...onTooltip }"
                   >
                     <img
-                      v-if="$vuetify.theme.dark === false"
-                      :src="require('../assets/icon/bug.svg')"
-                      width="24"
-                      height="24"
-                    />
-                    <img
-                      v-else
-                      :src="require('../assets/icon/bug-gray.svg')"
+                      :src="
+                        require('../assets/icon/control-panel-icon/bug.svg')
+                      "
                       width="24"
                       height="24"
                     />
@@ -780,6 +741,7 @@ import XrayExportSession from "./xray/XrayExportSession";
 import ZephyrSquadExportSession from "./zephyr/ZephyrSquadExportSession";
 import ZephyrScaleExportSession from "./zephyr/ZephyrScaleExportSession";
 import AddEvidenceDialog from "@/components/dialogs/AddEvidenceDialog.vue";
+import theme from "../mixins/theme";
 
 import JiraAddIssue from "./jira/JiraAddIssue";
 
@@ -855,6 +817,7 @@ export default {
       console.log(e);
     }
   },
+  mixins: [theme],
   watch: {
     selectedItems: function (newValue) {
       this.selected = newValue;
@@ -1997,17 +1960,13 @@ export default {
   column-gap: 5px;
   width: 100%;
 }
-.nml-ctrl-wrapper .control-btn-wrapper {
-  background: #f3f4f6;
-}
 .v-btn--disabled img {
   opacity: 0.5;
 }
-.theme--dark .control-btn-wrapper {
-  background-color: #374151;
+.control-btn-wrapper {
+  max-width: 300px;
 }
-.theme--dark .control-btn {
-  background-color: #4b5563;
-  border-color: #4b5563;
+.control-btn-shadow {
+  box-shadow: 0px 12px 16px -4px #10182814 !important;
 }
 </style>
