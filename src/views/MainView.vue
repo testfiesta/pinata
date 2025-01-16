@@ -99,11 +99,7 @@
               @taskToggle="handleTaskCheck"
             />
           </v-tab-item>
-          <v-tab-item
-            value="/main/workspace"
-            :transition="false"
-            style="height: 65vh"
-          >
+          <v-tab-item value="/main/workspace" :transition="false">
             <WorkspaceWrapper
               :items="items"
               :selectedItems="selected"
@@ -124,6 +120,13 @@
       </div>
     </div>
     <div class="footer">
+      <SourcePickerDialog
+        v-model="sourcePickerDialog"
+        :sources="sources"
+        :sourceId="sourceId"
+        :loaded="loaded"
+        @submit-source="startSession"
+      />
       <TimeCounter v-if="$store.state.session.status !== 'pending'" />
     </div>
   </v-container>
@@ -138,6 +141,7 @@ import {
   VTabItem,
   VBtn,
 } from "vuetify/lib/components";
+import SourcePickerDialog from "../components/dialogs/SourcePickerDialog.vue";
 import ExploratoryTestWrapper from "../components/ExploratoryTestWrapper.vue";
 import QuickTestWrapper from "@/components/QuickTestWrapper.vue";
 import WorkspaceWrapper from "../components/WorkspaceWrapper.vue";
@@ -165,6 +169,7 @@ export default {
     TimeCounter,
     CheckTaskWrapper,
     MenuPopover,
+    SourcePickerDialog,
   },
   data() {
     return {
@@ -172,6 +177,18 @@ export default {
       selected: [],
       showTaskError: false,
       showMenu: false,
+      sourcePickerDialog: false,
+      sources: [],
+      sourceId: "",
+      loaded: false,
+      interval: null,
+      timer: this.$store.state.session.timer,
+      duration: this.$store.state.case.duration,
+      isDuration: false,
+      started: "",
+      durationConfirmDialog: false,
+      status: this.$store.state.session.status,
+      viewMode: "normal",
     };
   },
   created() {
@@ -180,6 +197,7 @@ export default {
   mounted() {
     this.setInitialPreSession();
     this.setInitialPostSession();
+    this.$root.$on("start-quick-test", this.showSourcePickerDialog);
     this.$root.$on("update-selected", this.updateSelected);
     this.$root.$on("new-session", () => {
       this.setInitialPreSession();
@@ -210,9 +228,6 @@ export default {
         return this.$store.getters.requiredPreSessionTasksChecked;
       }
     },
-    status() {
-      return this.$store.state.session.status;
-    },
     showCheckList() {
       return (
         this.$store.state.session.status === SESSION_STATUSES.PENDING &&
@@ -239,6 +254,121 @@ export default {
     },
   },
   methods: {
+    fetchSources() {
+      if (this.$isElectron) {
+        return this.$electronService.getMediaSource();
+      }
+    },
+    async showSourcePickerDialog() {
+      if (this.$isElectron) {
+        try {
+          let data = await this.fetchSources();
+          this.loaded = true;
+          this.sources = data;
+
+          this.sourcePickerDialog = true;
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        this.mediaStream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            displaySurface: "window",
+            cursor: "always",
+          },
+          audio: true,
+        });
+
+        await this.startSession();
+      }
+    },
+    changeSessionStatus(status) {
+      if (this.$isElectron) {
+        this.$electronService.changeMenuBySessionStatus(status);
+      }
+    },
+    getCurrentDateTime() {
+      return new Date().toISOString();
+    },
+    updateStoreSession(isForce = false) {
+      this.$store.commit("updateSession", {
+        status: this.status,
+        timer: this.timer,
+        duration: this.duration,
+        isForce,
+      });
+    },
+    startInterval() {
+      if (!this.interval) {
+        this.interval = setInterval(() => {
+          this.timer += 1;
+
+          this.updateStoreSession();
+          if (this.isDuration && this.duration <= 0) {
+            this.durationConfirmDialog = true;
+            this.isDuration = false;
+            this.stopInterval();
+          }
+        }, 1000);
+      }
+    },
+    async startSession(id = null) {
+      if (this.$isElectron) {
+        this.sourceId = id;
+      }
+      this.sourcePickerDialog = false;
+
+      this.timer = this.$store.state.session.timer;
+      this.duration = this.$store.state.case.duration;
+      if (this.duration > 0) {
+        this.isDuration = true;
+      }
+
+      if (this.started === "") {
+        this.started = this.getCurrentDateTime();
+        this.$store.commit("setSessionStarted", this.started);
+      }
+
+      if (this.status !== SESSION_STATUSES.START) {
+        this.status = SESSION_STATUSES.START;
+        this.startInterval();
+        this.changeSessionStatus(SESSION_STATUSES.START);
+      }
+
+      if (!this.$store.state.session.sessionID) {
+        const data = {
+          case: {
+            title: this.$store.state.case.title,
+            charter: this.$store.state.case.charter,
+            preconditions: this.$store.state.case.preconditions,
+            duration: this.$store.state.case.duration,
+          },
+          session: {
+            status: this.$store.state.session.status,
+            timer: this.$store.state.session.timer,
+            started: this.$store.state.session.started,
+            ended: this.$store.state.session.ended,
+            quickTest: this.$store.state.session.quickTest,
+            path: this.$route.path,
+          },
+        };
+
+        await this.$storageService.createNewSession(data);
+        if (this.$isElectron) {
+          const caseID = await this.$storageService.getCaseId();
+          const sessionID = await this.$storageService.getSessionId();
+          this.$store.commit("setCaseID", caseID);
+          this.$store.commit("setSessionID", sessionID);
+        }
+      }
+
+      if (this.viewMode === "normal") {
+        const currentPath = this.$router.history.current.path;
+        if (currentPath !== "/main/workspace") {
+          await this.$router.push({ path: "/main/workspace" });
+        }
+      }
+    },
     handleTaskCheck(taskId, checked) {
       this.$store.commit("togglePreSessionTask", {
         taskId,

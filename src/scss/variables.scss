@@ -26,6 +26,22 @@ body {
 .fs-24 {
   font-size: 24px !important;
 }
+.timeline-theme .v-timeline-item__dot .v-timeline-item__inner-dot {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+.timeline-theme .v-timeline-item__dot {
+  box-shadow: none !important;
+  width: 48px;
+  height: 56px;
+}
+.v-timeline.timeline-theme::before {
+  left: calc(24px - 1px) !important;
+  background: #eaecf0 !important;
+}
+.timeline-theme .timeline-item {
+  align-items: start;
+}
 input::placeholder, 
 textarea::placeholder, 
 select::placeholder {

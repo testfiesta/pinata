@@ -1902,7 +1902,6 @@ export default {
       await this.$storageService.resetData();
       await this.$router.push("/");
     },
-
     async resetSession() {
       if (this.resetConfirmDialog) {
         this.resetConfirmDialog = false;

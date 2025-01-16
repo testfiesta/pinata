@@ -20,7 +20,7 @@
                   />
                 </div>
               </template>
-              <div class="duration-text">
+              <div class="duration-text mb-3 py-2">
                 <div
                   class="d-flex fs-14 mb-1 font-weight-semibold"
                   :style="{ color: currentTheme.secondary }"
@@ -33,6 +33,18 @@
                   }}</span>
                   <span v-else>{{ formatDate(current) }}</span>
                 </div>
+              </div>
+              <div class="d-flex justify-start align-center">
+                <img
+                  src="../assets/icon/timeline-icon/message.svg"
+                  alt="message"
+                  class="icon mx-2"
+                />
+                <img
+                  src="../assets/icon/timeline-icon/face-smile.svg"
+                  alt="emoticon"
+                  class="icon"
+                />
               </div>
             </v-timeline-item>
             <draggable
@@ -50,23 +62,42 @@
               >
                 <v-timeline-item
                   v-if="getType(item.fileType) === 'image'"
-                  color="primary"
-                  icon="mdi-camera-plus"
+                  class="timeline-item"
+                  large
                   fill-dot
                 >
+                  <template v-slot:icon>
+                    <div class="dot-wrapper">
+                      <img
+                        src="../assets/icon/timeline-icon/camera-gray.svg"
+                        alt="camera"
+                        class="icon"
+                      />
+                    </div>
+                  </template>
                   <div class="d-flex flex-column screenshot">
-                    <div class="d-flex justify-space-between py-2">
+                    <div
+                      class="d-flex justify-space-between align-start mb-3 py-2"
+                    >
                       <div class="duration-text">
-                        <v-icon>mdi-clock-outline</v-icon>
-                        <span>{{ formatTime(item.timer_mark) }}</span>
-                        <span class="filename-text">({{ item.fileName }})</span>
+                        <div
+                          class="d-flex fs-14 mb-1 font-weight-semibold"
+                          :style="{ color: currentTheme.secondary }"
+                        >
+                          {{ $tc("caption.screenshot", 1) }} •
+                          {{ item?.comment?.type }}
+                        </div>
+                        <div class="date-text">
+                          <span>{{ formatCreatedDate(item.createdAt) }}</span>
+                        </div>
                       </div>
-                      <div class="d-flex align-center">
+                      <div class="d-flex align-start">
                         <v-checkbox
                           :value="checkedItem(item.stepID)"
-                          class="field-theme"
+                          class="field-theme mt-0"
                           :ripple="false"
                           :item-value="item.stepID"
+                          hide-details
                           off-icon="icon-checkbox-off"
                           on-icon="icon-checkbox-on"
                           @change="handleSelected($event, item.stepID)"
@@ -74,7 +105,7 @@
                       </div>
                     </div>
                     <div
-                      class="image-wrapper"
+                      class="image-wrapper mb-2"
                       @click="handleItemClick(item.stepID)"
                     >
                       <img
@@ -87,25 +118,7 @@
                         "
                       />
                     </div>
-                    <div class="comment-wrapper mt-2 mb-2 test">
-                      <font-awesome-icon
-                        :icon="textTypes[item.comment.type].icon"
-                        class="mr-1"
-                        :style="{
-                          borderColor: textTypes[item.comment.type].fill,
-                          color: textTypes[item.comment.type].fill,
-                        }"
-                        :border="true"
-                      />
-                      <span
-                        class="comment-type"
-                        :style="{ color: currentTheme.secondary }"
-                      >
-                        {{ item.comment.type }}:
-                      </span>
-                      <span v-html="item.comment.content"></span>
-                    </div>
-                    <div v-if="item.tags.length" class="tags-wrapper my-2">
+                    <div v-if="item.tags.length" class="tags-wrapper mb-2">
                       <v-chip
                         v-for="(tag, i) in item.tags"
                         :key="i"
@@ -118,86 +131,93 @@
                       </v-chip>
                     </div>
                     <div class="actions-wrapper">
-                      <template v-if="item.emoji.length">
-                        <v-btn
-                          rounded
-                          color="primary"
-                          depressed
-                          class="pa-0 mb-1"
-                          height="26"
-                          min-width="45"
-                          style=""
-                          v-for="(emoji, i) in item.emoji"
-                          :key="i"
-                          @click="removeEmoji(item.stepID, emoji)"
-                        >
-                          <span class="emoji-icon">{{ emoji.data }}</span>
-                          <v-icon x-small>mdi-close</v-icon>
-                        </v-btn>
-                      </template>
+                      <div class="d-flex justify-start align-center">
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on: tooltip }">
+                            <v-btn
+                              rounded
+                              class="pa-0 mb-1"
+                              depressed
+                              height="24"
+                              text
+                              icon
+                              width="24"
+                              v-on="{
+                                ...tooltip,
+                              }"
+                            >
+                              <img
+                                src="../assets/icon/timeline-icon/message.svg"
+                                width="20"
+                                height="20"
+                              />
+                            </v-btn>
+                          </template>
+                          <span>{{ $tc("caption.add_comment", 1) }}</span>
+                        </v-tooltip>
 
-                      <v-menu
-                        v-model="emojiMenu[`menu-` + item.stepID]"
-                        :close-on-content-click="false"
-                        right
-                        bottom
-                        nudge-bottom="4"
-                        offset-y
-                      >
-                        <template v-slot:activator="{ on: menu }">
-                          <v-tooltip bottom>
-                            <template v-slot:activator="{ on: tooltip }">
-                              <v-btn
-                                rounded
-                                class="pa-0 mb-1"
-                                depressed
-                                height="26"
-                                min-width="35"
-                                v-on="{
-                                  ...menu,
-                                  ...tooltip,
-                                }"
-                                @click="handleSelectedItem(item.stepID)"
-                              >
-                                <img
-                                  :src="
-                                    require('../assets/icon/add-emoticon.svg')
-                                  "
-                                  width="24"
+                        <v-menu
+                          v-model="emojiMenu[`menu-` + item.stepID]"
+                          :close-on-content-click="false"
+                          right
+                          bottom
+                          nudge-bottom="4"
+                          offset-y
+                        >
+                          <template v-slot:activator="{ on: menu }">
+                            <v-tooltip bottom>
+                              <template v-slot:activator="{ on: tooltip }">
+                                <v-btn
+                                  rounded
+                                  class="pa-0 mb-1 mx-2"
+                                  depressed
+                                  text
+                                  icon
                                   height="24"
-                                />
-                              </v-btn>
-                            </template>
-                            <span>{{ $tc("caption.add_reaction", 1) }}</span>
-                          </v-tooltip>
-                        </template>
-                        <v-card class="emoji-lookup">
-                          <VEmojiPicker
-                            labelSearch="Search"
-                            lang="en-US"
-                            @select="selectEmoji"
-                          />
-                        </v-card>
-                      </v-menu>
-                    </div>
-                    <div class="check-box mt-1">
-                      <v-checkbox
-                        v-model="item.followUp"
-                        class="field-theme"
-                        name="follow_up"
-                        :ripple="false"
-                        off-icon="icon-checkbox-off"
-                        on-icon="icon-checkbox-on"
-                        @change="handleFollowUp($event, item.stepID)"
-                      >
-                        <template v-slot:label>
-                          <span
-                            class="fs-14"
-                            :style="{ color: currentTheme.secondary }"
-                            >{{ $tc("caption.required_follow_up", 1) }}</span
+                                  width="24"
+                                  v-on="{
+                                    ...menu,
+                                    ...tooltip,
+                                  }"
+                                  @click="handleSelectedItem(item.stepID)"
+                                >
+                                  <img
+                                    src="../assets/icon/timeline-icon/face-smile.svg"
+                                    width="20"
+                                    height="20"
+                                  />
+                                </v-btn>
+                              </template>
+                              <span>{{ $tc("caption.add_reaction", 1) }}</span>
+                            </v-tooltip>
+                          </template>
+                          <v-card class="emoji-lookup">
+                            <VEmojiPicker
+                              labelSearch="Search"
+                              lang="en-US"
+                              @select="selectEmoji"
+                            />
+                          </v-card>
+                        </v-menu>
+
+                        <template v-if="item.emoji.length">
+                          <v-btn
+                            rounded
+                            depressed
+                            class="pl-0 pr-1 mb-1"
+                            height="20"
+                            min-width="20"
+                            text
+                            style=""
+                            v-for="(emoji, i) in item.emoji"
+                            :key="i"
+                            @click="removeEmoji(item.stepID, emoji)"
                           >
+                            <span class="emoji-icon">{{ emoji.data }}</span>
+                            <v-icon x-small>mdi-close</v-icon>
+                          </v-btn>
                         </template>
-                      </v-checkbox>
+                      </div>
                     </div>
                   </div>
                 </v-timeline-item>
@@ -207,19 +227,38 @@
                   icon="mdi-video"
                   fill-dot
                 >
+                  <template v-slot:icon>
+                    <div class="dot-wrapper">
+                      <img
+                        src="../assets/icon/timeline-icon/video-gray.svg"
+                        alt="video"
+                        class="icon"
+                      />
+                    </div>
+                  </template>
                   <div class="d-flex flex-column">
-                    <div class="d-flex justify-space-between py-2">
+                    <div
+                      class="d-flex justify-space-between align-start mb-3 py-2"
+                    >
                       <div class="duration-text">
-                        <v-icon>mdi-clock-outline</v-icon>
-                        <span>{{ formatTime(item.timer_mark) }}</span>
-                        <span class="filename-text">({{ item.fileName }})</span>
+                        <div
+                          class="d-flex fs-14 mb-1 font-weight-semibold"
+                          :style="{ color: currentTheme.secondary }"
+                        >
+                          {{ $tc("caption.video_record", 1) }} •
+                          {{ item?.comment?.type }}
+                        </div>
+                        <div class="date-text">
+                          <span>{{ formatCreatedDate(item.createdAt) }}</span>
+                        </div>
                       </div>
                       <div class="d-flex align-center">
                         <v-checkbox
                           :value="checkedItem(item.stepID)"
-                          class="field-theme"
+                          class="field-theme mt-0"
                           :item-value="item.stepID"
                           :ripple="false"
+                          hide-details
                           off-icon="icon-checkbox-off"
                           on-icon="icon-checkbox-on"
                           @change="handleSelected($event, item.stepID)"
@@ -227,7 +266,7 @@
                       </div>
                     </div>
                     <div
-                      class="video-wrapper"
+                      class="video-wrapper mb-2"
                       @click.prevent="handleItemClick(item.stepID)"
                     >
                       <video
@@ -240,25 +279,7 @@
                         "
                       ></video>
                     </div>
-                    <div class="comment-wrapper mt-2 mb-2">
-                      <font-awesome-icon
-                        :icon="textTypes[item.comment.type].icon"
-                        class="mr-1"
-                        :style="{
-                          borderColor: textTypes[item.comment.type].fill,
-                          color: textTypes[item.comment.type].fill,
-                        }"
-                        :border="true"
-                      />
-                      <span
-                        class="comment-type"
-                        :style="{ color: currentTheme.secondary }"
-                      >
-                        {{ item.comment.type }}:
-                      </span>
-                      <span v-html="item.comment.content"></span>
-                    </div>
-                    <div v-if="item.tags.length" class="tags-wrapper my-2">
+                    <div v-if="item.tags.length" class="tags-wrapper mb-2">
                       <v-chip
                         v-for="(tag, i) in item.tags"
                         :key="i"
@@ -271,85 +292,92 @@
                       </v-chip>
                     </div>
                     <div class="actions-wrapper">
-                      <template v-if="item.emoji.length">
-                        <v-btn
-                          rounded
-                          color="primary"
-                          class="pa-0 mb-1"
-                          height="25"
-                          min-width="45"
-                          depressed
-                          v-for="(emoji, i) in item.emoji"
-                          :key="i"
-                          @click="removeEmoji(item.stepID, emoji)"
-                        >
-                          <span class="emoji-icon">{{ emoji.data }}</span>
-                          <v-icon x-small>mdi-close</v-icon>
-                        </v-btn>
-                      </template>
+                      <div class="d-flex justify-start align-center">
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on: tooltip }">
+                            <v-btn
+                              rounded
+                              class="pa-0 mb-1"
+                              depressed
+                              height="24"
+                              text
+                              icon
+                              width="24"
+                              v-on="{
+                                ...tooltip,
+                              }"
+                            >
+                              <img
+                                src="../assets/icon/timeline-icon/message.svg"
+                                width="20"
+                                height="20"
+                              />
+                            </v-btn>
+                          </template>
+                          <span>{{ $tc("caption.add_comment", 1) }}</span>
+                        </v-tooltip>
 
-                      <v-menu
-                        v-model="emojiMenu[`menu-` + item.stepID]"
-                        :close-on-content-click="false"
-                        right
-                        bottom
-                        nudge-bottom="4"
-                        offset-y
-                      >
-                        <template v-slot:activator="{ on: menu }">
-                          <v-tooltip bottom>
-                            <template v-slot:activator="{ on: tooltip }">
-                              <v-btn
-                                rounded
-                                class="pa-0 mb-1"
-                                height="26"
-                                depressed
-                                min-width="35"
-                                v-on="{
-                                  ...menu,
-                                  ...tooltip,
-                                }"
-                                @click="handleSelectedItem(item.stepID)"
-                              >
-                                <img
-                                  :src="
-                                    require('../assets/icon/add-emoticon.svg')
-                                  "
-                                  width="24"
+                        <v-menu
+                          v-model="emojiMenu[`menu-` + item.stepID]"
+                          :close-on-content-click="false"
+                          right
+                          bottom
+                          nudge-bottom="4"
+                          offset-y
+                        >
+                          <template v-slot:activator="{ on: menu }">
+                            <v-tooltip bottom>
+                              <template v-slot:activator="{ on: tooltip }">
+                                <v-btn
+                                  rounded
+                                  class="pa-0 mb-1 mx-2"
+                                  depressed
+                                  text
+                                  icon
                                   height="24"
-                                />
-                              </v-btn>
-                            </template>
-                            <span>{{ $tc("caption.add_reaction", 1) }}</span>
-                          </v-tooltip>
-                        </template>
-                        <v-card class="emoji-lookup">
-                          <VEmojiPicker
-                            labelSearch="Search"
-                            lang="en-US"
-                            @select="selectEmoji"
-                          />
-                        </v-card>
-                      </v-menu>
-                    </div>
-                    <div class="check-box mt-1">
-                      <v-checkbox
-                        :item-value="item.followUp"
-                        name="follow_up"
-                        class="field-theme"
-                        :ripple="false"
-                        off-icon="icon-checkbox-off"
-                        on-icon="icon-checkbox-on"
-                        @change="handleFollowUp($event, item.stepID)"
-                      >
-                        <template v-slot:label>
-                          <span
-                            class="fs-14"
-                            :style="{ color: currentTheme.secondary }"
-                            >{{ $tc("caption.required_follow_up", 1) }}</span
+                                  width="24"
+                                  v-on="{
+                                    ...menu,
+                                    ...tooltip,
+                                  }"
+                                  @click="handleSelectedItem(item.stepID)"
+                                >
+                                  <img
+                                    src="../assets/icon/timeline-icon/face-smile.svg"
+                                    width="20"
+                                    height="20"
+                                  />
+                                </v-btn>
+                              </template>
+                              <span>{{ $tc("caption.add_reaction", 1) }}</span>
+                            </v-tooltip>
+                          </template>
+                          <v-card class="emoji-lookup">
+                            <VEmojiPicker
+                              labelSearch="Search"
+                              lang="en-US"
+                              @select="selectEmoji"
+                            />
+                          </v-card>
+                        </v-menu>
+                        <template v-if="item.emoji.length">
+                          <v-btn
+                            rounded
+                            depressed
+                            class="pl-0 pr-1 mb-1"
+                            height="20"
+                            min-width="20"
+                            text
+                            style=""
+                            v-for="(emoji, i) in item.emoji"
+                            :key="i"
+                            @click="removeEmoji(item.stepID, emoji)"
                           >
+                            <span class="emoji-icon">{{ emoji.data }}</span>
+                            <v-icon x-small>mdi-close</v-icon>
+                          </v-btn>
                         </template>
-                      </v-checkbox>
+                      </div>
                     </div>
                   </div>
                 </v-timeline-item>
@@ -948,17 +976,6 @@
                 </v-timeline-item>
               </div>
             </draggable>
-            <v-timeline-item
-              class="timeline-item pb-0"
-              color="primary"
-              icon="mdi-stop-circle"
-              fill-dot
-            >
-              <div class="duration-text">
-                <v-icon>mdi-clock-outline</v-icon>
-                <span>{{ formatTime($store.state.session.timer) }}</span>
-              </div>
-            </v-timeline-item>
           </v-timeline>
         </div>
       </v-col>
@@ -1175,7 +1192,7 @@ export default {
       return hours + ":" + minutes + ":" + seconds;
     },
     formatDate(stringDate) {
-      const localDate = new Date(stringDate);
+      const localDate = stringDate ? new Date(stringDate) : new Date();
       const months = [
         "Jan",
         "Feb",
@@ -1198,6 +1215,19 @@ export default {
       const minutes = String(localDate.getMinutes()).padStart(2, "0");
       const seconds = String(localDate.getSeconds()).padStart(2, "0");
       return `${month} ${day}, ${year} ${hours}:${minutes}:${seconds}`;
+    },
+    formatCreatedDate(date) {
+      const getDate = date ? new Date(parseInt(date, 10)) : new Date();
+      const options = {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      };
+      return getDate.toLocaleString("en-US", options).replace(",", "");
     },
     async uploadEvidence() {
       // todo add relative handler for web app
@@ -1400,29 +1430,14 @@ export default {
 };
 </script>
 <style scoped>
-.timeline-theme .v-timeline-item__dot .v-timeline-item__inner-dot {
-  background-color: transparent;
-  border-color: transparent;
-}
-.timeline-theme .v-timeline-item__dot {
-  box-shadow: none !important;
-  width: 48px;
-  height: 56px;
-}
-.v-timeline.timeline-theme::before {
-  left: calc(24px - 1px) !important;
-  background: #eaecf0 !important;
-}
-.timeline-theme .timeline-item {
-  align-items: start;
-}
 ::v-deep .options {
   display: none !important;
 }
 
 .timeline-wrapper {
-  height: 65vh;
-  overflow: auto;
+  height: calc(100vh - 24px);
+  overflow-x: hidden;
+  overflow-y: overlay;
 }
 .node-text {
   cursor: default !important;
@@ -1588,6 +1603,16 @@ export default {
   justify-content: center;
   border-radius: 12px;
 }
+.dot-wrapper {
+  background-color: #fff;
+  width: 100%;
+  height: 48px;
+  display: flex;
+  border: solid 1px #eaecf0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
 .duration-text {
   display: flex;
   flex-direction: column;
@@ -1607,5 +1632,8 @@ export default {
   border-color: #d0d5dd !important;
   font-weight: 500;
   font-size: 14px !important;
+}
+.timeline-theme .v-timeline-item .v-timeline-item__divider {
+  min-width: 48px;
 }
 </style>
