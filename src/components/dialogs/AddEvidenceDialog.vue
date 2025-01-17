@@ -813,14 +813,27 @@ export default {
       };
       if (data) newItem = { ...data, ...newItem };
       console.log("Save Data", newItem);
+
       let tempItems = structuredClone(this.items);
-      for (let i = 0; i < this.nodes.length; i++) {
-        tempItems[i].fx = this.nodes[i].fx;
-        tempItems[i].fy = this.nodes[i].fy;
+
+      // Ensure tempItems has enough elements to match this.nodes
+      if (tempItems.length < this.nodes.length) {
+        for (let i = tempItems.length; i < this.nodes.length; i++) {
+          tempItems.push({ fx: null, fy: null }); // Add placeholders
+        }
       }
+
+      for (let i = 0; i < this.nodes.length; i++) {
+        if (tempItems[i]) {
+          tempItems[i].fx = this.nodes[i].fx;
+          tempItems[i].fy = this.nodes[i].fy;
+        }
+      }
+
       const updatedItems = [...tempItems];
       let updatedNodes = [];
       let updatedConnections = [...this.connections];
+
       if (this.nodes.length == 0) {
         newItem.fx = Math.floor(Math.random() * 1001) - 500;
         newItem.fy = Math.floor(Math.random() * 1001) - 500;
@@ -862,6 +875,7 @@ export default {
           });
         }
       }
+
       await this.$store.commit("setSessionItems", [...updatedItems]);
       await this.$store.commit("setSessionNodes", [...updatedNodes]);
       await this.$store.commit("setSessionConnections", [
@@ -870,6 +884,7 @@ export default {
       this.$emit("close");
       this.$root.$emit("render-mindmap");
     },
+
     handleClear() {
       this.comment = {
         type: "Comment",
