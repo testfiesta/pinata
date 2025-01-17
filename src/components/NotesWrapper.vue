@@ -3,26 +3,108 @@
     <div class="content">
       <v-tiptap
         :value="$store.state.session.notes.content"
+        class="tiptap-theme"
         :placeholder="$t('message.insert_note')"
         ref="notes"
         :toolbar="[
-          'headings',
-          '|',
-          'bold',
-          'italic',
-          'underline',
-          '|',
-          'color',
-          '|',
-          'bulletList',
-          'orderedList',
-          '|',
-          'link',
-          'emoji',
-          'blockquote',
+          '#headings',
+          '#bold',
+          '#italic',
+          '#underline',
+          '#bulletList',
+          '#orderedList',
+          '#link',
+          '#blockquote',
         ]"
         @input="updateNotes"
       >
+        <template #headings="{ editor }">
+          <v-select
+            v-model="selectedHeading"
+            :items="headingOptions"
+            :background-color="inputBg"
+            :color="currentTheme.secondary"
+            class="rounded-lg custom-select"
+            item-text="text"
+            item-value="level"
+            width="100%"
+            height="40px"
+            :placeholder="$t('Heading')"
+            append-icon="mdi-chevron-down"
+            :menu-props="{ offsetY: true }"
+            @change="setHeading(editor, $event)"
+          />
+        </template>
+        <template #bold="{ editor }">
+          <v-btn
+            icon
+            small
+            @click="editor.chain().focus().toggleBold().run()"
+            :class="{ 'v-btn--active': editor.isActive('bold') }"
+          >
+            <img src="/tiptap/bold.svg" />
+          </v-btn>
+        </template>
+        <template #italic="{ editor }">
+          <v-btn
+            icon
+            small
+            @click="editor.chain().focus().toggleItalic().run()"
+            :class="{ 'v-btn--active': editor.isActive('italic') }"
+          >
+            <img src="/tiptap/italic.svg" />
+          </v-btn>
+        </template>
+        <template #underline="{ editor }">
+          <v-btn
+            icon
+            small
+            @click="editor.chain().focus().toggleUnderline().run()"
+            :class="{ 'v-btn--active': editor.isActive('underline') }"
+          >
+            <img src="/tiptap/underline.svg" />
+          </v-btn>
+        </template>
+        <template #bulletList="{ editor }">
+          <v-btn
+            icon
+            small
+            @click="editor.chain().focus().toggleBulletList().run()"
+            :class="{ 'v-btn--active': editor.isActive('bulletList') }"
+          >
+            <img src="/tiptap/list.svg" />
+          </v-btn>
+        </template>
+        <template #orderedList="{ editor }">
+          <v-btn
+            icon
+            small
+            @click="editor.chain().focus().toggleOrderedList().run()"
+            :class="{ 'v-btn--active': editor.isActive('orderedList') }"
+          >
+            <img src="/tiptap/list-number.svg" />
+          </v-btn>
+        </template>
+        <template #link="{ editor }">
+          <v-btn
+            icon
+            small
+            @click="toggleLink(editor)"
+            :class="{ 'v-btn--active': editor.isActive('link') }"
+          >
+            <img src="/tiptap/link.svg" />
+          </v-btn>
+        </template>
+        <template #blockquote="{ editor }">
+          <v-btn
+            icon
+            small
+            @click="editor.chain().focus().toggleBlockquote().run()"
+            :class="{ 'v-btn--active': editor.isActive('blockquote') }"
+          >
+            <img src="/tiptap/quotes.svg" />
+          </v-btn>
+        </template>
       </v-tiptap>
       <div class="evidence-wrapper mt-3">
         <draggable
@@ -40,12 +122,15 @@
             >
               <template v-if="getType(item.fileType) === 'image'">
                 <div class="d-flex justify-end align-center">
-                  <input
-                    type="checkbox"
-                    class="item-select"
-                    :value="item.stepID"
-                    :checked="checkedItem(item.stepID)"
+                  <v-checkbox
+                    :value="checkedItem(item.stepID)"
+                    class="field-theme mt-0"
+                    :item-value="item.stepID"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
                     @change="handleSelected($event, item.stepID)"
+                    hide-details
                   />
                 </div>
                 <div
@@ -77,8 +162,8 @@
                     :key="i"
                     class="tag"
                     small
-                    color="#fee2e2"
-                    text-color="#991b1b"
+                    color="#ffffff"
+                    text-color="#344054"
                   >
                     {{ tag.text }}
                   </v-chip>
@@ -89,6 +174,7 @@
                       rounded
                       color="primary"
                       class="pa-0 mb-1"
+                      depressed
                       height="26"
                       min-width="45"
                       style=""
@@ -116,6 +202,7 @@
                             rounded
                             class="pa-0 mb-1"
                             height="26"
+                            depressed
                             min-width="35"
                             v-on="{
                               ...menu,
@@ -143,25 +230,36 @@
                   </v-menu>
                 </div>
                 <div class="check-box mt-1">
-                  <label
-                    ><input
-                      type="checkbox"
-                      name="follow_up"
-                      class="item-select"
-                      v-model="item.followUp"
-                      @change="handleFollowUp($event, item.stepID)"
-                    />{{ $tc("caption.required_follow_up", 1) }}
-                  </label>
+                  <v-checkbox
+                    :item-value="item.followUp"
+                    name="follow_up"
+                    class="field-theme"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
+                    @change="handleFollowUp($event, item.stepID)"
+                  >
+                    <template v-slot:label>
+                      <span
+                        class="fs-14"
+                        :style="{ color: currentTheme.secondary }"
+                        >{{ $tc("caption.required_follow_up", 1) }}</span
+                      >
+                    </template>
+                  </v-checkbox>
                 </div>
               </template>
               <template v-if="getType(item.fileType) === 'video'">
                 <div class="d-flex justify-end align-center">
-                  <input
-                    type="checkbox"
-                    class="item-select"
-                    :value="item.stepID"
-                    :checked="checkedItem(item.stepID)"
+                  <v-checkbox
+                    :value="checkedItem(item.stepID)"
+                    class="field-theme mt-0"
+                    :item-value="item.stepID"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
                     @change="handleSelected($event, item.stepID)"
+                    hide-details
                   />
                 </div>
                 <div
@@ -189,8 +287,8 @@
                     :key="i"
                     class="tag"
                     small
-                    color="#fee2e2"
-                    text-color="#991b1b"
+                    color="#ffffff"
+                    text-color="#344054"
                   >
                     {{ tag.text }}
                   </v-chip>
@@ -199,6 +297,7 @@
                   <template v-if="item.emoji.length">
                     <v-btn
                       rounded
+                      depressed
                       color="primary"
                       class="pa-0 mb-1"
                       height="26"
@@ -227,6 +326,7 @@
                           <v-btn
                             rounded
                             class="pa-0 mb-1"
+                            depressed
                             height="26"
                             min-width="35"
                             v-on="{
@@ -255,25 +355,36 @@
                   </v-menu>
                 </div>
                 <div class="check-box mt-1">
-                  <label
-                    ><input
-                      type="checkbox"
-                      name="follow_up"
-                      class="item-select"
-                      v-model="item.followUp"
-                      @change="handleFollowUp($event, item.stepID)"
-                    />{{ $tc("caption.required_follow_up", 1) }}
-                  </label>
+                  <v-checkbox
+                    :item-value="item.followUp"
+                    name="follow_up"
+                    class="field-theme"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
+                    @change="handleFollowUp($event, item.stepID)"
+                  >
+                    <template v-slot:label>
+                      <span
+                        class="fs-14"
+                        :style="{ color: currentTheme.secondary }"
+                        >{{ $tc("caption.required_follow_up", 1) }}</span
+                      >
+                    </template>
+                  </v-checkbox>
                 </div>
               </template>
               <template v-if="getType(item.fileType) === 'audio'">
                 <div class="d-flex justify-end align-center">
-                  <input
-                    type="checkbox"
-                    class="item-select"
-                    :value="item.stepID"
-                    :checked="checkedItem(item.stepID)"
+                  <v-checkbox
+                    :value="checkedItem(item.stepID)"
+                    class="field-theme mt-0"
+                    :item-value="item.stepID"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
                     @change="handleSelected($event, item.stepID)"
+                    hide-details
                   />
                 </div>
                 <div
@@ -302,8 +413,8 @@
                     :key="i"
                     class="tag"
                     small
-                    color="#fee2e2"
-                    text-color="#991b1b"
+                    color="#ffffff"
+                    text-color="#344054"
                   >
                     {{ tag.text }}
                   </v-chip>
@@ -312,6 +423,7 @@
                   <template v-if="item.emoji.length">
                     <v-btn
                       rounded
+                      depressed
                       color="primary"
                       class="pa-0 mb-1"
                       height="26"
@@ -340,6 +452,7 @@
                           <v-btn
                             rounded
                             class="pa-0 mb-1"
+                            depressed
                             height="26"
                             min-width="35"
                             v-on="{
@@ -368,25 +481,36 @@
                   </v-menu>
                 </div>
                 <div class="check-box mt-1">
-                  <label
-                    ><input
-                      type="checkbox"
-                      name="follow_up"
-                      class="item-select"
-                      v-model="item.followUp"
-                      @change="handleFollowUp($event, item.stepID)"
-                    />{{ $tc("caption.required_follow_up", 1) }}
-                  </label>
+                  <v-checkbox
+                    :item-value="item.followUp"
+                    name="follow_up"
+                    class="field-theme"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
+                    @change="handleFollowUp($event, item.stepID)"
+                  >
+                    <template v-slot:label>
+                      <span
+                        class="fs-14"
+                        :style="{ color: currentTheme.secondary }"
+                        >{{ $tc("caption.required_follow_up", 1) }}</span
+                      >
+                    </template>
+                  </v-checkbox>
                 </div>
               </template>
               <template v-if="getType(item.fileType) === 'text'">
                 <div class="d-flex justify-end align-center">
-                  <input
-                    type="checkbox"
-                    class="item-select"
-                    :value="item.stepID"
-                    :checked="checkedItem(item.stepID)"
+                  <v-checkbox
+                    :value="checkedItem(item.stepID)"
+                    class="field-theme mt-0"
+                    :item-value="item.stepID"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
                     @change="handleSelected($event, item.stepID)"
+                    hide-details
                   />
                 </div>
                 <div class="note-wrapper" @click="handleItemClick(item.stepID)">
@@ -400,32 +524,43 @@
                     :key="i"
                     class="tag"
                     small
-                    color="#fee2e2"
-                    text-color="#991b1b"
+                    color="#ffffff"
+                    text-color="#344054"
                   >
                     {{ tag.text }}
                   </v-chip>
                 </div>
                 <div class="check-box mt-1">
-                  <label
-                    ><input
-                      type="checkbox"
-                      name="follow_up"
-                      class="item-select"
-                      v-model="item.followUp"
-                      @change="handleFollowUp($event, item.stepID)"
-                    />{{ $tc("caption.required_follow_up", 1) }}
-                  </label>
+                  <v-checkbox
+                    :item-value="item.followUp"
+                    name="follow_up"
+                    class="field-theme"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
+                    @change="handleFollowUp($event, item.stepID)"
+                  >
+                    <template v-slot:label>
+                      <span
+                        class="fs-14"
+                        :style="{ color: currentTheme.secondary }"
+                        >{{ $tc("caption.required_follow_up", 1) }}</span
+                      >
+                    </template>
+                  </v-checkbox>
                 </div>
               </template>
               <template v-if="getType(item.fileType) === undefined">
                 <div class="d-flex justify-end align-center">
-                  <input
-                    type="checkbox"
-                    class="item-select"
-                    :value="item.stepID"
-                    :checked="checkedItem(item.stepID)"
+                  <v-checkbox
+                    :value="checkedItem(item.stepID)"
+                    class="field-theme mt-0"
+                    :item-value="item.stepID"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
                     @change="handleSelected($event, item.stepID)"
+                    hide-details
                   />
                 </div>
                 <div
@@ -490,32 +625,43 @@
                     :key="i"
                     class="tag"
                     small
-                    color="#fee2e2"
-                    text-color="#991b1b"
+                    color="#ffffff"
+                    text-color="#344054"
                   >
                     {{ tag.text }}
                   </v-chip>
                 </div>
                 <div class="check-box mt-1">
-                  <label
-                    ><input
-                      type="checkbox"
-                      name="follow_up"
-                      class="item-select"
-                      v-model="item.followUp"
-                      @change="handleFollowUp($event, item.stepID)"
-                    />{{ $tc("caption.required_follow_up", 1) }}
-                  </label>
+                  <v-checkbox
+                    :item-value="item.followUp"
+                    name="follow_up"
+                    class="field-theme"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
+                    @change="handleFollowUp($event, item.stepID)"
+                  >
+                    <template v-slot:label>
+                      <span
+                        class="fs-14"
+                        :style="{ color: currentTheme.secondary }"
+                        >{{ $tc("caption.required_follow_up", 1) }}</span
+                      >
+                    </template>
+                  </v-checkbox>
                 </div>
               </template>
               <template v-if="getType(item.fileType) === 'mindmap'">
                 <div class="d-flex justify-end align-center">
-                  <input
-                    type="checkbox"
-                    class="item-select"
-                    :value="item.stepID"
-                    :checked="checkedItem(item.stepID)"
+                  <v-checkbox
+                    :value="checkedItem(item.stepID)"
+                    class="field-theme mt-0"
+                    :item-value="item.stepID"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
                     @change="handleSelected($event, item.stepID)"
+                    hide-details
                   />
                 </div>
                 <div
@@ -547,22 +693,30 @@
                     :key="i"
                     class="tag"
                     small
-                    color="#fee2e2"
-                    text-color="#991b1b"
+                    color="#ffffff"
+                    text-color="#344054"
                   >
                     {{ tag.text }}
                   </v-chip>
                 </div>
                 <div class="check-box mt-1">
-                  <label
-                    ><input
-                      type="checkbox"
-                      name="follow_up"
-                      class="item-select"
-                      v-model="item.followUp"
-                      @change="handleFollowUp($event, item.stepID)"
-                    />{{ $tc("caption.required_follow_up", 1) }}
-                  </label>
+                  <v-checkbox
+                    :item-value="item.followUp"
+                    name="follow_up"
+                    class="field-theme"
+                    :ripple="false"
+                    off-icon="icon-checkbox-off"
+                    on-icon="icon-checkbox-on"
+                    @change="handleFollowUp($event, item.stepID)"
+                  >
+                    <template v-slot:label>
+                      <span
+                        class="fs-14"
+                        :style="{ color: currentTheme.secondary }"
+                        >{{ $tc("caption.required_follow_up", 1) }}</span
+                      >
+                    </template>
+                  </v-checkbox>
                 </div>
               </template>
             </div>
@@ -585,7 +739,7 @@
 <script>
 import draggable from "vuedraggable";
 import { VEmojiPicker } from "v-emoji-picker";
-
+import theme from "../mixins/theme";
 import { debounce } from "lodash";
 import { FILE_TYPES, TEXT_TYPES } from "../modules/constants";
 import EditEvidenceDialog from "@/components/dialogs/EditEvidenceDialog.vue";
@@ -628,6 +782,7 @@ export default {
       this.eventName = newValue;
     },
   },
+  mixins: [theme],
   data() {
     return {
       notes: { text: "", content: "" },
@@ -643,6 +798,13 @@ export default {
       textTypes: TEXT_TYPES,
       editEvidenceDialog: false,
       itemToEdit: null,
+      headingOptions: [
+        { text: "Normal Text", level: 0 }, // Normal text option
+        { text: "Heading 1", level: 1 },
+        { text: "Heading 2", level: 2 },
+        { text: "Heading 3", level: 3 },
+      ],
+      selectedHeading: 0,
     };
   },
   created() {
@@ -705,7 +867,7 @@ export default {
       return this.selected.includes(id);
     },
     handleSelected($event, id) {
-      if ($event.target.checked && !this.selected.includes(id)) {
+      if ($event && !this.selected.includes(id)) {
         this.selected.push(id);
       } else {
         this.selected = this.selected.filter((n) => n != id);
@@ -771,7 +933,7 @@ export default {
       this.itemLists = this.itemLists.map((item) => {
         let temp = Object.assign({}, item);
         if (temp.stepID === id) {
-          temp.followUp = $event.target.checked;
+          temp.followUp = $event;
         }
         return temp;
       });
@@ -814,8 +976,9 @@ export default {
   row-gap: 5px;
   min-width: calc(60% - 5px);
   max-width: calc(60% - 5px);
-  border: 10px solid rgba(255, 173, 80, 0.25);
-  background-color: rgba(255, 173, 80, 0.25);
+  border: 10px solid #f9f9fb;
+  background-color: #f9f9fb;
+  border-radius: 0.5rem;
 }
 .image-wrapper {
   position: relative;
@@ -882,12 +1045,15 @@ export default {
 .comment-wrapper {
   display: flex;
   background: #fff;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 .comment-wrapper p {
   margin-bottom: 0 !important;
 }
 .tags-wrapper .tag {
   margin-right: 5px;
+  margin-bottom: 1rem;
 }
 .tags-wrapper .tag:last-child {
   margin-right: 0;

@@ -1,228 +1,264 @@
 <template>
   <v-container class="wrapper">
-    <div class="header py-4">
-      <v-btn class="text-capitalize pa-0 back-btn" plain @click="back">
-        <v-icon class="ma-0">mdi-chevron-left</v-icon>
-        {{ $tc("caption.back", 1) }}
-      </v-btn>
-      <div
-        class="subtitle-1 signup-title text-center"
-        :style="{ color: currentTheme.secondary }"
-      >
-        <span>{{ $tc("caption.signin_jira", 1) }}</span>
+    <div
+      class="d-flex justify-center align-center flex-column pa-6 rounded-lg login-wrapper mt-16"
+      :style="{ backgroundColor: mainBg }"
+    >
+      <div class="d-flex justify-space-between align-center w-full">
+        <v-btn class="text-capitalize pa-0 back-btn" plain @click="back">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
+        <img
+          :src="require('../../assets/icon/jira.svg')"
+          alt="jira"
+          height="42"
+        />
+        <v-btn class="text-capitalize pa-0 back-btn invisible">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
+      </div>
+      <div class="fs-30 font-weight-semibold mt-4 mb-6">
+        {{ $tc("caption.signin_jira", 1) }}
+      </div>
+      <div class="w-full position-relative">
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-row v-if="connectWithCloudOAuth">
+            <v-col cols="12">
+              <v-btn
+                class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+                color="#0C2FF3"
+                block
+                depressed
+                height="40px"
+                :loading="loading"
+                @click="signInWithCloud()"
+              >
+                {{ $tc("caption.login_with_jira_cloud", 1) }}
+              </v-btn>
+              <v-btn
+                class="mt-4 mb-4 text-capitalize btn_signup rounded-lg"
+                height="40px"
+                :color="btnBg"
+                block
+                depressed
+                :loading="loading"
+                @click="useServerOAuth()"
+              >
+                <div
+                  class="btn-text fs-14 ml-2"
+                  :style="{ color: currentTheme.secondary }"
+                >
+                  {{ $tc("caption.login_with_jira_datacenter", 1) }}
+                </div>
+              </v-btn>
+              <v-btn
+                class="mt-4 mb-4 text-capitalize btn_signup rounded-lg"
+                height="40px"
+                :color="btnBg"
+                block
+                depressed
+                :loading="loading"
+                @click="useApiKey()"
+              >
+                {{ $tc("caption.login_with_api_key", 1) }}
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row v-if="connectWithApi">
+            <v-col cols="12" class="pb-0">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.user_name", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  placeholder="test@example.com"
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="userName"
+                  required
+                  :rules="rules.userName"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="py-0">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.api_key", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="apiKey"
+                  required
+                  :rules="rules.apiKey"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="py-0">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.jira_instance_url", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="instanceUrl"
+                  placeholder="mydomain.atlassian.net"
+                  required
+                  :rules="rules.instanceUrl"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="py-0">
+              <v-btn
+                class="my-4 text-capitalize btn_signup rounded-lg white--text"
+                color="#0C2FF3"
+                block
+                depressed
+                height="40px"
+                :loading="loading"
+                @click="signInWithApiKey()"
+              >
+                {{ $tc("caption.sign_in", 1) }}
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row v-if="connectWithServerOAuth">
+            <v-col cols="12" class="d-flex justify-center">
+              <div class="fs-14 text-center">
+                {{ $tc("message.jira_server_sign_in_description") }}
+              </div>
+            </v-col>
+            <v-col cols="12" class="d-flex justify-center">
+              <div class="subtitle-2">
+                <a
+                  class="text-theme-primary"
+                  @click="
+                    openExternalLink(
+                      'https://confluence.atlassian.com/adminjiraserver/configure-an-incoming-link-1115659067.html'
+                    )
+                  "
+                >
+                  {{ $tc("message.jira_incoming_link") }}
+                </a>
+              </div>
+            </v-col>
+            <v-col cols="12" class="mb-5">
+              <div class="subtitle-3">
+                <strong>
+                  {{ $tc("message.jira_server_sign_in_note") }}
+                </strong>
+              </div>
+            </v-col>
+            <v-col cols="12" class="">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.client_id", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="clientId"
+                  required
+                  :rules="rules.clientId"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="pb-0">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.client_secret", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="clientSecret"
+                  required
+                  :rules="rules.clientSecret"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="py-0">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.jira_instance_url", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="instanceUrl"
+                  placeholder="mydomain.atlassian.net"
+                  required
+                  :rules="rules.instanceUrl"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="py-0">
+              <v-btn
+                class="my-4 text-capitalize btn_signup rounded-lg white--text"
+                color="#0C2FF3"
+                block
+                depressed
+                height="40px"
+                :loading="loading"
+                @click="signInWithServer()"
+              >
+                {{ $tc("caption.sign_in", 1) }}
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+        <v-alert
+          class="mt-2"
+          v-if="loading"
+          color="orange"
+          dense
+          text
+          type="warning"
+          >{{ $tc("message.browser_action_attempts", 1) }}
+          {{ currentConnectAttempt }}/{{ connectAttempts }}</v-alert
+        >
       </div>
     </div>
-    <div class="content mt-2">
-      <v-form ref="form" v-model="valid" lazy-validation>
-        <v-row v-if="connectWithCloudOAuth">
-          <v-col cols="12" class="d-flex justify-center pa-0">
-            <img
-              :src="require('../../assets/icon/jira.svg')"
-              alt="jira"
-              width="60"
-            />
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <v-btn
-              class="mt-4 mb-4 text-capitalize btn_signup"
-              color="primary"
-              fill
-              block
-              :loading="loading"
-              @click="signInWithCloud()"
-            >
-              {{ $tc("caption.login_with_jira_cloud", 1) }}
-            </v-btn>
-            <v-btn
-              class="mt-4 mb-4 text-capitalize btn_signup"
-              color="primary"
-              outlined
-              block
-              :loading="loading"
-              @click="useServerOAuth()"
-            >
-              {{ $tc("caption.login_with_jira_datacenter", 1) }}
-            </v-btn>
-            <v-btn
-              class="mt-4 mb-4 text-capitalize btn_signup"
-              color="primary"
-              outlined
-              block
-              :loading="loading"
-              @click="useApiKey()"
-            >
-              {{ $tc("caption.login_with_api_key", 1) }}
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row v-if="connectWithApi">
-          <v-col cols="12" class="d-flex justify-center pa-0">
-            <img
-              :src="require('../../assets/icon/jira.svg')"
-              alt="jira"
-              width="60"
-            />
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.user_name", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                placeholder="test@example.com"
-                outlined
-                dense
-                v-model="userName"
-                required
-                :rules="rules.userName"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.api_key", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                outlined
-                dense
-                v-model="apiKey"
-                required
-                :rules="rules.apiKey"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.jira_instance_url", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                outlined
-                dense
-                v-model="instanceUrl"
-                placeholder="mydomain.atlassian.net"
-                required
-                :rules="rules.instanceUrl"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <v-btn
-              class="text-capitalize btn_signup"
-              color="primary"
-              fill
-              small
-              block
-              :loading="loading"
-              @click="signInWithApiKey()"
-            >
-              {{ $tc("caption.sign_in", 1) }}
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row v-if="connectWithServerOAuth">
-          <v-col cols="12" class="d-flex justify-center pa-0">
-            <img
-              :src="require('../../assets/icon/jira.svg')"
-              alt="jira"
-              width="60"
-            />
-          </v-col>
-          <v-col cols="12" class="d-flex justify-center mt-5 pa-0">
-            <div class="subtitle-3">
-              {{ $tc("message.jira_server_sign_in_description") }}
-            </div>
-          </v-col>
-          <v-col cols="12" class="d-flex justify-center mb-5 pa-0">
-            <div class="subtitle-2">
-              <a
-                @click="
-                  openExternalLink(
-                    'https://confluence.atlassian.com/adminjiraserver/configure-an-incoming-link-1115659067.html'
-                  )
-                "
-              >
-                {{ $tc("message.jira_incoming_link") }}
-              </a>
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0 mb-5">
-            <div class="subtitle-3">
-              <strong>
-                {{ $tc("message.jira_server_sign_in_note") }}
-              </strong>
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.client_id", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                outlined
-                dense
-                v-model="clientId"
-                required
-                :rules="rules.clientId"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.client_secret", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                outlined
-                dense
-                v-model="clientSecret"
-                required
-                :rules="rules.clientSecret"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.jira_instance_url", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                outlined
-                dense
-                v-model="instanceUrl"
-                placeholder="mydomain.atlassian.net"
-                required
-                :rules="rules.instanceUrl"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <v-btn
-              class="text-capitalize btn_signup"
-              color="primary"
-              fill
-              small
-              block
-              :loading="loading"
-              @click="signInWithServer()"
-            >
-              {{ $tc("caption.sign_in", 1) }}
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
-      <v-alert
-        class="mt-2"
-        v-if="loading"
-        color="orange"
-        dense
-        text
-        type="warning"
-        >{{ $tc("message.browser_action_attempts", 1) }}
-        {{ currentConnectAttempt }}/{{ connectAttempts }}</v-alert
-      >
-    </div>
+
     <v-snackbar v-model="snackBar.enabled" timeout="3000">
       {{ snackBar.message }}
       <template v-slot:action="{ attrs }">
@@ -333,6 +369,15 @@ export default {
       } else {
         return this.$vuetify.theme.themes.light;
       }
+    },
+    mainBg() {
+      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
+    },
+    btnBg() {
+      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
+    },
+    inputBg() {
+      return this.$vuetify.theme.dark ? "#4B5563" : "#F9F9FB";
     },
   },
   methods: {

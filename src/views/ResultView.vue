@@ -1,11 +1,8 @@
 <template>
   <v-container fluid style="min-height: 100vh" class="d-flex">
-    <v-row class="flex justify-space-between px-6">
+    <v-row class="d-flex justify-space-between mt-2 px-6">
       <v-col cols="6" class="wrapper pa-0">
-        <div class="header">
-          <LogoWrapper :height="34" :width="120" />
-        </div>
-        <div class="content">
+        <div class="content white rounded-lg overflow-hidden">
           <TestWrapper :config-item="config" :credential-items="credentials" />
         </div>
         <div class="footer">
@@ -16,8 +13,8 @@
           />
         </div>
       </v-col>
-      <v-divider vertical></v-divider>
-      <v-col cols="5" class="wrapper pa-0 flex justify-center align-center">
+      <v-divider class="divider-theme" vertical></v-divider>
+      <v-col cols="5" class="wrapper pa-0 d-flex justify-start align-center">
         <div class="header">
           <SearchWrapper />
         </div>
@@ -48,7 +45,6 @@ import TestWrapper from "../components/ExploratoryTestWrapper.vue";
 import WorkspaceWrapper from "../components/WorkspaceWrapper.vue";
 import ControlPanel from "../components/ControlPanel.vue";
 import ExportPanel from "../components/ExportPanel.vue";
-import LogoWrapper from "../components/LogoWrapper.vue";
 
 import { TEXT_TYPES, FILE_TYPES } from "@/modules/constants";
 import { mapGetters } from "vuex";
@@ -61,7 +57,6 @@ export default {
     WorkspaceWrapper,
     ControlPanel,
     ExportPanel,
-    LogoWrapper,
   },
   props: {},
   watch: {},
@@ -229,7 +224,6 @@ export default {
 }
 
 .content {
-  flex-grow: 1;
   overflow: auto;
   width: 100%;
 }
@@ -263,5 +257,10 @@ export default {
   width: 100%;
   display: flex;
   align-items: center;
+}
+</style>
+<style>
+.divider-theme {
+  z-index: 99;
 }
 </style>

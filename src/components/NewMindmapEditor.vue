@@ -843,7 +843,7 @@ export default {
   display: flex;
   align-items: center;
   overflow: hidden;
-  /* max-height: 400px; */
+  border-radius: 0.5rem;
   position: relative;
 }
 .mindmap-btn-wrapper {

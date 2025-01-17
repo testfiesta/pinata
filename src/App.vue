@@ -117,4 +117,22 @@ export default {
   height: 100vh;
   background: transparent;
 }
+html,
+body,
+.v-application {
+  font-family: "Inter" !important;
+}
+* {
+  font-family: "Inter" !important;
+}
+/* CSS */
+:root {
+  font-family: Inter, sans-serif;
+  font-feature-settings: "liga" 1, "calt" 1; /* fix for Chrome */
+}
+@supports (font-variation-settings: normal) {
+  :root {
+    font-family: InterVariable, sans-serif;
+  }
+}
 </style>

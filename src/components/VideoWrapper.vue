@@ -48,9 +48,13 @@
             <v-text-field
               placeholder="00:00"
               v-mask="'##:##'"
-              outlined
               dense
+              flat
+              solo
+              height="40px"
+              :background-color="inputBg"
               v-model="start"
+              class="rounded-lg"
               hide-details="true"
             ></v-text-field>
           </div>
@@ -65,7 +69,11 @@
             <v-text-field
               placeholder="00:00"
               v-mask="'##:##'"
-              outlined
+              flat
+              solo
+              class="rounded-lg"
+              height="40px"
+              :background-color="inputBg"
               dense
               v-model="end"
               hide-details="true"
@@ -84,6 +92,7 @@
 
 <script>
 import { STATUSES } from "../modules/constants";
+import theme from "../mixins/theme";
 export default {
   name: "VideoWrapper",
   components: {},
@@ -114,6 +123,7 @@ export default {
       }
     },
   },
+  mixins: [theme],
   data() {
     return {
       editSessionItem: this.item,

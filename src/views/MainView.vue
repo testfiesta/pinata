@@ -1,77 +1,90 @@
 <template>
   <v-container class="wrapper" fluid>
-    <div class="header">
-      <div class="logo mb-4">
-        <LogoWrapper :height="34" :width="120" />
-      </div>
-      <div class="tabs">
-        <v-tabs
-          class="tabs"
-          centered
-          v-model="activeTab"
-          color="primary"
-          background-color="transparent"
-          :height="26"
-          hide-slider
-        >
-          <v-tab class="test-tab" to="/main" exact>
-            {{ $tc("caption.test", 1) }}
-          </v-tab>
-          <v-tab
-            class="workspace-tab"
-            :disabled="this.status === 'pending'"
-            to="/main/workspace"
+    <v-app-bar
+      :color="mainBg"
+      class="px-4 app-navbar"
+      max-height="80px"
+      height="80px"
+      elevation="0"
+      rounded="lg"
+    >
+      <div class="d-flex justify-space-between align-center w-full">
+        <router-link to="/">
+          <img :src="pinataLogo" alt="logo" />
+        </router-link>
+        <div class="tabs" style="display: none">
+          <v-tabs
+            class="tabs"
+            centered
+            v-model="activeTab"
+            color="primary"
+            background-color="transparent"
+            :height="26"
+            hide-slider
           >
-            {{ $tc("caption.workspace", 1) }}
-          </v-tab>
-        </v-tabs>
-      </div>
-      <div class="avatar" style="display: none">
-        <div v-if="isAuthenticated">
-          <MenuPopover />
+            <v-tab class="test-tab" to="/main" exact>
+              {{ $tc("caption.test", 1) }}
+            </v-tab>
+            <v-tab
+              class="workspace-tab"
+              :disabled="this.status === 'pending'"
+              to="/main/workspace"
+            >
+              {{ $tc("caption.workspace", 1) }}
+            </v-tab>
+          </v-tabs>
         </div>
-        <div v-else>
-          <v-menu :nudge-width="100" bottom z-index="99999" offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                fab
-                small
-                color="primary"
-                height="32"
-                width="32"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon dark> mdi-account </v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item link to="/authentication/signin">
-                <v-list-item-title>Log In</v-list-item-title>
-              </v-list-item>
-              <!--<v-list-item link to="/authentication/signupMain">
+        <div class="avatar">
+          <div v-if="isAuthenticated">
+            <MenuPopover />
+          </div>
+          <div v-else>
+            <v-menu
+              :nudge-width="100"
+              bottom
+              z-index="99999"
+              offset-y
+              min-width="280px"
+              class="rounded-lg"
+              content-class="shadow-theme"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  fab
+                  small
+                  color="primary"
+                  height="40"
+                  width="40"
+                  depressed
+                  offset-y
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon dark> mdi-account </v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item link to="/authentication/signin">
+                  <v-list-item-title class="fs-16 font-weight-medium">{{
+                    $tc("caption.login", 1)
+                  }}</v-list-item-title>
+                </v-list-item>
+                <!--<v-list-item link to="/authentication/signupMain">
                 <v-list-item-title>Register</v-list-item-title>
               </v-list-item>-->
-            </v-list>
-          </v-menu>
+              </v-list>
+            </v-menu>
+          </div>
         </div>
       </div>
-    </div>
-    <div
-      :class="
-        activeTab === `/main` && this.quickTest
-          ? 'content-container'
-          : 'content-container vh-full'
-      "
-    >
-      <div
-        :class="
-          activeTab === `/main` && this.quickTest
-            ? 'content w-400'
-            : 'content h-full w-60'
-        "
-      >
-        <v-tabs-items v-model="activeTab" style="height: 100%">
+    </v-app-bar>
+    <div class="mt-3">
+      <div>
+        <v-tabs-items
+          v-model="activeTab"
+          style="height: 100%"
+          class="tabs-items-theme"
+        >
           <v-tab-item
             value="/main"
             :transition="false"
@@ -86,27 +99,33 @@
               @taskToggle="handleTaskCheck"
             />
           </v-tab-item>
-          <v-tab-item
-            value="/main/workspace"
-            :transition="false"
-            style="height: 65vh"
-          >
+          <v-tab-item value="/main/workspace" :transition="false">
             <WorkspaceWrapper
               :items="items"
               :selectedItems="selected"
               event-type="dblclick"
-            />
+            >
+              <template v-slot:control-panel>
+                <ControlPanel
+                  @add-item="addItem"
+                  @update-item="updateItem"
+                  :selectedItems="selected"
+                  :preSessionRequirementsMet="presessionValid"
+                  view-mode="normal"
+                />
+              </template>
+            </WorkspaceWrapper>
           </v-tab-item>
         </v-tabs-items>
       </div>
     </div>
     <div class="footer">
-      <ControlPanel
-        @add-item="addItem"
-        @update-item="updateItem"
-        :selectedItems="selected"
-        :preSessionRequirementsMet="presessionValid"
-        view-mode="normal"
+      <SourcePickerDialog
+        v-model="sourcePickerDialog"
+        :sources="sources"
+        :sourceId="sourceId"
+        :loaded="loaded"
+        @submit-source="startSession"
       />
       <TimeCounter v-if="$store.state.session.status !== 'pending'" />
     </div>
@@ -122,6 +141,7 @@ import {
   VTabItem,
   VBtn,
 } from "vuetify/lib/components";
+import SourcePickerDialog from "../components/dialogs/SourcePickerDialog.vue";
 import ExploratoryTestWrapper from "../components/ExploratoryTestWrapper.vue";
 import QuickTestWrapper from "@/components/QuickTestWrapper.vue";
 import WorkspaceWrapper from "../components/WorkspaceWrapper.vue";
@@ -132,12 +152,10 @@ import MenuPopover from "@/components/MenuPopover.vue";
 
 import { SESSION_STATUSES } from "../modules/constants";
 import { mapGetters } from "vuex";
-import LogoWrapper from "@/components/LogoWrapper.vue";
 
 export default {
   name: "MainView",
   components: {
-    LogoWrapper,
     VContainer,
     VBtn,
     VTabs,
@@ -151,6 +169,7 @@ export default {
     TimeCounter,
     CheckTaskWrapper,
     MenuPopover,
+    SourcePickerDialog,
   },
   data() {
     return {
@@ -158,6 +177,18 @@ export default {
       selected: [],
       showTaskError: false,
       showMenu: false,
+      sourcePickerDialog: false,
+      sources: [],
+      sourceId: "",
+      loaded: false,
+      interval: null,
+      timer: this.$store.state.session.timer,
+      duration: this.$store.state.case.duration,
+      isDuration: false,
+      started: "",
+      durationConfirmDialog: false,
+      status: this.$store.state.session.status,
+      viewMode: "normal",
     };
   },
   created() {
@@ -166,6 +197,7 @@ export default {
   mounted() {
     this.setInitialPreSession();
     this.setInitialPostSession();
+    this.$root.$on("start-quick-test", this.showSourcePickerDialog);
     this.$root.$on("update-selected", this.updateSelected);
     this.$root.$on("new-session", () => {
       this.setInitialPreSession();
@@ -196,17 +228,147 @@ export default {
         return this.$store.getters.requiredPreSessionTasksChecked;
       }
     },
-    status() {
-      return this.$store.state.session.status;
-    },
     showCheckList() {
       return (
         this.$store.state.session.status === SESSION_STATUSES.PENDING &&
         this.checklistPresessionStatus
       );
     },
+    pinataLogo() {
+      return this.$vuetify.theme.dark
+        ? "/pinata-logo-white.svg"
+        : "/pinata-logo.svg";
+    },
+    currentTheme() {
+      if (this.$vuetify.theme.dark) {
+        return this.$vuetify.theme.themes.dark;
+      } else {
+        return this.$vuetify.theme.themes.light;
+      }
+    },
+    btnBg() {
+      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
+    },
+    mainBg() {
+      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
+    },
   },
   methods: {
+    fetchSources() {
+      if (this.$isElectron) {
+        return this.$electronService.getMediaSource();
+      }
+    },
+    async showSourcePickerDialog() {
+      if (this.$isElectron) {
+        try {
+          let data = await this.fetchSources();
+          this.loaded = true;
+          this.sources = data;
+
+          this.sourcePickerDialog = true;
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        this.mediaStream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            displaySurface: "window",
+            cursor: "always",
+          },
+          audio: true,
+        });
+
+        await this.startSession();
+      }
+    },
+    changeSessionStatus(status) {
+      if (this.$isElectron) {
+        this.$electronService.changeMenuBySessionStatus(status);
+      }
+    },
+    getCurrentDateTime() {
+      return new Date().toISOString();
+    },
+    updateStoreSession(isForce = false) {
+      this.$store.commit("updateSession", {
+        status: this.status,
+        timer: this.timer,
+        duration: this.duration,
+        isForce,
+      });
+    },
+    startInterval() {
+      if (!this.interval) {
+        this.interval = setInterval(() => {
+          this.timer += 1;
+
+          this.updateStoreSession();
+          if (this.isDuration && this.duration <= 0) {
+            this.durationConfirmDialog = true;
+            this.isDuration = false;
+            this.stopInterval();
+          }
+        }, 1000);
+      }
+    },
+    async startSession(id = null) {
+      if (this.$isElectron) {
+        this.sourceId = id;
+      }
+      this.sourcePickerDialog = false;
+
+      this.timer = this.$store.state.session.timer;
+      this.duration = this.$store.state.case.duration;
+      if (this.duration > 0) {
+        this.isDuration = true;
+      }
+
+      if (this.started === "") {
+        this.started = this.getCurrentDateTime();
+        this.$store.commit("setSessionStarted", this.started);
+      }
+
+      if (this.status !== SESSION_STATUSES.START) {
+        this.status = SESSION_STATUSES.START;
+        this.startInterval();
+        this.changeSessionStatus(SESSION_STATUSES.START);
+      }
+
+      if (!this.$store.state.session.sessionID) {
+        const data = {
+          case: {
+            title: this.$store.state.case.title,
+            charter: this.$store.state.case.charter,
+            preconditions: this.$store.state.case.preconditions,
+            duration: this.$store.state.case.duration,
+          },
+          session: {
+            status: this.$store.state.session.status,
+            timer: this.$store.state.session.timer,
+            started: this.$store.state.session.started,
+            ended: this.$store.state.session.ended,
+            quickTest: this.$store.state.session.quickTest,
+            path: this.$route.path,
+          },
+        };
+
+        await this.$storageService.createNewSession(data);
+        if (this.$isElectron) {
+          const caseID = await this.$storageService.getCaseId();
+          const sessionID = await this.$storageService.getSessionId();
+          this.$store.commit("setCaseID", caseID);
+          this.$store.commit("setSessionID", sessionID);
+        }
+      }
+
+      if (this.viewMode === "normal") {
+        const currentPath = this.$router.history.current.path;
+        if (currentPath !== "/main/workspace") {
+          await this.$router.push({ path: "/main/workspace" });
+        }
+      }
+    },
     handleTaskCheck(taskId, checked) {
       this.$store.commit("togglePreSessionTask", {
         taskId,
@@ -271,7 +433,6 @@ export default {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: #f2f4f7;
   overflow-y: auto;
   border-left: 1px solid rgba(0, 0, 0, 0.12);
   border-right: 1px solid rgba(0, 0, 0, 0.12);
@@ -309,9 +470,8 @@ export default {
 }
 .content {
   overflow: auto;
-  min-width: 400px;
-  box-shadow: -10px 12px 34px 0px rgba(48, 98, 254, 0.15);
-  border-radius: 15px;
+  min-width: 408px;
+  border-radius: 8px;
 }
 .footer {
   width: 100%;
@@ -349,8 +509,8 @@ export default {
   font-weight: 500;
 }
 .v-tab.v-tab--active {
-  background: #0a26c3;
-  border: 1px solid #586af3;
+  background: rgb(12, 47, 243);
+  border: 1px solid rgb(12, 47, 243);
   color: #fff;
 }
 .v-tab.test-tab {
@@ -363,13 +523,21 @@ export default {
 }
 .theme--light.v-tabs .v-tabs-bar .v-tab--disabled,
 .theme--light.v-tabs .v-tabs-bar .v-tab:not(.v-tab--active) {
-  color: #0a26c3;
-  border: 1px solid #596def;
+  color: rgb(12, 47, 243);
+  border: 1px solid rgb(12, 47, 243);
 }
 .theme--dark.v-tabs .v-tabs-bar .v-tab--disabled,
 .theme--dark.v-tabs .v-tabs-bar .v-tab:not(.v-tab--active) {
   border-color: #4b5563;
   background-color: #374151;
   color: #ffffff;
+}
+</style>
+<style>
+.shadow-theme {
+  box-shadow: 0px 16px 40px 0px rgba(0, 0, 0, 0.0588235294) !important;
+}
+.v-tabs-items.tabs-items-theme {
+  background-color: initial;
 }
 </style>

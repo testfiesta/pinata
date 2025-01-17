@@ -1,81 +1,109 @@
 <template>
   <v-container class="wrapper" fluid>
-    <div class="header">
-      <div class="logo mb-4">
-        <LogoWrapper :height="34" :width="120" />
-      </div>
-      <div class="avatar" style="display: none">
-        <div v-if="isAuthenticated">
-          <MenuPopover />
-        </div>
-        <div v-else>
-          <v-menu :nudge-width="100" bottom z-index="99999" offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                fab
-                small
-                color="primary"
-                height="32"
-                width="32"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon dark> mdi-account </v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item link to="/authentication/signin">
-                <v-list-item-title>Log In</v-list-item-title>
-              </v-list-item>
-              <!--<v-list-item link to="/authentication/signupMain">
+    <v-app-bar
+      :color="mainBg"
+      class="px-4 app-navbar"
+      max-height="80px"
+      height="80px"
+      elevation="0"
+      rounded="lg"
+    >
+      <div class="d-flex justify-space-between align-center w-full">
+        <router-link to="/">
+          <img :src="pinataLogo" alt="logo" />
+        </router-link>
+        <div class="avatar" style="display: none">
+          <div v-if="isAuthenticated">
+            <MenuPopover />
+          </div>
+          <div v-else>
+            <v-menu :nudge-width="100" bottom z-index="99999" offset-y>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  fab
+                  small
+                  color="primary"
+                  height="32"
+                  width="32"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon dark> mdi-account </v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item link to="/authentication/signin">
+                  <v-list-item-title>Log In</v-list-item-title>
+                </v-list-item>
+                <!--<v-list-item link to="/authentication/signupMain">
                 <v-list-item-title>Register</v-list-item-title>
               </v-list-item>-->
-            </v-list>
-          </v-menu>
+              </v-list>
+            </v-menu>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="content">
-      <div class="test-wrapper box-shadow3">
-        <div class="logo mb-4">
-          <LogoWrapper :height="34" :width="120" />
+    </v-app-bar>
+    <div class="d-flex justify-center">
+      <div
+        class="d-flex justify-center align-center flex-column pa-6 rounded-lg home-wrapper mt-16 w-full"
+        :style="{ backgroundColor: mainBg }"
+      >
+        <div class="logo mb-6 w-full">
+          <div class="fs-30 font-weight-semibold text-left">
+            {{ $tc("caption.create_test_session") }}
+          </div>
         </div>
         <div class="new-section">
           <v-btn
-            class="my-4 text-capitalize secondary-btn"
-            fill
+            class="mb-4 text-capitalize rounded-lg white--text font-weight-semibold"
+            :color="btnBg"
             block
-            plain
-            medium
-            color="secondary"
+            height="40px"
+            depressed
             v-shortkey="quickTestHotkey"
             @shortkey="handleQuickTest()"
             @click="handleQuickTest()"
           >
-            {{ $tc("caption.quick_test", 1) }}
+            <div
+              class="btn-text fs-14"
+              :style="{ color: currentTheme.secondary }"
+            >
+              {{ $tc("caption.quick_test_session", 1) }}
+            </div>
           </v-btn>
         </div>
         <div class="open-section">
           <v-btn
-            class="text-capitalize secondary-btn"
+            class="mb-4 text-capitalize rounded-lg white--text font-weight-semibold"
+            :color="btnBg"
             block
-            plain
-            medium
-            color="secondary"
+            height="40px"
+            depressed
             v-shortkey="newExploratoryHotkey"
             @shortkey="newSession"
             @click="newSession"
           >
-            {{ $tc("caption.new_exploratory_session", 1) }}
+            <div
+              class="btn-text fs-14"
+              :style="{ color: currentTheme.secondary }"
+            >
+              {{ $tc("caption.exploratory_session", 1) }}
+            </div>
           </v-btn>
           <v-btn
+            class="mb-4 text-capitalize rounded-lg white--text font-weight-semibold"
+            :color="btnBg"
             block
-            plain
-            color="secondary"
-            medium
-            class="mt-4 text-capitalize secondary-btn"
+            height="40px"
+            depressed
           >
-            {{ $tc("caption.scripted_test_session", 1) }}
+            <div
+              class="btn-text fs-14"
+              :style="{ color: currentTheme.secondary }"
+            >
+              {{ $tc("caption.scripted_test_session", 1) }}
+            </div>
           </v-btn>
         </div>
         <!--
@@ -332,7 +360,6 @@
 </template>
 <script>
 import { VContainer, VBtn } from "vuetify/lib/components";
-import LogoWrapper from "../components/LogoWrapper.vue";
 import MenuPopover from "../components/MenuPopover.vue";
 
 import { STATUSES } from "../modules/constants";
@@ -342,7 +369,6 @@ export default {
   components: {
     VContainer,
     VBtn,
-    LogoWrapper,
     MenuPopover,
   },
   data() {
@@ -357,8 +383,26 @@ export default {
       isAuthenticated: "auth/isAuthenticated",
       loggedInServices: "auth/loggedInServices",
     }),
+    currentTheme() {
+      if (this.$vuetify.theme.dark) {
+        return this.$vuetify.theme.themes.dark;
+      } else {
+        return this.$vuetify.theme.themes.light;
+      }
+    },
+    btnBg() {
+      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
+    },
+    mainBg() {
+      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
+    },
     quickTestHotkey() {
       return this.$hotkeyHelpers.findBinding("home.quickTest", this.hotkeys);
+    },
+    pinataLogo() {
+      return this.$vuetify.theme.dark
+        ? "/pinata-logo-white.svg"
+        : "/pinata-logo.svg";
     },
     newExploratoryHotkey() {
       return this.$hotkeyHelpers.findBinding(
@@ -425,14 +469,15 @@ export default {
 </script>
 
 <style scoped>
+.home-wrapper {
+  max-width: 408px;
+}
 .wrapper {
   height: 100vh;
   width: 100%;
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
-  background: #f2f4f7;
   justify-content: flex-start;
 }
 .header {
@@ -475,8 +520,6 @@ export default {
 }
 .open-section {
   width: 100%;
-  padding: 20px 0;
-  border-top: 1px solid #e5e7eb;
 }
 .theme--dark .open-section {
   border-color: rgba(255, 255, 255, 0.15);

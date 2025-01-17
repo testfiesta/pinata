@@ -1,76 +1,88 @@
 <template>
   <v-container class="wrapper">
-    <div class="header py-4">
-      <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
-        <v-icon class="ma-0">mdi-chevron-left</v-icon>
-        {{ $tc("caption.back", 1) }}
-      </v-btn>
-      <div
-        class="subtitle-1 signup-title text-center"
-        :style="{ color: currentTheme.secondary }"
-      >
-        <span>{{ $tc("caption.signin_zephyr_squad", 1) }}</span>
+    <div
+      class="d-flex justify-center align-center flex-column pa-6 rounded-lg login-wrapper mt-16"
+      :style="{ backgroundColor: mainBg }"
+    >
+      <div class="d-flex justify-space-between align-center w-full">
+        <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
+        <img
+          :src="require('../../assets/icon/zephyr-squad.png')"
+          alt="zephyr_squad"
+          width="42"
+        />
+        <v-btn class="text-capitalize pa-0 back-btn invisible">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
       </div>
-    </div>
-    <div class="content mt-2">
-      <v-form ref="form" v-model="valid" lazy-validation>
-        <v-row>
-          <v-col cols="12" class="d-flex justify-center pa-0">
-            <img
-              :src="require('../../assets/icon/zephyr-squad.png')"
-              alt="zephyr_squad"
-              width="60"
-            />
-          </v-col>
-          <v-col cols="12" class="pa-0 pt-4">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.zephyr_squad_api_access_token", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                :append-icon="
-                  showZephyrSquadApiToken ? 'mdi-eye' : 'mdi-eye-off'
-                "
-                outlined
-                dense
-                v-model="zephyr_squad_api_access_token"
-                :type="showZephyrSquadApiToken ? 'text' : 'password'"
-                required
-                :rules="rules.zephyr_squad_api_access_token"
-                @click:append="
-                  showZephyrSquadApiToken = !showZephyrSquadApiToken
-                "
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="d-flex justify-center mb-5 pa-0 mt-2">
-            <div class="subtitle-2">
-              <a
-                @click="
-                  openExternalLink(
-                    'https://support.smartbear.com/zephyr-squad-cloud/docs/en/rest-api/generate-api-access-token.html'
-                  )
-                "
+      <div class="fs-30 font-weight-semibold text-center mt-4 mb-6">
+        {{ $tc("caption.signin_zephyr_squad", 1) }}
+      </div>
+      <div class="w-full position-relative">
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-row>
+            <v-col cols="12" class="pt-4">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
               >
-                {{ $tc("message.zephyr_api_keys_docs") }}
-              </a>
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <v-btn
-              class="text-capitalize btn_signup"
-              color="primary"
-              fill
-              small
-              block
-              :loading="loading"
-              @click="signIn()"
-            >
-              {{ $tc("caption.sign_in", 1) }}
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
+                {{ $tc("caption.zephyr_squad_api_access_token", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  :append-icon="
+                    showZephyrSquadApiToken ? 'mdi-eye' : 'mdi-eye-off'
+                  "
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="zephyr_squad_api_access_token"
+                  :type="showZephyrSquadApiToken ? 'text' : 'password'"
+                  required
+                  :rules="rules.zephyr_squad_api_access_token"
+                  @click:append="
+                    showZephyrSquadApiToken = !showZephyrSquadApiToken
+                  "
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="d-flex justify-center mb-5 mt-2">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                <a
+                  @click="
+                    openExternalLink(
+                      'https://support.smartbear.com/zephyr-squad-cloud/docs/en/rest-api/generate-api-access-token.html'
+                    )
+                  "
+                >
+                  {{ $tc("message.zephyr_api_keys_docs") }}
+                </a>
+              </div>
+            </v-col>
+            <v-col cols="12">
+              <v-btn
+                class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+                color="#0C2FF3"
+                block
+                depressed
+                height="40px"
+                :loading="loading"
+                @click="signIn()"
+              >
+                {{ $tc("caption.sign_in", 1) }}
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+      </div>
     </div>
     <v-snackbar v-model="snackBar.enabled" timeout="3000">
       {{ snackBar.message }}
@@ -92,6 +104,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import zephyrSquadIntegrationHelpers from "../../integrations/ZephyrSquadIntegrationHelpers";
 import { mapGetters } from "vuex";
+import theme from "../../mixins/theme";
 
 export default {
   name: "SigninZephyrSquadWrapper",
@@ -106,6 +119,7 @@ export default {
       this.previousRoute = newValue;
     },
   },
+  mixins: [theme],
   data() {
     return {
       previousRoute: this.prevRoute,

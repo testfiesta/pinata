@@ -1,5 +1,16 @@
 <template>
-  <div class="authentication-wrapper">
+  <div class="pa-3 authentication-wrapper">
+    <v-app-bar
+      :color="mainBg"
+      class="px-4 app-navbar"
+      height="80px"
+      elevation="0"
+      rounded="lg"
+    >
+      <router-link to="/">
+        <img :src="pinataLogo" alt="logo" class="mr-6" />
+      </router-link>
+    </v-app-bar>
     <router-view
       :config-item="config"
       :credential-items="credentials"
@@ -18,6 +29,23 @@ export default {
       credentials: {},
       prevRoute: null,
     };
+  },
+  computed: {
+    currentTheme() {
+      if (this.$vuetify.theme.dark) {
+        return this.$vuetify.theme.themes.dark;
+      } else {
+        return this.$vuetify.theme.themes.light;
+      }
+    },
+    mainBg() {
+      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
+    },
+    pinataLogo() {
+      return this.$vuetify.theme.dark
+        ? "/pinata-logo-white.svg"
+        : "/pinata-logo.svg";
+    },
   },
   created() {
     this.getConfig();

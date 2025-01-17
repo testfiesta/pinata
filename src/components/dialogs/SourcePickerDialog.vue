@@ -42,19 +42,18 @@
         </div>
         <div class="footer">
           <v-btn
-            class="text-capitalize"
-            small
-            :color="currentTheme.background"
-            :style="{ color: currentTheme.secondary }"
+            class="text-capitalize rounded-lg"
+            :color="btnBg"
             v-shortkey="cancelHotkey"
             @shortkey="handleClose()"
             @click="handleClose()"
+            depressed
           >
             {{ $tc("caption.cancel", 1) }}
           </v-btn>
           <v-btn
-            class="text-capitalize"
-            small
+            class="text-capitalize rounded-lg"
+            depressed
             :color="currentTheme.primary"
             :style="{ color: currentTheme.white }"
             :disabled="!activeSource"
@@ -111,6 +110,9 @@ export default {
       } else {
         return this.$vuetify.theme.themes.light;
       }
+    },
+    btnBg() {
+      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
     },
   },
   methods: {

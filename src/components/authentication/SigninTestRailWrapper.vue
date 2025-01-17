@@ -1,89 +1,111 @@
 <template>
   <v-container class="wrapper">
-    <div class="header py-4">
-      <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
-        <v-icon class="ma-0">mdi-chevron-left</v-icon>
-        {{ $tc("caption.back", 1) }}
-      </v-btn>
-      <div
-        class="subtitle-1 signup-title text-center"
-        :style="{ color: currentTheme.secondary }"
-      >
-        <span>{{ $tc("caption.signin_testrail", 1) }}</span>
+    <div
+      class="d-flex justify-center align-center flex-column pa-6 rounded-lg login-wrapper mt-16"
+      :style="{ backgroundColor: mainBg }"
+    >
+      <div class="d-flex justify-space-between align-center w-full">
+        <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
+        <img
+          :src="require('../../assets/icon/testrail.svg')"
+          alt="testrail"
+          width="42"
+        />
+        <v-btn class="text-capitalize pa-0 back-btn invisible">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
       </div>
-    </div>
-    <div class="content mt-2">
-      <v-form ref="form" v-model="valid" lazy-validation>
-        <v-row>
-          <v-col cols="12" class="d-flex justify-center pa-0">
-            <img
-              :src="require('../../assets/icon/testrail.png')"
-              alt="testrail"
-              width="60"
-            />
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.user_name", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                placeholder="test@example.com"
-                outlined
-                dense
-                v-model="username"
-                required
-                :rules="rules.username"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.api_key", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                :append-icon="showEye ? 'mdi-eye' : 'mdi-eye-off'"
-                outlined
-                dense
-                :type="showEye ? 'text' : 'password'"
-                v-model="apiKey"
-                required
-                :rules="rules.apiKey"
-                @click:append="showEye = !showEye"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <div class="subtitle-2 label-text">
-              {{ $tc("caption.testrail_instance_url", 1) }}
-            </div>
-            <div class="timer-box-wrapper">
-              <v-text-field
-                outlined
-                dense
-                v-model="instanceUrl"
-                placeholder="mydomain.testrail.io"
-                required
-                :rules="rules.instanceUrl"
-              />
-            </div>
-          </v-col>
-          <v-col cols="12" class="pa-0">
-            <v-btn
-              class="text-capitalize btn_signup"
-              color="primary"
-              fill
-              small
-              block
-              :loading="loading"
-              @click="signIn()"
-            >
-              {{ $tc("caption.sign_in", 1) }}
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
+      <div class="fs-30 font-weight-semibold mt-4 mb-6">
+        {{ $tc("caption.signin_testrail", 1) }}
+      </div>
+      <div class="w-full position-relative">
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-row>
+            <v-col cols="12" class="pb-0">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.user_name", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  placeholder="test@example.com"
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="username"
+                  required
+                  :rules="rules.username"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="py-0">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.api_key", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  :append-icon="showEye ? 'mdi-eye' : 'mdi-eye-off'"
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  :type="showEye ? 'text' : 'password'"
+                  v-model="apiKey"
+                  required
+                  :rules="rules.apiKey"
+                  @click:append="showEye = !showEye"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="py-0">
+              <div
+                class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              >
+                {{ $tc("caption.testrail_instance_url", 1) }}
+              </div>
+              <div class="timer-box-wrapper">
+                <v-text-field
+                  class="rounded-lg"
+                  :background-color="inputBg"
+                  dense
+                  height="40px"
+                  flat
+                  solo
+                  v-model="instanceUrl"
+                  placeholder="mydomain.testrail.io"
+                  required
+                  :rules="rules.instanceUrl"
+                />
+              </div>
+            </v-col>
+            <v-col cols="12" class="">
+              <v-btn
+                class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+                color="#0C2FF3"
+                block
+                depressed
+                height="40px"
+                :loading="loading"
+                @click="signIn()"
+              >
+                {{ $tc("caption.sign_in", 1) }}
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+      </div>
     </div>
     <v-snackbar v-model="snackBar.enabled" timeout="3000">
       {{ snackBar.message }}
@@ -168,6 +190,15 @@ export default {
       } else {
         return this.$vuetify.theme.themes.light;
       }
+    },
+    mainBg() {
+      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
+    },
+    btnBg() {
+      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
+    },
+    inputBg() {
+      return this.$vuetify.theme.dark ? "#4B5563" : "#F9F9FB";
     },
   },
   methods: {
