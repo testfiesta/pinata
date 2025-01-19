@@ -69,6 +69,25 @@ export default class ElectronService {
     window.ipc.on(IPC_BIND_KEYS.MODAL_DATA, callback);
   }
 
+  onStartRecordVideo(callback) {
+    window.ipc.on("START_RECORD_VIDEO", callback);
+  }
+  onStopRecordVideo(callback) {
+    window.ipc.on("STOP_RECORD_VIDEO", callback);
+  }
+
+  onScreenshot(callback) {
+    window.ipc.on("SCREENSHOT", callback);
+  }
+
+  onStartRecordAudio(callback) {
+    window.ipc.on("START_RECORD_AUDIO", callback);
+  }
+
+  onStopRecordAudio(callback) {
+    window.ipc.on("STOP_RECORD_AUDIO", callback);
+  }
+
   // Invokers
   setWindowSize({ width, height }) {
     window.ipc.invoke(IPC_HANDLERS.WINDOW, {
@@ -265,6 +284,19 @@ export default class ElectronService {
     return await window.ipc.invoke(IPC_HANDLERS.FILE_SYSTEM, {
       func: IPC_FUNCTIONS.DELETE_SESSION,
       data,
+    });
+  }
+
+  async registerGlobalShortcuts(data) {
+    return await window.ipc.invoke(IPC_HANDLERS.WINDOW, {
+      func: IPC_FUNCTIONS.REGISTER_GLOBAL_SHORTCUTS,
+      data,
+    });
+  }
+
+  async unregisterAllGlobalShortcuts() {
+    return await window.ipc.invoke(IPC_HANDLERS.WINDOW, {
+      func: IPC_FUNCTIONS.UNREGISTER_ALL_GLOBAL_SHORTCUTS,
     });
   }
 

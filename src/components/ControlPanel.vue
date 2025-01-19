@@ -749,6 +749,11 @@
         evidenceData = null;
       "
     />
+    <GlobalHotkeysNoticeDialog
+      v-model="showGlobalHotkeysDialog"
+      @registerGlobalHotkeys="registerGlobalHotkeys"
+      @close="showGlobalHotkeysDialog = false"
+    />
   </v-container>
 </template>
 
@@ -776,6 +781,7 @@ import XrayExportSession from "./xray/XrayExportSession";
 import ZephyrSquadExportSession from "./zephyr/ZephyrSquadExportSession";
 import ZephyrScaleExportSession from "./zephyr/ZephyrScaleExportSession";
 import AddEvidenceDialog from "@/components/dialogs/AddEvidenceDialog.vue";
+import GlobalHotkeysNoticeDialog from "./dialogs/GlobalHotkeysNoticeDialog.vue";
 
 import JiraAddIssue from "./jira/JiraAddIssue";
 
@@ -824,6 +830,7 @@ export default {
     ZephyrSquadExportSession,
     ZephyrScaleExportSession,
     JiraAddIssue,
+    GlobalHotkeysNoticeDialog,
   },
   props: {
     selectedItems: {
@@ -1021,6 +1028,7 @@ export default {
       evidenceData: null,
       addEvidenceDialog: false,
       mediaStream: null,
+      showGlobalHotkeysDialog: false,
     };
   },
   mounted() {
@@ -1028,6 +1036,17 @@ export default {
       this.$electronService.onNewSession(this.newSession);
       this.$electronService.onSaveSession(this.handleSaveConfirmDialog);
       this.$electronService.onResetSession(this.showResetConfirmDialog);
+      this.$electronService.onStartRecordVideo(this.startRecordVideo);
+      this.$electronService.onStopRecordVideo(this.stopRecordVideo);
+      this.$electronService.onStartRecordAudio(this.startRecordAudio);
+      this.$electronService.onStopRecordAudio(this.stopRecordAudio);
+      this.$electronService.onScreenshot(this.handleScreenshot);
+      // Show global hotkeys notice if not shown before
+      this.showGlobalHotkeysNotice();
+      // Register global shortcuts if enabled
+      if (this.config.useGlobalHotkeys) {
+        this.registerGlobalHotkeys();
+      }
     }
 
     this.$root.$on("update-selected-nodes", this.updateSelectedNodes);
@@ -1058,6 +1077,12 @@ export default {
     this.updateStoreSession(true);
     this.$root.$off("close-sourcepickerdialog", this.hideSourcePickerDialog);
     this.$root.$on("close-notedialog", this.hideNoteDialog);
+
+    // Unregister global shortcuts
+    if (this.$isElectron && this.config.useGlobalHotkeys) {
+      this.$electronService.unregisterAllGlobalShortcuts();
+    }
+
     // clear timer
     clearInterval(this.interval);
     this.timer = 0;
@@ -1978,6 +2003,66 @@ export default {
       if (this.$isElectron) {
         await this.$electronService.openLowProfileWindow();
       }
+    },
+    showGlobalHotkeysNotice() {
+      this.showGlobalHotkeysDialog = true;
+    },
+    handleHotkeyDialogDiscard() {
+      this.showGlobalHotkeysDialog = false;
+      this.$store.commit("config/setHasShownGlobalHotkeysNotice", true);
+    },
+    async registerGlobalHotkeys() {
+      this.showGlobalHotkeysDialog = false;
+      const globalShortcuts = [
+        {
+          accelerator: this.convertToElectronAccelerator(this.startVideoHotkey),
+          action: "START_RECORD_VIDEO",
+        },
+        {
+          accelerator: this.convertToElectronAccelerator([
+            "ctrl",
+            "shift",
+            "v",
+          ]),
+          action: "STOP_RECORD_VIDEO",
+        },
+        {
+          accelerator: this.convertToElectronAccelerator(this.screenshotHotkey),
+          action: "SCREENSHOT",
+        },
+        {
+          accelerator: this.convertToElectronAccelerator(this.startAudioHotkey),
+          action: "START_RECORD_AUDIO",
+        },
+        {
+          accelerator: this.convertToElectronAccelerator([
+            "ctrl",
+            "shift",
+            "a",
+          ]),
+          action: "STOP_RECORD_AUDIO",
+        },
+      ];
+      await this.$electronService.registerGlobalShortcuts(globalShortcuts);
+    },
+    convertToElectronAccelerator(shortkey) {
+      // Convert shortkey array format to Electron accelerator string
+      return shortkey
+        .map((key) => {
+          switch (key.toLowerCase()) {
+            case "ctrl":
+              return "CommandOrControl";
+            case "cmd":
+              return "Command";
+            case "alt":
+              return "Alt";
+            case "shift":
+              return "Shift";
+            default:
+              return key.toUpperCase();
+          }
+        })
+        .join("+");
     },
   },
 };
