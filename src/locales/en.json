@@ -276,7 +276,9 @@
     "openai_key_validation_failed": "Failed to validate OpenAI key",
     "successfully_saved": "Successfully saved!",
     "no_server_oauth_creds": "No shareable OAuth credentials found.",
-    "testrail_instance_url": "Instance URL"
+    "testrail_instance_url": "Instance URL",
+    "enable_global_hotkeys": "Enable Global Hotkeys",
+    "maybe_later": "Maybe Later"
   },
   "hotkeys": {
     "general": "General",
@@ -402,5 +404,9 @@
     "zephyr_squad_api_access_token": "Zephyr Squad API Access Token",
     "zephyr_scale_api_access_token": "Zephyr Scale API Access Token",
     "client_secret": "Client Secret"
+  },
+  "dialog": {
+    "global_hotkeys_notice_title": "Enable Global Hotkeys",
+    "global_hotkeys_notice_message": "Would you like to enable global hotkeys for media capture? This will allow you to use hotkeys even when the app is not focused."
   }
 }

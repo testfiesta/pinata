@@ -70,6 +70,8 @@ ipcMain.handle(IPC_HANDLERS.WINDOW, async (event, args) => {
       return windowUtility.moveWindow(args.data);
     case IPC_FUNCTIONS.RESET_SESSION:
       return windowUtility.resetSession(args.data);
+    case IPC_FUNCTIONS.REGISTER_GLOBAL_SHORTCUTS:
+      return windowUtility.registerGlobalShortcuts(args.data);
     default:
       return null;
   }

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, screen } = require("electron");
+const { app, BrowserWindow, screen, globalShortcut } = require("electron");
 
 let isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -228,4 +228,16 @@ module.exports.moveWindow = (data) => {
     currentPosition[0] + data.x,
     currentPosition[1] + data.y
   );
+};
+
+module.exports.registerGlobalShortcuts = (data) => {
+  const mainWindow = BrowserWindow.getAllWindows()[0];
+  data.forEach(({ accelerator, action }) => {
+    const callback = () => mainWindow.webContents.send(action);
+    globalShortcut.register(accelerator, callback);
+  });
+};
+
+module.exports.unregisterAllGlobalShortcuts = () => {
+  globalShortcut.unregisterAll();
 };

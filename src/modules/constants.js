@@ -76,6 +76,9 @@ export const IPC_FUNCTIONS = {
   OPEN_EXTERNAL_LINK: "openExternalLink",
   CHANGE_MENUITEM_STATUS: "changeMenuItemStatus",
 
+  REGISTER_GLOBAL_SHORTCUTS: "registerGlobalShortcuts",
+  UNREGISTER_ALL_GLOBAL_SHORTCUTS: "unregisterAllGlobalShortcuts",
+
   START_SERVER: "startServer",
   STOP_SERVER: "stopServer",
 };

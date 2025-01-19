@@ -13,6 +13,8 @@ export const config = {
     commentType: "Comment",
     audioCapture: false,
     videoQuality: "high",
+    useGlobalHotkeys: true,
+    hasShownGlobalHotkeysNotice: true,
     debugMode: false,
     summary: false,
     templates: [],
@@ -112,6 +114,12 @@ export const config = {
         task.required = payload.value;
       }
       this._vm.$storageService.updateConfig(state);
+    },
+    setUseGlobalHotkeys(state, value) {
+      state.useGlobalHotkeys = value;
+    },
+    setHasShownGlobalHotkeysNotice(state, value) {
+      state.hasShownGlobalHotkeysNotice = value;
     },
   },
   actions: {},
