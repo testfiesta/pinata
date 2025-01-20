@@ -2,78 +2,96 @@
   <v-container class="wrapper" fluid>
     <v-app-bar
       :color="mainBg"
-      class="px-4 app-navbar"
+      class="app-navbar px-2"
       max-height="80px"
       height="80px"
       elevation="0"
       rounded="lg"
     >
-      <div class="d-flex justify-space-between align-center w-full">
-        <router-link to="/">
-          <img :src="pinataLogo" alt="logo" />
-        </router-link>
-        <div class="tabs" style="display: none">
-          <v-tabs
-            class="tabs"
-            centered
-            v-model="activeTab"
-            color="primary"
-            background-color="transparent"
-            :height="26"
-            hide-slider
-          >
-            <v-tab class="test-tab" to="/main" exact>
-              {{ $tc("caption.test", 1) }}
-            </v-tab>
-            <v-tab
-              class="workspace-tab"
-              :disabled="this.status === 'pending'"
-              to="/main/workspace"
-            >
-              {{ $tc("caption.workspace", 1) }}
-            </v-tab>
-          </v-tabs>
-        </div>
-        <div class="avatar">
-          <div v-if="isAuthenticated">
-            <MenuPopover />
-          </div>
-          <div v-else>
-            <v-menu
-              :nudge-width="100"
-              bottom
-              z-index="99999"
-              offset-y
-              min-width="280px"
-              class="rounded-lg"
-              content-class="shadow-theme"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  fab
-                  small
-                  color="primary"
-                  height="40"
-                  width="40"
-                  depressed
-                  offset-y
-                  v-bind="attrs"
-                  v-on="on"
+      <div class="row w-full align-center">
+        <div class="col col-8 pr-1">
+          <div class="d-flex justify-space-between align-center w-full">
+            <router-link to="/">
+              <img :src="pinataLogo" alt="logo" />
+            </router-link>
+            <div class="tabs" style="display: none">
+              <v-tabs
+                class="tabs"
+                centered
+                v-model="activeTab"
+                color="primary"
+                background-color="transparent"
+                :height="26"
+                hide-slider
+              >
+                <v-tab class="test-tab" to="/main" exact>
+                  {{ $tc("caption.test", 1) }}
+                </v-tab>
+                <v-tab
+                  class="workspace-tab"
+                  :disabled="this.status === 'pending'"
+                  to="/main/workspace"
                 >
-                  <v-icon dark> mdi-account </v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item link to="/authentication/signin">
-                  <v-list-item-title class="fs-16 font-weight-medium">{{
-                    $tc("caption.login", 1)
-                  }}</v-list-item-title>
-                </v-list-item>
-                <!--<v-list-item link to="/authentication/signupMain">
+                  {{ $tc("caption.workspace", 1) }}
+                </v-tab>
+              </v-tabs>
+            </div>
+            <v-btn
+              class="rounded-lg font-weight-semibold text-capitalize"
+              color="primary"
+              height="40"
+              depressed
+              offset-y
+              @click="endSession"
+            >
+              {{ $tc("caption.end_session", 1) }} {{ elapsedTime }}
+            </v-btn>
+          </div>
+        </div>
+        <div class="col col-4">
+          <div class="d-flex justify-end align-center">
+            <div class="avatar">
+              <div v-if="isAuthenticated">
+                <MenuPopover />
+              </div>
+              <div v-else>
+                <v-menu
+                  :nudge-width="100"
+                  bottom
+                  z-index="99999"
+                  offset-y
+                  min-width="280px"
+                  class="rounded-lg"
+                  content-class="shadow-theme"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      small
+                      color="primary"
+                      height="40"
+                      width="40"
+                      depressed
+                      offset-y
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon dark> mdi-account </v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item link to="/authentication/signin">
+                      <v-list-item-title class="fs-16 font-weight-medium">{{
+                        $tc("caption.login", 1)
+                      }}</v-list-item-title>
+                    </v-list-item>
+                    <!--<v-list-item link to="/authentication/signupMain">
                 <v-list-item-title>Register</v-list-item-title>
               </v-list-item>-->
-              </v-list>
-            </v-menu>
+                  </v-list>
+                </v-menu>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -112,6 +130,7 @@
                   :selectedItems="selected"
                   :preSessionRequirementsMet="presessionValid"
                   view-mode="normal"
+                  ref="controlPanel"
                 />
               </template>
             </WorkspaceWrapper>
@@ -127,7 +146,6 @@
         :loaded="loaded"
         @submit-source="startSession"
       />
-      <TimeCounter v-if="$store.state.session.status !== 'pending'" />
     </div>
   </v-container>
 </template>
@@ -146,7 +164,6 @@ import ExploratoryTestWrapper from "../components/ExploratoryTestWrapper.vue";
 import QuickTestWrapper from "@/components/QuickTestWrapper.vue";
 import WorkspaceWrapper from "../components/WorkspaceWrapper.vue";
 import ControlPanel from "../components/ControlPanel.vue";
-import TimeCounter from "../components/TimeCounter.vue";
 import CheckTaskWrapper from "@/components/CheckTaskWrapper.vue";
 import MenuPopover from "@/components/MenuPopover.vue";
 
@@ -166,7 +183,6 @@ export default {
     ExploratoryTestWrapper,
     WorkspaceWrapper,
     ControlPanel,
-    TimeCounter,
     CheckTaskWrapper,
     MenuPopover,
     SourcePickerDialog,
@@ -199,6 +215,7 @@ export default {
     this.setInitialPostSession();
     this.$root.$on("start-quick-test", this.showSourcePickerDialog);
     this.$root.$on("update-selected", this.updateSelected);
+    this.$root.$on("close-sourcepickerdialog", this.hideSourcePickerDialog);
     this.$root.$on("new-session", () => {
       this.setInitialPreSession();
       this.setInitialPostSession();
@@ -227,6 +244,13 @@ export default {
       } else {
         return this.$store.getters.requiredPreSessionTasksChecked;
       }
+    },
+    elapsedTime() {
+      const timer = this.$store.state.session.timer;
+      const date = new Date(null);
+      date.setSeconds(timer);
+      const result = date.toISOString().substr(11, 8);
+      return result;
     },
     showCheckList() {
       return (
@@ -282,6 +306,9 @@ export default {
         await this.startSession();
       }
     },
+    hideSourcePickerDialog() {
+      this.sourcePickerDialog = false;
+    },
     changeSessionStatus(status) {
       if (this.$isElectron) {
         this.$electronService.changeMenuBySessionStatus(status);
@@ -311,6 +338,9 @@ export default {
           }
         }, 1000);
       }
+    },
+    endSession() {
+      this.$refs?.controlPanel?.endSession();
     },
     async startSession(id = null) {
       if (this.$isElectron) {

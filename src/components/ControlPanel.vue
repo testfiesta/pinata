@@ -295,7 +295,7 @@
             </template>
             <span>{{ $tc("caption.resume_session", 1) }}</span>
           </v-tooltip> -->
-          <!-- <v-tooltip open-on-hover top>
+          <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_end_session"
@@ -324,7 +324,7 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.end_session", 1) }}</span>
-          </v-tooltip> -->
+          </v-tooltip>
           <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
@@ -500,6 +500,29 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.mind_map", 1) }}</span>
+          </v-tooltip>
+          <v-tooltip open-on-hover top>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                class="control-btn mx-1"
+                fab
+                icon
+                small
+                color="default"
+                :disabled="status === 'pause'"
+                v-on="on"
+                @click="uploadEvidence"
+              >
+                <img
+                  :src="
+                    require('../assets/icon/control-panel-icon/evidence.svg')
+                  "
+                  width="24"
+                  height="24"
+                />
+              </v-btn>
+            </template>
+            <span>{{ $tc("caption.upload_evidence", 1) }}</span>
           </v-tooltip>
           <!-- <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
@@ -722,7 +745,6 @@ import { VBtn, VCol, VContainer, VIcon, VRow } from "vuetify/lib/components";
 import uuidv4 from "uuid";
 
 import testfiestaIntegrationHelper from "../integrations/TestfiestaIntegrationHelpers";
-
 import SourcePickerDialog from "./dialogs/SourcePickerDialog.vue";
 import ShareSessionDialog from "./dialogs/ShareSessionDialog.vue";
 import NoteDialog from "./dialogs/NoteDialog.vue";
@@ -1258,6 +1280,24 @@ export default {
         this.showEndSessionDialog();
       } else {
         this.showSummaryDialog();
+      }
+    },
+    async uploadEvidence() {
+      // todo add relative handler for web app
+      if (this.$isElectron) {
+        const { status, message, item } =
+          await this.$electronService.uploadEvidence();
+
+        if (status === STATUSES.ERROR) {
+          this.$root.$emit("set-snackbar", message);
+        } else {
+          const data = {
+            ...item,
+            timer_mark: this.$store.state.session.timer,
+          };
+          this.evidenceData = data;
+          this.addEvidenceDialog = true;
+        }
       }
     },
     async endSessionProcess() {
@@ -1959,6 +1999,7 @@ export default {
   column-gap: 5px;
   width: 100%;
 }
+
 .v-btn--disabled img {
   opacity: 0.5;
 }
