@@ -5,21 +5,44 @@
       v-on="$listeners"
       persistent
       width="100%"
-      max-width="500px"
+      max-width="656px"
       eager
+      content-class="rounded-12px"
     >
       <v-sheet outlined rounded>
         <v-card :style="{ backgroundColor: currentTheme.background }">
-          <v-card-title
-            class="dialog-title"
-            :style="{ color: currentTheme.secondary }"
-          >
-            {{ $tc("caption.summarize_session", 1) }}
+          <v-card-title class="pa-6" :style="{ color: currentTheme.secondary }">
+            <div class="d-flex justify-space-between align-center w-full">
+              <span class="dialog-title">
+                {{ $tc("caption.test_session_summary", 1) }}
+              </span>
+              <div class="d-flex align-center justify-end">
+                <v-select
+                  :items="commentTypes"
+                  v-model="comment.type"
+                  :placeholder="$tc('caption.comment_type', 1)"
+                  solo
+                  dense
+                  flat
+                  :color="currentTheme.secondary"
+                  :background-color="inputBg"
+                  class="rounded-lg custom-select select-comment-type pa-0 mr-3"
+                  append-icon="mdi-chevron-down"
+                  :menu-props="{ offsetY: true }"
+                  height="40px"
+                  hide-details="true"
+                ></v-select>
+                <ExportButton
+                  :items="exportButtonItems"
+                  :config-item="exportButtonConfig"
+                  :credential-items="exportButtonCredentials"
+                />
+              </div>
+            </div>
           </v-card-title>
-          <v-divider></v-divider>
           <v-container>
             <v-row>
-              <v-col cols="12">
+              <v-col cols="12" class="px-6 pt-0">
                 <v-card
                   v-if="commentLoading"
                   class="loading-wrapper"
@@ -34,12 +57,6 @@
                   ></v-progress-circular>
                 </v-card>
                 <div v-else>
-                  <div
-                    class="d-flex fs-14 mb-1 font-weight-medium"
-                    :style="{ color: currentTheme.secondary }"
-                  >
-                    {{ $tc("caption.comment", 1) }}
-                  </div>
                   <v-tiptap
                     class="tiptap-theme"
                     v-model="comment.content"
@@ -64,11 +81,14 @@
                         :items="headingOptions"
                         :background-color="inputBg"
                         :color="currentTheme.secondary"
-                        class="rounded-lg custom-select"
+                        class="rounded-lg pa-0 mr-3"
                         item-text="text"
                         item-value="level"
                         width="100%"
                         height="40px"
+                        solo
+                        dense
+                        flat
                         :placeholder="$t('Heading')"
                         append-icon="mdi-chevron-down"
                         :menu-props="{ offsetY: true }"
@@ -179,67 +199,34 @@
                 </div>
               </v-col>
             </v-row>
-            <v-row class="mt-0">
-              <v-col>
-                <div
-                  class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
-                  :style="{ color: currentTheme.secondary }"
-                >
-                  {{ $tc("caption.comment_type", 1) }}
-                </div>
-                <v-select
-                  :items="commentTypes"
-                  v-model="comment.type"
-                  :placeholder="$tc('caption.comment_type', 1)"
-                  solo
-                  dense
-                  flat
-                  :color="currentTheme.secondary"
-                  :background-color="inputBg"
-                  class="rounded-lg custom-select"
-                  append-icon="mdi-chevron-down"
-                  :menu-props="{ offsetY: true }"
-                  height="40px"
-                  disabled
-                  hide-details="true"
-                ></v-select>
-              </v-col>
-            </v-row>
           </v-container>
-          <v-divider></v-divider>
           <v-card-actions>
-            <v-row class="action-wrapper">
-              <v-col cols="6" class="pr-1">
-                <v-btn
-                  class="btn px-8 rounded-lg text-capitalize"
-                  height="40px"
-                  depressed
-                  block
-                  :color="btnBg"
-                  :style="{ color: currentTheme.secondary }"
-                  v-shortkey="cancelHotkey"
-                  @shortkey="handleCancel()"
-                  @click="handleCancel()"
-                >
-                  {{ $tc("caption.cancel", 1) }}
-                </v-btn>
-              </v-col>
-              <v-col cols="6" class="pr-1">
-                <v-btn
-                  class="btn px-8 rounded-lg text-capitalize"
-                  height="40px"
-                  depressed
-                  block
-                  :color="currentTheme.primary"
-                  :style="{ color: currentTheme.white }"
-                  v-shortkey="confirmHotkey"
-                  @shortkey="handleSave()"
-                  @click="handleSave()"
-                >
-                  {{ $tc("caption.save", 1) }}
-                </v-btn>
-              </v-col>
-            </v-row>
+            <div class="d-flex justify-end align-center w-full">
+              <v-btn
+                class="btn px-8 rounded-lg text-capitalize mr-3"
+                height="40px"
+                depressed
+                :color="btnBg"
+                :style="{ color: currentTheme.secondary }"
+                v-shortkey="cancelHotkey"
+                @shortkey="handleCancel()"
+                @click="handleCancel()"
+              >
+                {{ $tc("caption.cancel", 1) }}
+              </v-btn>
+              <v-btn
+                class="btn px-8 rounded-lg text-capitalize"
+                height="40px"
+                depressed
+                :color="currentTheme.primary"
+                :style="{ color: currentTheme.white }"
+                v-shortkey="confirmHotkey"
+                @shortkey="handleSave()"
+                @click="handleSave()"
+              >
+                {{ $tc("caption.save", 1) }}
+              </v-btn>
+            </div>
           </v-card-actions>
         </v-card>
       </v-sheet>
@@ -257,16 +244,27 @@ import openAIIntegrationHelper from "../../integrations/OpenAIIntegrationHelpers
 import { mapGetters } from "vuex";
 import TipTapLinkDialog from "./TipTapLinkDialog.vue";
 import theme from "../../mixins/theme";
+import ExportButton from "../ExportButton.vue";
 
 export default {
   name: "SummaryDialog",
   components: {
     TipTapLinkDialog,
+    ExportButton,
   },
   props: {
     summary: {
       type: Object,
       default: () => {},
+    },
+    exportButtonItems: {
+      type: [String, Array],
+    },
+    exportButtonConfig: {
+      type: Object,
+    },
+    exportButtonCredentials: {
+      type: Object,
     },
   },
   watch: {
@@ -477,12 +475,9 @@ export default {
   height: 250px;
 }
 .dialog-title {
-  /* border-bottom: 1px solid #e5e7eb; */
-  font-size: 14px;
-  font-style: normal;
+  font-size: 18px;
   font-weight: 600;
-  line-height: 20px;
-  padding: 12px;
+  line-height: 28px;
 }
 .dialog-content {
   max-height: 250px;
@@ -490,5 +485,8 @@ export default {
 }
 .v-card__actions {
   padding: 12px;
+}
+.select-comment-type {
+  max-width: 132px;
 }
 </style>

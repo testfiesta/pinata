@@ -1,7 +1,7 @@
 <template>
   <v-container fluid style="min-height: 100vh" class="d-flex">
     <v-row class="d-flex justify-space-between mt-2 px-6">
-      <v-col cols="6" class="wrapper pa-0">
+      <v-col cols="4" class="wrapper">
         <div class="content white rounded-lg overflow-hidden">
           <TestWrapper :config-item="config" :credential-items="credentials" />
         </div>
@@ -13,27 +13,24 @@
           />
         </div>
       </v-col>
-      <v-divider class="divider-theme" vertical></v-divider>
-      <v-col cols="5" class="wrapper pa-0 d-flex justify-start align-center">
+      <v-col cols="8" class="wrapper d-flex justify-start align-center">
         <div class="header">
           <SearchWrapper />
         </div>
-        <div class="content my-1">
+        <div class="content my-1 position-relative">
           <WorkspaceWrapper
             :items="searchItems"
             :selectedItems="selected"
             event-type="click"
             @activate-edit-session="activateEditSession"
-          >
-            <template v-slot:control-panel>
-              <ControlPanel
-                :selectedItems="selected"
-                :config-item="config"
-                :credential-items="credentials"
-                view-mode="normal"
-              />
-            </template>
-          </WorkspaceWrapper>
+          />
+          <ControlPanel
+            class="control-panel"
+            :selectedItems="selected"
+            :config-item="config"
+            :credential-items="credentials"
+            view-mode="normal"
+          />
         </div>
       </v-col>
     </v-row>
@@ -258,6 +255,11 @@ export default {
   width: 100%;
   display: flex;
   align-items: center;
+}
+.control-panel {
+  position: absolute;
+  top: 2%;
+  right: 4%;
 }
 </style>
 <style>

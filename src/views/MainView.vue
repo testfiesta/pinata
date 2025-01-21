@@ -43,6 +43,7 @@
               depressed
               offset-y
               @click="endSession"
+              v-if="$store.state.session.status !== 'pending'"
             >
               {{ $tc("caption.end_session", 1) }} {{ elapsedTime }}
             </v-btn>
@@ -97,7 +98,7 @@
       </div>
     </v-app-bar>
     <div class="mt-3">
-      <div>
+      <div class="position-relative">
         <v-tabs-items
           v-model="activeTab"
           style="height: 100%"
@@ -125,30 +126,19 @@
               :items="items"
               :selectedItems="selected"
               event-type="dblclick"
-            >
-              <template v-slot:control-panel>
-                <ControlPanel
-                  @add-item="addItem"
-                  @update-item="updateItem"
-                  :selectedItems="selected"
-                  :preSessionRequirementsMet="presessionValid"
-                  view-mode="normal"
-                  ref="controlPanel"
-                />
-              </template>
-            </WorkspaceWrapper>
+            />
           </v-tab-item>
         </v-tabs-items>
+        <ControlPanel
+          class="control-panel"
+          @add-item="addItem"
+          @update-item="updateItem"
+          :selectedItems="selected"
+          :preSessionRequirementsMet="presessionValid"
+          view-mode="normal"
+          ref="controlPanel"
+        />
       </div>
-    </div>
-    <div class="footer">
-      <SourcePickerDialog
-        v-model="sourcePickerDialog"
-        :sources="sources"
-        :sourceId="sourceId"
-        :loaded="loaded"
-        @submit-source="startSession"
-      />
     </div>
   </v-container>
 </template>
@@ -162,7 +152,6 @@ import {
   VTabItem,
   VBtn,
 } from "vuetify/lib/components";
-import SourcePickerDialog from "../components/dialogs/SourcePickerDialog.vue";
 import ExploratoryTestWrapper from "../components/ExploratoryTestWrapper.vue";
 import QuickTestWrapper from "@/components/QuickTestWrapper.vue";
 import WorkspaceWrapper from "../components/WorkspaceWrapper.vue";
@@ -188,7 +177,6 @@ export default {
     ControlPanel,
     CheckTaskWrapper,
     MenuPopover,
-    SourcePickerDialog,
   },
   data() {
     return {
@@ -249,7 +237,7 @@ export default {
       }
     },
     elapsedTime() {
-      const timer = this.$store.state.session.timer;
+      const timer = this.$store.state.session.timer || 0;
       const date = new Date(null);
       date.setSeconds(timer);
       const result = date.toISOString().substr(11, 8);
@@ -344,63 +332,6 @@ export default {
     },
     endSession() {
       this.$refs?.controlPanel?.endSession();
-    },
-    async startSession(id = null) {
-      if (this.$isElectron) {
-        this.sourceId = id;
-      }
-      this.sourcePickerDialog = false;
-
-      this.timer = this.$store.state.session.timer;
-      this.duration = this.$store.state.case.duration;
-      if (this.duration > 0) {
-        this.isDuration = true;
-      }
-
-      if (this.started === "") {
-        this.started = this.getCurrentDateTime();
-        this.$store.commit("setSessionStarted", this.started);
-      }
-
-      if (this.status !== SESSION_STATUSES.START) {
-        this.status = SESSION_STATUSES.START;
-        this.startInterval();
-        this.changeSessionStatus(SESSION_STATUSES.START);
-      }
-
-      if (!this.$store.state.session.sessionID) {
-        const data = {
-          case: {
-            title: this.$store.state.case.title,
-            charter: this.$store.state.case.charter,
-            preconditions: this.$store.state.case.preconditions,
-            duration: this.$store.state.case.duration,
-          },
-          session: {
-            status: this.$store.state.session.status,
-            timer: this.$store.state.session.timer,
-            started: this.$store.state.session.started,
-            ended: this.$store.state.session.ended,
-            quickTest: this.$store.state.session.quickTest,
-            path: this.$route.path,
-          },
-        };
-
-        await this.$storageService.createNewSession(data);
-        if (this.$isElectron) {
-          const caseID = await this.$storageService.getCaseId();
-          const sessionID = await this.$storageService.getSessionId();
-          this.$store.commit("setCaseID", caseID);
-          this.$store.commit("setSessionID", sessionID);
-        }
-      }
-
-      if (this.viewMode === "normal") {
-        const currentPath = this.$router.history.current.path;
-        if (currentPath !== "/main/workspace") {
-          await this.$router.push({ path: "/main/workspace" });
-        }
-      }
     },
     handleTaskCheck(taskId, checked) {
       this.$store.commit("togglePreSessionTask", {
@@ -564,6 +495,11 @@ export default {
   border-color: #4b5563;
   background-color: #374151;
   color: #ffffff;
+}
+.control-panel {
+  position: absolute;
+  top: 2%;
+  right: 8%;
 }
 </style>
 <style>

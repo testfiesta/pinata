@@ -19,7 +19,7 @@
     </div>
     <div
       className="nml-ctrl-wrapper"
-      class="d-flex justify-center"
+      class="d-flex justify-end"
       v-if="viewMode === 'normal'"
     >
       <v-row class="mb-1" v-if="selected.length > 0">
@@ -678,6 +678,9 @@
       :credentialItems="credentials"
       :summary="summary"
       @submit-summary="addSummary"
+      :export-button-items="items"
+      :export-button-config="config"
+      :export-button-credentials="credentials"
     />
     <DeleteConfirmDialog
       v-model="deleteConfirmDialog"
@@ -1308,7 +1311,8 @@ export default {
       this.changeSessionStatus(SESSION_STATUSES.END);
       this.stopInterval();
       this.$root.$emit("handle-mindmap");
-      await this.$router.push({ path: "/result" });
+      this.finishSession();
+      // await this.$router.push({ path: "/result" });
     },
     showSummaryDialog() {
       this.summaryDialog = true;
