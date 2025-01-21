@@ -293,10 +293,7 @@ const store = new Vuex.Store({
       state.session.connections = [];
       this._vm.$storageService.updateState(state);
     },
-    resetSessionTimer(state) {
-      state.session.timer = 0;
-      this._vm.$storageService.updateState(state);
-    },
+
     resetState(state) {
       state.session.status = SESSION_STATUSES.PENDING;
       state.session.timer = 0;

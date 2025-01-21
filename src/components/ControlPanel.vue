@@ -206,7 +206,7 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.restart_session", 1) }}</span>
-          </v-tooltip>
+          </v-tooltip> -->
           <v-tooltip open-on-hover top v-if="status !== 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
@@ -226,7 +226,7 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.finish_session", 1) }}</span>
-          </v-tooltip> -->
+          </v-tooltip>
         </v-col>
       </v-row>
       <v-row
@@ -295,7 +295,7 @@
             </template>
             <span>{{ $tc("caption.resume_session", 1) }}</span>
           </v-tooltip> -->
-          <v-tooltip open-on-hover top>
+          <!-- <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_end_session"
@@ -324,7 +324,7 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.end_session", 1) }}</span>
-          </v-tooltip>
+          </v-tooltip> -->
           <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn

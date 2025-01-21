@@ -107,7 +107,10 @@
             value="/main"
             :transition="false"
             style="height: 100%"
-            v-if="this.$store.state.session.status == 'pending'"
+            v-if="
+              this.$store.state.session.status == 'pending' ||
+              this.$store.state.session.status == 'start'
+            "
           >
             <QuickTestWrapper v-if="this.quickTest" />
             <ExploratoryTestWrapper style="height: 100%" v-else />

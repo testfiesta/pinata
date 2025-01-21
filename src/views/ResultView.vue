@@ -24,15 +24,16 @@
             :selectedItems="selected"
             event-type="click"
             @activate-edit-session="activateEditSession"
-          />
-        </div>
-        <div class="footer">
-          <ControlPanel
-            :selectedItems="selected"
-            :config-item="config"
-            :credential-items="credentials"
-            view-mode="normal"
-          />
+          >
+            <template v-slot:control-panel>
+              <ControlPanel
+                :selectedItems="selected"
+                :config-item="config"
+                :credential-items="credentials"
+                view-mode="normal"
+              />
+            </template>
+          </WorkspaceWrapper>
         </div>
       </v-col>
     </v-row>
