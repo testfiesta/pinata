@@ -294,7 +294,9 @@
     "openai_key_validation_failed": "Failed to validate OpenAI key",
     "successfully_saved": "Successfully saved!",
     "no_server_oauth_creds": "No shareable OAuth credentials found.",
-    "testrail_instance_url": "Instance URL"
+    "testrail_instance_url": "Instance URL",
+    "screenshot_target": "Screenshot target",
+    "recording_target": "Recording target"
   },
   "hotkeys": {
     "general": "General",

@@ -126,6 +126,8 @@
               :items="items"
               :selectedItems="selected"
               event-type="dblclick"
+              :sourceThumbnail.sync="sourceThumbnail"
+              :evidence.sync="evidence"
             />
           </v-tab-item>
         </v-tabs-items>
@@ -137,6 +139,8 @@
           :preSessionRequirementsMet="presessionValid"
           view-mode="normal"
           ref="controlPanel"
+          @start-session="onStartSession"
+          @add-evidence="addEvidence"
         />
       </div>
     </div>
@@ -196,6 +200,7 @@ export default {
       durationConfirmDialog: false,
       status: this.$store.state.session.status,
       viewMode: "normal",
+      evidence: {},
     };
   },
   created() {
@@ -249,6 +254,12 @@ export default {
         this.checklistPresessionStatus
       );
     },
+    sourceThumbnail() {
+      return (
+        this.sources.find((source) => source.id === this.sourceId)?.thumbnail ||
+        ""
+      );
+    },
     pinataLogo() {
       return this.$vuetify.theme.dark
         ? "/pinata-logo-white.svg"
@@ -273,6 +284,12 @@ export default {
       if (this.$isElectron) {
         return this.$electronService.getMediaSource();
       }
+    },
+    onStartSession(id) {
+      this.sourceId = id;
+    },
+    addEvidence(data) {
+      this.evidence = data;
     },
     async showSourcePickerDialog() {
       if (this.$isElectron) {

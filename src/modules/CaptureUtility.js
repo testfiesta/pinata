@@ -30,8 +30,8 @@ const configDir = (app || remote.app).getPath("userData");
 module.exports.getMediaSource = async () => {
   const sources = await desktopCapturer.getSources({
     thumbnailSize: {
-      width: 150,
-      height: 100,
+      width: 600,
+      height: 340,
     },
     types: ["window", "screen"],
   });

@@ -6,9 +6,21 @@
           class="app-height-global rounded-lg card pa-6"
           :style="{ backgroundColor: mainBg }"
         >
-          <span class="fs-16 font-weight-bold">{{
-            $tc("caption.session_started", 1)
-          }}</span>
+          <div class="fs-16 font-weight-bold mb-6">
+            {{ $tc("caption.session_started", 1) }}
+          </div>
+          <div class="workspace-container app-height-global">
+            <img
+              :src="localSourceThumbnail"
+              alt="source_thumbnail"
+              v-if="localSourceThumbnail && isLocalEvidenceEmpty"
+            />
+            <EvidenceWrapper
+              v-if="!isLocalEvidenceEmpty"
+              :item-data="localEvidence"
+              @close="$emit('update:evidence', {})"
+            />
+          </div>
         </div>
       </div>
       <div class="col col-4 pl-0">
@@ -111,7 +123,7 @@ import NotesWrapper from "./NotesWrapper.vue";
 import TimelineWrapper from "./TimelineWrapper.vue";
 import theme from "../mixins/theme";
 import SearchWrapper from "./SearchWrapper.vue";
-
+import EvidenceWrapper from "./EvidenceWrapper.vue";
 export default {
   name: "WorkspaceWrapper",
   computed: {
@@ -125,11 +137,31 @@ export default {
         return this.$vuetify.theme.themes.light;
       }
     },
+    localSourceThumbnail: {
+      get() {
+        return this.sourceThumbnail;
+      },
+      set(value) {
+        this.$emit("update:sourceThumbnail", value);
+      },
+    },
+    localEvidence: {
+      get() {
+        return this.evidence;
+      },
+      set(value) {
+        this.$emit("update:evidence", value);
+      },
+    },
+    isLocalEvidenceEmpty() {
+      return Object.keys(this.localEvidence).length === 0 && this.localEvidence;
+    },
   },
   components: {
     NotesWrapper,
     TimelineWrapper,
     SearchWrapper,
+    EvidenceWrapper,
   },
   props: {
     selectedItems: {
@@ -139,6 +171,14 @@ export default {
     eventType: {
       type: String,
       default: () => "",
+    },
+    sourceThumbnail: {
+      type: String,
+      default: () => "",
+    },
+    evidence: {
+      type: Object,
+      default: () => {},
     },
   },
   watch: {
@@ -229,5 +269,14 @@ export default {
   transition: background 0.3s;
   border-radius: 8px;
   box-shadow: 0px 16px 40px 0px #0000000f !important;
+}
+.workspace-container {
+  /* background-color: #f2f4f7; */
+  height: calc(100% - 3rem);
+  margin: auto;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

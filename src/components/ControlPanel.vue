@@ -330,15 +330,15 @@
               <v-btn
                 id="btn_screenshot"
                 class="control-btn mx-1"
-                fab
+                width="40px"
                 icon
-                small
+                height="40px"
                 color="default"
                 :disabled="status === 'pause'"
                 v-on="on"
                 v-shortkey="screenshotHotkey"
-                @shortkey="handleScreenshot()"
-                @click="handleScreenshot()"
+                @shortkey="onSelectScreenshot()"
+                @click="onSelectScreenshot()"
               >
                 <img
                   :src="require('../assets/icon/control-panel-icon/camera.svg')"
@@ -354,15 +354,15 @@
               <v-btn
                 id="btn_start_record_video"
                 class="control-btn mx-1"
-                fab
+                width="40px"
                 icon
-                small
+                height="40px"
                 color="default"
                 :disabled="status === 'pause'"
                 v-on="on"
                 v-shortkey="startVideoHotkey"
-                @shortkey="startRecordVideo()"
-                @click="startRecordVideo()"
+                @shortkey="onSelectRecordVideo()"
+                @click="onSelectRecordVideo()"
               >
                 <img
                   :src="require('../assets/icon/control-panel-icon/video.svg')"
@@ -376,12 +376,11 @@
           <v-tooltip open-on-hover top v-if="recordVideoStarted">
             <template v-slot:activator="{ on }">
               <v-btn
-                id="btn_stop_record_video"
-                class="control-btn mx-1"
-                fab
-                icon
-                small
-                color="default"
+                class="mx-1 rounded-lg"
+                width="40px"
+                height="40px"
+                min-width="40px"
+                color="primary"
                 :disabled="status === 'pause'"
                 v-on="on"
                 v-shortkey="stopVideoHotkey"
@@ -402,9 +401,9 @@
               <v-btn
                 id="btn_start_record_audio"
                 class="control-btn mx-1"
-                fab
+                width="40px"
                 icon
-                small
+                height="40px"
                 color="default"
                 :disabled="status === 'pause'"
                 v-on="on"
@@ -428,11 +427,11 @@
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_stop_record_audio"
-                class="control-btn mx-1"
-                fab
-                icon
-                small
-                color="default"
+                class="rounded-lg mx-1"
+                width="40px"
+                height="40px"
+                min-width="40px"
+                color="primary"
                 v-on="on"
                 :disabled="status === 'pause'"
                 v-shortkey="stopAudioHotkey"
@@ -656,6 +655,14 @@
       :loaded="loaded"
       @submit-source="startSession"
     />
+    <ChangeSourceTargetDialog
+      v-model="changeSourceTargetDialog"
+      :titleDialog="selectedControlPanelTitleDialog"
+      :sources="sources"
+      :sourceId="sourceId"
+      :loaded="loaded"
+      @change-source="changeSource"
+    />
     <ShareSessionDialog
       v-if="isShareSessionAllowed"
       v-model="shareSessionDialog"
@@ -749,6 +756,7 @@ import uuidv4 from "uuid";
 
 import testfiestaIntegrationHelper from "../integrations/TestfiestaIntegrationHelpers";
 import SourcePickerDialog from "./dialogs/SourcePickerDialog.vue";
+import ChangeSourceTargetDialog from "./dialogs/ChangeSourceTargetDialog.vue";
 import ShareSessionDialog from "./dialogs/ShareSessionDialog.vue";
 import NoteDialog from "./dialogs/NoteDialog.vue";
 import SummaryDialog from "./dialogs/SummaryDialog.vue";
@@ -798,6 +806,7 @@ export default {
     VBtn,
     VIcon,
     SourcePickerDialog,
+    ChangeSourceTargetDialog,
     ShareSessionDialog,
     NoteDialog,
     SummaryDialog,
@@ -1013,6 +1022,13 @@ export default {
       evidenceData: null,
       addEvidenceDialog: false,
       mediaStream: null,
+      changeSourceTargetDialog: false,
+      selectedControlPanel: null,
+      selectedControlPanelTitleDialog: "",
+      controlPanelActions: {
+        screenshot: this.handleScreenshot,
+        video: this.startRecordVideo,
+      },
     };
   },
   mounted() {
@@ -1025,6 +1041,10 @@ export default {
     this.$root.$on("update-selected-nodes", this.updateSelectedNodes);
     this.$root.$on("close-sourcepickerdialog", this.hideSourcePickerDialog);
     this.$root.$on("close-sharesessiondialog", this.hideShareSessionDialog);
+    this.$root.$on(
+      "close-changesourcetargetdialog",
+      this.hideChangeSourceTargetDialog
+    );
     this.$root.$on("close-notedialog", this.hideNoteDialog);
     this.$root.$on("start-quick-test", this.showSourcePickerDialog);
     this.$root.$on("start-new-exploratory-session", this.startNewSession);
@@ -1049,6 +1069,10 @@ export default {
   beforeDestroy() {
     this.updateStoreSession(true);
     this.$root.$off("close-sourcepickerdialog", this.hideSourcePickerDialog);
+    this.$root.$off(
+      "close-changesourcetargetdialog",
+      this.hideChangeSourceTargetDialog
+    );
     this.$root.$on("close-notedialog", this.hideNoteDialog);
     // clear timer
     clearInterval(this.interval);
@@ -1130,6 +1154,18 @@ export default {
         await this.startSession();
       }
     },
+    async showChangeSourceTargetDialog() {
+      if (this.$isElectron) {
+        try {
+          let data = await this.fetchSources();
+          this.loaded = true;
+          this.sources = data;
+          this.changeSourceTargetDialog = true;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    },
     async showShareSessionDialog() {
       let savedSession = await testfiestaIntegrationHelper.saveSession(
         this.credentials
@@ -1146,6 +1182,11 @@ export default {
     },
     hideSourcePickerDialog() {
       this.sourcePickerDialog = false;
+    },
+    hideChangeSourceTargetDialog() {
+      this.changeSourceTargetDialog = false;
+      this.selectedControlPanel = null;
+      this.selectedControlPanelTitleDialog = "";
     },
     hideShareSessionDialog() {
       this.shareSessionDialog = false;
@@ -1195,9 +1236,17 @@ export default {
         isForce,
       });
     },
+    async changeSource(id = null) {
+      this.sourceId = id;
+      this.changeSourceTargetDialog = false;
+      if (this.selectedControlPanel) {
+        this.controlPanelActions[this.selectedControlPanel]();
+      }
+    },
     async startSession(id = null) {
       if (this.$isElectron) {
         this.sourceId = id;
+        this.$emit("start-session", id);
       }
       this.sourcePickerDialog = false;
 
@@ -1366,6 +1415,14 @@ export default {
         audio: true,
       });
     },
+    async onSelectScreenshot() {
+      this.selectedControlPanel = "screenshot";
+      this.selectedControlPanelTitleDialog = this.$tc(
+        "caption.screenshot_target",
+        1
+      );
+      await this.showChangeSourceTargetDialog();
+    },
     async handleScreenshot() {
       if (this.$isElectron) {
         this.fetchSources().then((data) => {
@@ -1411,7 +1468,8 @@ export default {
                 timer_mark: this.timer,
               };
               this.evidenceData = data;
-              this.addEvidenceDialog = true;
+              this.$emit("add-evidence", this.evidenceData);
+              // this.addEvidenceDialog = true;
             }
           } else {
             const { item } = createImageForWeb(imgURI);
@@ -1420,7 +1478,8 @@ export default {
               timer_mark: this.timer,
             };
             this.evidenceData = data;
-            this.addEvidenceDialog = true;
+            this.$emit("add-evidence", this.evidenceData);
+            // this.addEvidenceDialog = true;
           }
         };
       };
@@ -1451,6 +1510,14 @@ export default {
       } catch (e) {
         this.handleError(e);
       }
+    },
+    async onSelectRecordVideo() {
+      this.selectedControlPanel = "video";
+      this.selectedControlPanelTitleDialog = this.$tc(
+        "caption.recording_target",
+        1
+      );
+      await this.showChangeSourceTargetDialog();
     },
     async startRecordVideo() {
       if (this.$isElectron) {
@@ -1535,7 +1602,8 @@ export default {
                 timer_mark: this.timer,
               };
               this.evidenceData = data;
-              this.addEvidenceDialog = true;
+              this.$emit("add-evidence", this.evidenceData);
+              // this.addEvidenceDialog = true;
             }
           } else {
             const { item } = createVideoForWeb(blob);
@@ -1545,7 +1613,8 @@ export default {
               timer_mark: this.timer,
             };
             this.evidenceData = data;
-            this.addEvidenceDialog = true;
+            this.$emit("add-evidence", this.evidenceData);
+            // this.addEvidenceDialog = true;
           }
         };
         // mediaRecorder.addEventListener("error", (event) => {
@@ -1678,7 +1747,8 @@ export default {
                 poster: "",
               };
               this.evidenceData = data;
-              this.addEvidenceDialog = true;
+              this.$emit("add-evidence", this.evidenceData);
+              // this.addEvidenceDialog = true;
             }
             recordedChunks = [];
           } else {
@@ -1689,7 +1759,8 @@ export default {
               poster: "",
             };
             this.evidenceData = data;
-            this.addEvidenceDialog = true;
+            this.$emit("add-evidence", this.evidenceData);
+            // this.addEvidenceDialog = true;
           }
         };
         mediaRecorder.start(1000);
