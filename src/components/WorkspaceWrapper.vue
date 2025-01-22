@@ -25,7 +25,7 @@
       </div>
       <div class="col col-4 pl-0">
         <div
-          class="app-height-global rounded-lg card pa-6"
+          class="app-height-global rounded-lg card pa-6 position-relative"
           :style="{ backgroundColor: mainBg }"
         >
           <SearchWrapper class="mt-16" />
@@ -49,17 +49,152 @@
           </div>
           <div class="mt-3">
             <TimelineWrapper
-              :items="itemLists"
+              :items="items"
               :selectedItems="selected"
               :event-type="eventName"
               v-if="currentTab === 'timeline'"
             />
             <NotesWrapper
-              :items="itemLists"
+              :items="items"
               :selectedItems="selected"
               :event-type="eventName"
               v-else
             />
+          </div>
+          <div class="action-wrapper" v-if="selected.length > 0">
+            <div class="row">
+              <div class="col col-6">
+                <v-btn
+                  id="btn_delete"
+                  class="rounded-lg text-capitalize"
+                  fill
+                  depressed
+                  height="40px"
+                  :color="currentTheme.danger"
+                  block
+                  :style="{ color: currentTheme.white }"
+                  @click="handleDeleteConfirmDialog"
+                >
+                  <v-icon left>mdi-delete</v-icon>
+                  {{ $tc("caption.delete", 1) }}
+                </v-btn>
+              </div>
+              <div class="col col-6">
+                <v-menu
+                  top
+                  :offset-y="true"
+                  :close-on-content-click="false"
+                  v-model="evidenceExportDestinationMenu"
+                >
+                  <template
+                    v-slot:activator="{ on: evidenceExportDestinationMenu }"
+                  >
+                    <v-tooltip open-on-hover top>
+                      <template v-slot:activator="{ on: onTooltip }">
+                        <v-btn
+                          id="btn_download"
+                          fill
+                          class="rounded-lg text-capitalize white--text"
+                          depressed
+                          height="40px"
+                          block
+                          :color="currentTheme.primary"
+                          :style="{ color: currentTheme.black }"
+                          v-on="{
+                            ...evidenceExportDestinationMenu,
+                            ...onTooltip,
+                          }"
+                        >
+                          <v-icon left>mdi-download</v-icon>
+                          {{ $tc("caption.export", 1) }}
+                        </v-btn>
+                      </template>
+                      <span>{{ $tc("caption.export", 1) }}</span>
+                    </v-tooltip>
+                  </template>
+                  <v-card tile>
+                    <v-list dense>
+                      <v-list-item @click="exportItems">
+                        <v-list-item-icon class="mr-4">
+                          <v-icon>mdi-download</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            {{ $tc("caption.save_as", 1) }}
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <div
+                        v-if="credentials.jira && credentials.jira.length > 0"
+                      >
+                        <jira-export-session
+                          :title="$tc(`caption.export_to_jira`, 1)"
+                          :credential-items="credentials.jira"
+                          :items="items"
+                          :selected="selected"
+                          @close-menu="
+                            () => (evidenceExportDestinationMenu = false)
+                          "
+                        />
+                      </div>
+                      <div
+                        v-if="
+                          credentials.testrail &&
+                          credentials.testrail.length > 0
+                        "
+                      >
+                        <test-rail-export-session
+                          :title="$tc(`caption.export_to_testrail`, 1)"
+                          :credential-items="credentials.testrail"
+                          :items="items"
+                          :selected="selected"
+                        />
+                      </div>
+                      <div
+                        v-if="credentials.xray && credentials.xray.length > 0"
+                      >
+                        <xray-export-session
+                          :title="$tc(`caption.export_to_xray`, 1)"
+                          :credential-items="credentials.xray"
+                          :items="items"
+                          :selected="selected"
+                        />
+                      </div>
+                      <div
+                        v-if="
+                          credentials.zephyrSquad &&
+                          credentials.zephyrSquad.length > 0 &&
+                          // Adding the false to make it invisible
+                          false
+                        "
+                      >
+                        <zephyr-squad-export-session
+                          :title="$tc(`caption.export_to_zephyr_squad`, 1)"
+                          :credential-items="credentials.zephyrSquad"
+                          :items="items"
+                          :selected="selected"
+                        />
+                      </div>
+                      <div
+                        v-if="
+                          credentials.zephyrScale &&
+                          credentials.zephyrScale.length > 0 &&
+                          // // Adding the false to make it invisible
+                          false
+                        "
+                      >
+                        <zephyr-scale-export-session
+                          :title="$tc(`caption.export_to_zephyr_scale`, 1)"
+                          :credential-items="credentials.zephyrScale"
+                          :items="items"
+                          :selected="selected"
+                        />
+                      </div>
+                    </v-list>
+                  </v-card>
+                </v-menu>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -94,27 +229,35 @@
       <v-tabs-items v-model="currentTab">
         <v-tab-item value="timeline" :transition="false">
           <TimelineWrapper
-            :items="itemLists"
+            :items="items"
             :selectedItems="selected"
             :event-type="eventName"
           />
         </v-tab-item>
         <v-tab-item value="notes" :transition="false">
           <NotesWrapper
-            :items="itemLists"
+            :items="items"
             :selectedItems="selected"
             :event-type="eventName"
           />
         </v-tab-item>
         <v-tab-item value="tree" :transition="false">
           <MindmapWrapper
-            :items="itemLists"
+            :items="items"
             :selectedItems="selected"
             :event-type="eventName"
           />
         </v-tab-item>
       </v-tabs-items>
     </div> -->
+    <DeleteConfirmDialog
+      v-model="deleteConfirmDialog"
+      ref="deleteConfirmDialog"
+      :text="$t('message.confirm_delete')"
+      :configItem="config"
+      @confirm="deleteItems"
+      @cancel="deleteConfirmDialog = false"
+    />
   </v-container>
 </template>
 <script>
@@ -124,11 +267,19 @@ import TimelineWrapper from "./TimelineWrapper.vue";
 import theme from "../mixins/theme";
 import SearchWrapper from "./SearchWrapper.vue";
 import EvidenceWrapper from "./EvidenceWrapper.vue";
+import JiraExportSession from "./jira/JiraExportSession";
+import TestRailExportSession from "./testrail/TestRailExportSession";
+import XrayExportSession from "./xray/XrayExportSession";
+import ZephyrSquadExportSession from "./zephyr/ZephyrSquadExportSession";
+import ZephyrScaleExportSession from "./zephyr/ZephyrScaleExportSession";
+import DeleteConfirmDialog from "./dialogs/DeleteConfirmDialog.vue";
 export default {
   name: "WorkspaceWrapper",
   computed: {
     ...mapGetters({
-      itemLists: "sessionItems",
+      items: "sessionItems",
+      config: "config/fullConfig",
+      credentials: "auth/credentials",
     }),
     currentTheme() {
       if (this.$vuetify.theme.dark) {
@@ -162,6 +313,12 @@ export default {
     TimelineWrapper,
     SearchWrapper,
     EvidenceWrapper,
+    JiraExportSession,
+    TestRailExportSession,
+    XrayExportSession,
+    ZephyrSquadExportSession,
+    ZephyrScaleExportSession,
+    DeleteConfirmDialog,
   },
   props: {
     selectedItems: {
@@ -195,6 +352,8 @@ export default {
       selected: this.selectedItems,
       eventName: this.eventType,
       currentTab: "timeline",
+      evidenceExportDestinationMenu: false,
+      deleteConfirmDialog: false,
     };
   },
   methods: {
@@ -203,6 +362,26 @@ export default {
     },
     setTab(tab) {
       this.currentTab = tab;
+    },
+    handleDeleteConfirmDialog() {
+      this.deleteConfirmDialog = true;
+      setTimeout(() => {
+        this.$refs.deleteConfirmDialog.$refs.confirmBtn.$el.focus();
+      }, 100);
+    },
+    async deleteItems() {
+      this.$store.commit("deleteSessionItems", this.selected);
+      this.selected = [];
+      this.$root.$emit("update-selected", this.selected);
+      this.deleteConfirmDialog = false;
+    },
+    async exportItems() {
+      if (this.$isElectron) {
+        await this.$electronService.exportItems(this.selected);
+        this.selected = [];
+        this.$root.$emit("update-selected", this.selected);
+      }
+      // todo add web handler for items export
     },
   },
 };
@@ -271,7 +450,7 @@ export default {
   box-shadow: 0px 16px 40px 0px #0000000f !important;
 }
 .workspace-container {
-  /* background-color: #f2f4f7; */
+  background-color: #f2f4f7;
   height: calc(100% - 3rem);
   margin: auto;
   border-radius: 0.5rem;

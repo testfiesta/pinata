@@ -132,7 +132,7 @@
           </v-tab-item>
         </v-tabs-items>
         <ControlPanel
-          class="control-panel"
+          class="pa-0"
           @add-item="addItem"
           @update-item="updateItem"
           :selectedItems="selected"
@@ -512,11 +512,6 @@ export default {
   border-color: #4b5563;
   background-color: #374151;
   color: #ffffff;
-}
-.control-panel {
-  position: absolute;
-  top: 2%;
-  right: 8%;
 }
 </style>
 <style>

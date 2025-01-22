@@ -22,124 +22,6 @@
       class="d-flex justify-end"
       v-if="viewMode === 'normal'"
     >
-      <v-row class="mb-1" v-if="selected.length > 0">
-        <v-col cols="6" class="pa-1">
-          <v-btn
-            id="btn_delete"
-            class="rounded-lg text-capitalize"
-            fill
-            depressed
-            height="40px"
-            block
-            :color="currentTheme.primary"
-            :style="{ color: currentTheme.white }"
-            @click="handleDeleteConfirmDialog"
-          >
-            <v-icon left>mdi-delete</v-icon> {{ $tc("caption.delete", 1) }}
-          </v-btn>
-        </v-col>
-        <v-col cols="6" class="pa-1">
-          <v-menu
-            top
-            :offset-y="true"
-            :close-on-content-click="false"
-            v-model="evidenceExportDestinationMenu"
-          >
-            <template v-slot:activator="{ on: evidenceExportDestinationMenu }">
-              <v-tooltip open-on-hover top>
-                <template v-slot:activator="{ on: onTooltip }">
-                  <v-btn
-                    id="btn_download"
-                    fill
-                    class="rounded-lg text-capitalize"
-                    depressed
-                    height="40px"
-                    block
-                    color="white"
-                    :style="{ color: currentTheme.black }"
-                    v-on="{ ...evidenceExportDestinationMenu, ...onTooltip }"
-                  >
-                    <v-icon left>mdi-download</v-icon>
-                    {{ $tc("caption.export", 1) }}
-                  </v-btn>
-                </template>
-                <span>{{ $tc("caption.export", 1) }}</span>
-              </v-tooltip>
-            </template>
-            <v-card tile>
-              <v-list dense>
-                <v-list-item @click="exportItems">
-                  <v-list-item-icon class="mr-4">
-                    <v-icon>mdi-download</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{ $tc("caption.save_as", 1) }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <div v-if="credentials.jira && credentials.jira.length > 0">
-                  <jira-export-session
-                    :title="$tc(`caption.export_to_jira`, 1)"
-                    :credential-items="credentials.jira"
-                    :items="items"
-                    :selected="selected"
-                    @close-menu="() => (evidenceExportDestinationMenu = false)"
-                  />
-                </div>
-                <div
-                  v-if="credentials.testrail && credentials.testrail.length > 0"
-                >
-                  <test-rail-export-session
-                    :title="$tc(`caption.export_to_testrail`, 1)"
-                    :credential-items="credentials.testrail"
-                    :items="items"
-                    :selected="selected"
-                  />
-                </div>
-                <div v-if="credentials.xray && credentials.xray.length > 0">
-                  <xray-export-session
-                    :title="$tc(`caption.export_to_xray`, 1)"
-                    :credential-items="credentials.xray"
-                    :items="items"
-                    :selected="selected"
-                  />
-                </div>
-                <div
-                  v-if="
-                    credentials.zephyrSquad &&
-                    credentials.zephyrSquad.length > 0 &&
-                    // Adding the false to make it invisible
-                    false
-                  "
-                >
-                  <zephyr-squad-export-session
-                    :title="$tc(`caption.export_to_zephyr_squad`, 1)"
-                    :credential-items="credentials.zephyrSquad"
-                    :items="items"
-                    :selected="selected"
-                  />
-                </div>
-                <div
-                  v-if="
-                    credentials.zephyrScale &&
-                    credentials.zephyrScale.length > 0 &&
-                    // // Adding the false to make it invisible
-                    false
-                  "
-                >
-                  <zephyr-scale-export-session
-                    :title="$tc(`caption.export_to_zephyr_scale`, 1)"
-                    :credential-items="credentials.zephyrScale"
-                    :items="items"
-                    :selected="selected"
-                  />
-                </div>
-              </v-list>
-            </v-card>
-          </v-menu>
-        </v-col>
-      </v-row>
       <v-row
         class="text-center control-btn-wrapper rounded-12px"
         :style="{ backgroundColor: mainBgReverse }"
@@ -230,7 +112,7 @@
         </v-col>
       </v-row>
       <v-row
-        class="text-center control-btn-wrapper control-btn-shadow rounded-12px"
+        class="text-center control-btn-wrapper control-btn-shadow control-panel rounded-12px"
         :style="{ backgroundColor: mainBgReverse }"
         v-if="status !== 'pending' && status !== 'end'"
       >
@@ -768,15 +650,8 @@ import DurationConfirmDialog from "./dialogs/DurationConfirmDialog.vue";
 import AudioErrorDialog from "./dialogs/AudioErrorDialog.vue";
 import EndSessionDialog from "./dialogs/EndSessionDialog.vue";
 import LowProfileControlWrapper from "../components/LowProfileControlWrapper.vue";
-import JiraExportSession from "./jira/JiraExportSession";
-import TestRailExportSession from "./testrail/TestRailExportSession";
-import XrayExportSession from "./xray/XrayExportSession";
-import ZephyrSquadExportSession from "./zephyr/ZephyrSquadExportSession";
-import ZephyrScaleExportSession from "./zephyr/ZephyrScaleExportSession";
 import AddEvidenceDialog from "@/components/dialogs/AddEvidenceDialog.vue";
 import theme from "../mixins/theme";
-
-import JiraAddIssue from "./jira/JiraAddIssue";
 
 import {
   DEFAULT_MAP_CONNECTIONS,
@@ -818,12 +693,6 @@ export default {
     AudioErrorDialog,
     EndSessionDialog,
     LowProfileControlWrapper,
-    JiraExportSession,
-    TestRailExportSession,
-    XrayExportSession,
-    ZephyrSquadExportSession,
-    ZephyrScaleExportSession,
-    JiraAddIssue,
   },
   props: {
     selectedItems: {
@@ -1017,7 +886,6 @@ export default {
       selected: [],
       selectedNodes: [],
       callback: null,
-      evidenceExportDestinationMenu: false,
       issueCreateDestinationMenu: false,
       evidenceData: null,
       addEvidenceDialog: false,
@@ -1202,12 +1070,6 @@ export default {
     },
     updateSelectedNodes(value) {
       this.selectedNodes = value;
-    },
-    handleDeleteConfirmDialog() {
-      this.deleteConfirmDialog = true;
-      setTimeout(() => {
-        this.$refs.deleteConfirmDialog.$refs.confirmBtn.$el.focus();
-      }, 100);
     },
     startInterval() {
       if (!this.interval) {
@@ -1468,8 +1330,8 @@ export default {
                 timer_mark: this.timer,
               };
               this.evidenceData = data;
-              this.$emit("add-evidence", this.evidenceData);
-              // this.addEvidenceDialog = true;
+              // this.$emit("add-evidence", this.evidenceData);
+              this.addEvidenceDialog = true;
             }
           } else {
             const { item } = createImageForWeb(imgURI);
@@ -1478,8 +1340,8 @@ export default {
               timer_mark: this.timer,
             };
             this.evidenceData = data;
-            this.$emit("add-evidence", this.evidenceData);
-            // this.addEvidenceDialog = true;
+            // this.$emit("add-evidence", this.evidenceData);
+            this.addEvidenceDialog = true;
           }
         };
       };
@@ -1602,8 +1464,8 @@ export default {
                 timer_mark: this.timer,
               };
               this.evidenceData = data;
-              this.$emit("add-evidence", this.evidenceData);
-              // this.addEvidenceDialog = true;
+              // this.$emit("add-evidence", this.evidenceData);
+              this.addEvidenceDialog = true;
             }
           } else {
             const { item } = createVideoForWeb(blob);
@@ -1613,8 +1475,8 @@ export default {
               timer_mark: this.timer,
             };
             this.evidenceData = data;
-            this.$emit("add-evidence", this.evidenceData);
-            // this.addEvidenceDialog = true;
+            // this.$emit("add-evidence", this.evidenceData);
+            this.addEvidenceDialog = true;
           }
         };
         // mediaRecorder.addEventListener("error", (event) => {
@@ -1747,8 +1609,8 @@ export default {
                 poster: "",
               };
               this.evidenceData = data;
-              this.$emit("add-evidence", this.evidenceData);
-              // this.addEvidenceDialog = true;
+              // this.$emit("add-evidence", this.evidenceData);
+              this.addEvidenceDialog = true;
             }
             recordedChunks = [];
           } else {
@@ -1759,8 +1621,8 @@ export default {
               poster: "",
             };
             this.evidenceData = data;
-            this.$emit("add-evidence", this.evidenceData);
-            // this.addEvidenceDialog = true;
+            // this.$emit("add-evidence", this.evidenceData);
+            this.addEvidenceDialog = true;
           }
         };
         mediaRecorder.start(1000);
@@ -1902,14 +1764,6 @@ export default {
       this.selected = [];
       this.$root.$emit("update-selected", this.selected);
       this.deleteConfirmDialog = false;
-    },
-    async exportItems() {
-      if (this.$isElectron) {
-        await this.$electronService.exportItems(this.selected);
-        this.selected = [];
-        this.$root.$emit("update-selected", this.selected);
-      }
-      // todo add web handler for items export
     },
     async saveSession(callback = null) {
       this.newSessionDialog = false;
@@ -2083,5 +1937,11 @@ export default {
 }
 .control-btn-shadow {
   box-shadow: 0px 12px 16px -4px #10182814 !important;
+}
+.control-panel {
+  margin-top: 1.25rem;
+  position: absolute;
+  top: 0;
+  right: 8%;
 }
 </style>

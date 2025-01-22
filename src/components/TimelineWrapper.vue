@@ -1458,7 +1458,7 @@ export default {
 }
 
 .timeline-wrapper {
-  height: calc(100vh - 24px);
+  /* height: calc(100vh - 24px); */
   overflow-x: hidden;
   overflow-y: overlay;
 }

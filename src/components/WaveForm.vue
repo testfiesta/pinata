@@ -50,9 +50,9 @@ export default {
       container: this.$refs.waveform,
       waveColor: "#98A2B3",
       progressColor: "#182230",
-      barWidth: 2,
+      barWidth: 4,
       barGap: 2,
-      barRadius: 100,
+      barRadius: 2,
       responsive: true,
       height: 24,
     });
