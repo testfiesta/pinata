@@ -624,7 +624,7 @@ export default {
     });
   },
   beforeDestroy() {
-    // this.$root.$off("save-data");
+    this.$root.$off("save-data");
   },
   watch: {
     itemData: function (val) {
