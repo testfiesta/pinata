@@ -801,6 +801,7 @@ export default {
       this.emojis = this.emojis.filter((item) => item.data !== emoji.data);
     },
     async saveData(data) {
+      this.item.fileName = this.name + this.fileSuffix;
       let newItem = {
         ...this.item,
         comment: this.comment,
@@ -811,9 +812,10 @@ export default {
         createdAt: Date.now(),
         uploaded: false,
       };
-      if (data) newItem = { ...data, ...newItem };
+      if (data && typeof data === "object" && !Array.isArray(data)) {
+        newItem = { ...data, ...newItem };
+      }
       let tempItems = structuredClone(this.items);
-
       // Ensure tempItems has enough elements to match this.nodes
       if (tempItems.length < this.nodes.length) {
         for (let i = tempItems.length; i < this.nodes.length; i++) {
@@ -873,7 +875,6 @@ export default {
           });
         }
       }
-
       await this.$store.commit("setSessionItems", [...updatedItems]);
       await this.$store.commit("setSessionNodes", [...updatedNodes]);
       await this.$store.commit("setSessionConnections", [

@@ -1616,7 +1616,11 @@ export default {
 ::v-deep .options {
   display: none !important;
 }
-
+.timeline-wrap {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
+}
 .timeline-wrapper {
   /* height: calc(100vh - 24px); */
   overflow-x: hidden;

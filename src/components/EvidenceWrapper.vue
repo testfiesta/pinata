@@ -344,10 +344,6 @@ export default {
     itemData: function () {
       console.log("itemData changed");
       this.activeSession();
-      this.comment.content = this.itemData?.comment?.content || "";
-      this.comment.text = this.itemData?.comment?.text || "";
-      this.comment.type = this.itemData?.comment?.type || "";
-      console.log(this.comment);
     },
     createJiraTicket: async function (val) {
       if (val) {
@@ -435,6 +431,10 @@ export default {
           this.comment.text = temp.text;
         }
       });
+
+      this.comment.content = this.itemData?.comment?.content || "";
+      this.comment.text = this.itemData?.comment?.text || "";
+      this.comment.type = this.itemData?.comment?.type || "";
     },
     toggleFollowUp() {
       this.followUp = !this.followUp;
