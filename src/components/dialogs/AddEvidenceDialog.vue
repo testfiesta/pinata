@@ -812,8 +812,6 @@ export default {
         uploaded: false,
       };
       if (data) newItem = { ...data, ...newItem };
-      console.log("Save Data", newItem);
-
       let tempItems = structuredClone(this.items);
 
       // Ensure tempItems has enough elements to match this.nodes
@@ -849,8 +847,8 @@ export default {
         newItem.fx = this.nodes[this.nodes.length - 1].fx + random_offset_x;
         newItem.fy = this.nodes[this.nodes.length - 1].fy + random_offset_y;
       }
-
       updatedItems.push(newItem);
+      this.$root.$emit("set-selected-evidence", newItem);
       tempItems = updatedItems
         .slice()
         .filter((item) => item?.comment?.type !== "Summary");

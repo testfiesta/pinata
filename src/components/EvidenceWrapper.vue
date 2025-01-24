@@ -1,46 +1,12 @@
 <template>
   <div class="d-flex flex-column w-full">
-    <div class="d-flex justify-space-between mb-3 w-full">
-      <div class="w-full">
-        <div
-          v-shortkey="nameHotkey"
-          @shortkey="$hotkeyHelpers.focusField($refs, 'nameTextField')"
-        >
-          <div
-            class="d-flex fs-14 mb-1 font-weight-medium"
-            :style="{ color: currentTheme.secondary }"
-          >
-            {{ $tc("caption.filename", 1) }}
-          </div>
-        </div>
-        <v-text-field
-          name="name"
-          flat
-          solo
-          height="40px"
-          hide-details
-          class="mr-3"
-          :background-color="inputBg"
-          v-model="name"
-          :suffix="fileSuffix"
-          :disabled="processing"
-          ref="nameTextField"
-          @input="handleName"
-        />
+    <div class="d-flex justify-space-between align-center mb-3 w-full">
+      <div class="fs-16 font-weight-semibold w-full">
+        {{ name + fileSuffix }}
       </div>
 
-      <div class="d-flex justify-end w-full">
+      <div class="d-flex justify-end align-center w-full">
         <div>
-          <div class="comment-type">
-            <div
-              class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
-              :style="{ color: currentTheme.secondary }"
-              v-shortkey="typeHotkey"
-              @shortkey="openCommentType()"
-            >
-              {{ $tc("caption.comment_type", 1) }}
-            </div>
-          </div>
           <v-select
             ref="commentType"
             :items="commentTypes"
@@ -70,68 +36,6 @@
       :auto-save="autoSaveEvent"
       class="mb-3"
     />
-
-    <div class="actions-wrapper mb-3">
-      <template v-if="emojis.length">
-        <v-btn
-          rounded
-          color="primary"
-          class="pa-0 mb-1"
-          height="32"
-          depressed
-          min-width="32"
-          v-for="(emoji, i) in emojis"
-          :key="i"
-          :disabled="processing"
-          @click="removeEmoji(emoji)"
-        >
-          <span class="emoji-icon">{{ emoji.data }}</span>
-          <v-icon x-small>mdi-close</v-icon>
-        </v-btn>
-      </template>
-
-      <v-menu
-        v-model="emojiMenu"
-        :close-on-content-click="false"
-        right
-        bottom
-        nudge-bottom="4"
-        offset-y
-      >
-        <template v-slot:activator="{ on: emojiMenu }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on: tooltip }">
-              <v-btn
-                rounded
-                class="pa-0 mb-1"
-                height="32"
-                depressed
-                min-width="32"
-                v-on="{
-                  ...emojiMenu,
-                  ...tooltip,
-                }"
-                :disabled="processing"
-              >
-                <img
-                  :src="require('../assets/icon/add-emoticon.svg')"
-                  width="24"
-                  height="24"
-                />
-              </v-btn>
-            </template>
-            <span>{{ $tc("caption.add_reaction", 1) }}</span>
-          </v-tooltip>
-        </template>
-        <v-card class="emoji-lookup">
-          <VEmojiPicker
-            labelSearch="Search"
-            lang="en-US"
-            @select="selectEmoji"
-          />
-        </v-card>
-      </v-menu>
-    </div>
     <v-card v-if="commentLoading" class="loading-wrapper mb-3" outlined flat>
       <v-progress-circular
         :color="currentTheme.primary"
@@ -274,161 +178,6 @@
         </template>
       </v-tiptap>
     </div>
-    <div
-      v-shortkey="tagsHotkey"
-      @shortkey="$hotkeyHelpers.focusField($refs, 'tags')"
-      class="mb-3"
-    >
-      <div
-        class="d-flex fs-14 mb-1 font-weight-medium"
-        :style="{ color: currentTheme.secondary }"
-      >
-        {{ $tc("caption.tags_tab", 1) }}
-      </div>
-      <vue-tags-input
-        ref="tags"
-        class="input-box tags-theme"
-        :class="{
-          dark: $vuetify.theme.dark,
-          light: !$vuetify.theme.dark,
-        }"
-        v-model="tagText"
-        :tags="tags"
-        :autocomplete-items="filteredTags"
-        label="Tags"
-        :max-tags="10"
-        :maxlength="20"
-        @tags-changed="handleTags"
-        :placeholder="$t('message.insert_tag')"
-        :disabled="processing"
-      />
-    </div>
-    <div class="flex flex-column mb-3">
-      <div
-        class="d-flex fs-14 mb-1 font-weight-medium"
-        :style="{ color: currentTheme.secondary }"
-      >
-        {{ $tc("caption.create_new_issue", 1) }}
-      </div>
-      <v-menu
-        v-if="!createJiraTicket"
-        top
-        :offset-y="true"
-        :close-on-content-click="false"
-        ref="issueMenu"
-        v-model="issueCreateDestinationMenu"
-      >
-        <template v-slot:activator="{ on: issueCreateDestinationMenu }">
-          <v-tooltip top>
-            <template v-slot:activator="{ on: onTooltip }">
-              <v-btn
-                id="btn__bug"
-                class="control-btn mx-1"
-                fab
-                outlined
-                color="default"
-                v-on="{ ...issueCreateDestinationMenu, ...onTooltip }"
-              >
-                <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/bug.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/bug-gray.svg')"
-                  width="24"
-                  height="24"
-                />
-              </v-btn>
-            </template>
-
-            <span>{{ $tc("caption.create_new_issue", 1) }}</span>
-          </v-tooltip>
-        </template>
-        <v-card class="mx-auto" width="150" tile>
-          <v-list dense>
-            <v-list-item
-              @click="
-                createJiraTicket = true;
-                issueCreateDestinationMenu = false;
-              "
-            >
-              <v-list-item-icon class="mr-4">
-                <v-avatar size="24">
-                  <img
-                    :src="require('../assets/icon/jira.png')"
-                    width="24"
-                    alt="avatar"
-                  />
-                </v-avatar>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>{{
-                  $tc("caption.jira", 1)
-                }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-menu>
-      <v-btn
-        v-if="createJiraTicket"
-        class="text-capitalize pa-0 back-btn"
-        plain
-        @click="createJiraTicket = false"
-        >{{ $tc("caption.cancel_creating_issue", 1) }}</v-btn
-      >
-    </div>
-    <JiraAddIssueForm
-      v-if="createJiraTicket"
-      :credential-items="credentials.jira"
-      :trigger-save="triggerJiraSaveTicket"
-      :items="[item]"
-      @issueAdded="handleSaveAndClose"
-    />
-
-    <div class="d-flex justify-space-between mt-6">
-      <v-btn
-        fill
-        height="40px"
-        :color="btnBg"
-        class="text-capitalize rounded-lg"
-        depressed
-        @click="handleClear"
-      >
-        {{ $tc("caption.clear", 1) }}
-      </v-btn>
-      <div class="d-flex">
-        <v-btn
-          fill
-          height="40px"
-          :color="btnBg"
-          depressed
-          class="text-capitalize mr-2 rounded-lg"
-          :disabled="processing"
-          v-shortkey="cancelHotkey"
-          @shortkey="handleDiscard()"
-          @click="handleDiscard()"
-        >
-          {{ $tc("caption.discard", 1) }}
-        </v-btn>
-        <v-btn
-          class="text-capitalize rounded-lg"
-          fill
-          height="40px"
-          depressed
-          color="primary"
-          :disabled="processing"
-          v-shortkey="saveHotkey"
-          @shortkey="handleSave"
-          @click="handleSave"
-        >
-          {{ $tc("caption.save", 1) }}
-        </v-btn>
-      </div>
-    </div>
     <TipTapLinkDialog
       ref="linkModal"
       :placeholder="$tc('caption.enter_url', 1)"
@@ -438,10 +187,8 @@
 
 <script>
 import ReviewWrapper from "@/components/ReviewWrapper.vue";
-import VueTagsInput from "@johmun/vue-tags-input";
-import { VEmojiPicker } from "v-emoji-picker";
 import TipTapLinkDialog from "../components/dialogs/TipTapLinkDialog.vue";
-
+import debounce from "lodash/debounce";
 import {
   TEXT_TYPES,
   STATUSES,
@@ -452,16 +199,12 @@ import {
 import openAIIntegrationHelper from "../integrations/OpenAIIntegrationHelpers";
 import { mapGetters } from "vuex";
 import jiraIntegrationHelper from "@/integrations/JiraIntegrationHelpers";
-import JiraAddIssueForm from "@/components/jira/JiraAddIssueForm.vue";
 import theme from "../mixins/theme";
 
 export default {
   name: "EvidenceWrapper",
   components: {
     ReviewWrapper,
-    VueTagsInput,
-    VEmojiPicker,
-    JiraAddIssueForm,
     TipTapLinkDialog,
   },
   props: {
@@ -506,6 +249,7 @@ export default {
       jiraTicketSaved: false,
       autoSaveEvent: false,
       allTags: [],
+      lastStepID: null,
       headingOptions: [
         { text: "Normal Text", level: 0 }, // Normal text option
         { text: "Heading 1", level: 1 },
@@ -587,10 +331,6 @@ export default {
     }
 
     this.activeSession();
-
-    // Focus on comment
-    this.$refs.comment.editor.commands.focus();
-
     this.$root.$on("update-edit-item", this.updateEditItem);
     this.$root.$on("update-processing", this.updateProcessing);
     this.$root.$on("save-data", (data) => {
@@ -601,10 +341,13 @@ export default {
     // this.$root.$off("save-data");
   },
   watch: {
-    itemData: function (val) {
+    itemData: function () {
       console.log("itemData changed");
-      console.log(val);
       this.activeSession();
+      this.comment.content = this.itemData?.comment?.content || "";
+      this.comment.text = this.itemData?.comment?.text || "";
+      this.comment.type = this.itemData?.comment?.type || "";
+      console.log(this.comment);
     },
     createJiraTicket: async function (val) {
       if (val) {
@@ -613,6 +356,13 @@ export default {
         );
         this.projects = response.projects;
       }
+    },
+    comment: {
+      handler: debounce(function () {
+        let data = { ...this.itemData, comment: { ...this.comment } };
+        this.$store.commit("updateSessionItem", data);
+      }, 1000),
+      deep: true,
     },
   },
   methods: {
@@ -786,8 +536,6 @@ export default {
         uploaded: false,
       };
       if (data) newItem = { ...data, ...newItem };
-      console.log("Save Data", newItem);
-
       let tempItems = structuredClone(this.items);
 
       // Ensure tempItems has enough elements to match this.nodes

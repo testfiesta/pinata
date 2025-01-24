@@ -14,6 +14,7 @@
         :item="editSessionItem"
         :trigger-save="triggerSaveEvent"
         :defaultColor="config.defaultColor"
+        :editorId="uniqueId"
       />
     </div>
     <div v-else-if="getType(editSessionItem.fileType) === 'video'">
@@ -21,6 +22,7 @@
         :item="editSessionItem"
         :processing="processing"
         :trigger-save="triggerSaveEvent"
+        :videoPlayerId="uniqueId"
       />
     </div>
     <div v-else-if="getType(editSessionItem.fileType) === 'audio'">
@@ -117,6 +119,9 @@ export default {
     ...mapGetters({
       config: "config/fullConfig",
     }),
+    uniqueId() {
+      return `image-editor-${Date.now()}`;
+    },
   },
   methods: {
     getType(type) {

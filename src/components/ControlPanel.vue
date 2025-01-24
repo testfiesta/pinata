@@ -1330,7 +1330,6 @@ export default {
                 timer_mark: this.timer,
               };
               this.evidenceData = data;
-              // this.$emit("add-evidence", this.evidenceData);
               this.addEvidenceDialog = true;
             }
           } else {
@@ -1340,7 +1339,6 @@ export default {
               timer_mark: this.timer,
             };
             this.evidenceData = data;
-            // this.$emit("add-evidence", this.evidenceData);
             this.addEvidenceDialog = true;
           }
         };
@@ -1456,7 +1454,6 @@ export default {
               await this.$electronService.createVideo(buffer);
             if (status === STATUSES.ERROR) {
               this.$root.$emit("set-snackbar", message);
-              console.log(message);
             } else {
               const data = {
                 ...item,
@@ -1464,7 +1461,6 @@ export default {
                 timer_mark: this.timer,
               };
               this.evidenceData = data;
-              // this.$emit("add-evidence", this.evidenceData);
               this.addEvidenceDialog = true;
             }
           } else {
@@ -1475,7 +1471,6 @@ export default {
               timer_mark: this.timer,
             };
             this.evidenceData = data;
-            // this.$emit("add-evidence", this.evidenceData);
             this.addEvidenceDialog = true;
           }
         };
@@ -1609,7 +1604,6 @@ export default {
                 poster: "",
               };
               this.evidenceData = data;
-              // this.$emit("add-evidence", this.evidenceData);
               this.addEvidenceDialog = true;
             }
             recordedChunks = [];
@@ -1621,7 +1615,6 @@ export default {
               poster: "",
             };
             this.evidenceData = data;
-            // this.$emit("add-evidence", this.evidenceData);
             this.addEvidenceDialog = true;
           }
         };

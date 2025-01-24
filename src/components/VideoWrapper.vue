@@ -21,7 +21,7 @@
     <div class="video-wrapper" v-if="!isProcessing">
       <div class="video-player">
         <video
-          ref="videoPlayer"
+          :ref="videoPlayerRef"
           controls
           @loadedmetadata="logDuration"
           style="width: 100%"
@@ -109,6 +109,10 @@ export default {
       type: Boolean,
       default: () => false,
     },
+    videoPlayerId: {
+      type: String,
+      required: true,
+    },
   },
   watch: {
     item: function (newValue) {
@@ -133,8 +137,10 @@ export default {
       duration: 0,
     };
   },
-  mounted() {},
   computed: {
+    videoPlayerRef() {
+      return `videoPlayer-${this.videoPlayerId}`;
+    },
     durationTime() {
       try {
         const date = new Date(null);
@@ -196,7 +202,7 @@ export default {
       this.$root.$emit("update-processing", this.isProcessing);
     },
     logDuration() {
-      this.duration = this.$refs.videoPlayer.duration;
+      this.duration = this.$refs[this.videoPlayerRef].duration;
     },
     setEndTime(value) {
       this.end = value;
@@ -211,6 +217,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .preview-wrapper {
   text-align: center;

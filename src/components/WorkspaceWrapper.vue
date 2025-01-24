@@ -6,20 +6,23 @@
           class="app-height-global rounded-lg card pa-6"
           :style="{ backgroundColor: mainBg }"
         >
-          <div class="fs-16 font-weight-bold mb-6">
+          <div class="fs-16 font-weight-bold" v-if="!isItemsExist">
             {{ $tc("caption.session_started", 1) }}
           </div>
-          <div class="workspace-container app-height-global">
+          <div
+            class="workspace-container app-height-global mt-6"
+            :class="{
+              'workspace-container-bg': !isItemsExist,
+              'align-start': isItemsExist,
+              'align-center': !isItemsExist,
+            }"
+          >
             <img
               :src="localSourceThumbnail"
               alt="source_thumbnail"
-              v-if="localSourceThumbnail && isLocalEvidenceEmpty"
+              v-if="!isItemsExist"
             />
-            <EvidenceWrapper
-              v-if="!isLocalEvidenceEmpty"
-              :item-data="localEvidence"
-              @close="$emit('update:evidence', {})"
-            />
+            <EvidenceWrapper :item-data="selectedEvidence" v-else />
           </div>
         </div>
       </div>
@@ -275,39 +278,6 @@ import ZephyrScaleExportSession from "./zephyr/ZephyrScaleExportSession";
 import DeleteConfirmDialog from "./dialogs/DeleteConfirmDialog.vue";
 export default {
   name: "WorkspaceWrapper",
-  computed: {
-    ...mapGetters({
-      items: "sessionItems",
-      config: "config/fullConfig",
-      credentials: "auth/credentials",
-    }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
-    localSourceThumbnail: {
-      get() {
-        return this.sourceThumbnail;
-      },
-      set(value) {
-        this.$emit("update:sourceThumbnail", value);
-      },
-    },
-    localEvidence: {
-      get() {
-        return this.evidence;
-      },
-      set(value) {
-        this.$emit("update:evidence", value);
-      },
-    },
-    isLocalEvidenceEmpty() {
-      return Object.keys(this.localEvidence).length === 0 && this.localEvidence;
-    },
-  },
   components: {
     NotesWrapper,
     TimelineWrapper,
@@ -333,10 +303,12 @@ export default {
       type: String,
       default: () => "",
     },
-    evidence: {
-      type: Object,
-      default: () => {},
-    },
+  },
+  mounted() {
+    this.$root.$on("edit-evidence", this.editEvidence);
+    this.$root.$on("set-selected-evidence", (selected) => {
+      this.editEvidence(selected);
+    });
   },
   watch: {
     selectedItems: function (newValue) {
@@ -354,7 +326,33 @@ export default {
       currentTab: "timeline",
       evidenceExportDestinationMenu: false,
       deleteConfirmDialog: false,
+      selectedEvidence: {},
     };
+  },
+  computed: {
+    ...mapGetters({
+      items: "sessionItems",
+      config: "config/fullConfig",
+      credentials: "auth/credentials",
+    }),
+    isItemsExist() {
+      return this.items.length > 0;
+    },
+    currentTheme() {
+      if (this.$vuetify.theme.dark) {
+        return this.$vuetify.theme.themes.dark;
+      } else {
+        return this.$vuetify.theme.themes.light;
+      }
+    },
+    localSourceThumbnail: {
+      get() {
+        return this.sourceThumbnail;
+      },
+      set(value) {
+        this.$emit("update:sourceThumbnail", value);
+      },
+    },
   },
   methods: {
     handleAdd(content) {
@@ -382,6 +380,9 @@ export default {
         this.$root.$emit("update-selected", this.selected);
       }
       // todo add web handler for items export
+    },
+    editEvidence(item) {
+      this.selectedEvidence = item;
     },
   },
 };
@@ -450,12 +451,13 @@ export default {
   box-shadow: 0px 16px 40px 0px #0000000f !important;
 }
 .workspace-container {
-  background-color: #f2f4f7;
   height: calc(100% - 3rem);
   margin: auto;
   border-radius: 0.5rem;
   display: flex;
-  align-items: center;
   justify-content: center;
+}
+.workspace-container-bg {
+  background-color: #f2f4f7;
 }
 </style>
