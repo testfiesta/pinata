@@ -4,67 +4,118 @@
     v-on="$listeners"
     persistent
     width="100%"
+    eager
+    content-class="rounded-12px"
     max-width="600px"
   >
-    <v-sheet rounded :style="{ backgroundColor: currentTheme.background }">
-      <div class="wrapper">
-        <div class="header">
-          <span :style="{ color: currentTheme.secondary }">
-            {{ $tc("message.select_window_to_record_session", 1) }}
-          </span>
-        </div>
-        <div class="content">
-          <v-radio-group v-model="activeSource">
-            <v-row class="session-list">
-              <v-col
-                class="session-item"
-                cols="6"
-                xs="6"
-                sm="4"
-                md="4"
-                v-for="item in sources"
-                :key="item.id"
+    <v-sheet outlined rounded>
+      <v-card :style="{ backgroundColor: currentTheme.background }">
+        <v-card-title class="pa-6" :style="{ color: currentTheme.secondary }">
+          <div class="d-flex justify-space-between align-center w-full">
+            <span
+              class="dialog-title fs-18 font-weight-semibold"
+              :style="{ color: currentTheme.secondary }"
+            >
+              {{ $tc("message.select_window_to_record_session", 1) }}
+            </span>
+            <v-btn icon color="#98a2b3" @click="dialog = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </div>
+        </v-card-title>
+        <v-container>
+          <v-row>
+            <v-col cols="12" class="px-6 pt-0">
+              <div class="wrapper">
+                <v-radio-group v-model="activeSource">
+                  <v-row class="session-list">
+                    <v-col
+                      class="session-item"
+                      cols="6"
+                      xs="6"
+                      sm="4"
+                      md="4"
+                      v-for="item in sources"
+                      :key="item.id"
+                    >
+                      <div
+                        class="session-img cursor-pointer rounded-lg"
+                        :class="{ selected: activeSource === item.id }"
+                      >
+                        <img
+                          class="rounded-lg"
+                          :src="item.thumbnail"
+                          :alt="item.name"
+                          @click="activeSource = item.id"
+                        />
+                      </div>
+                      <div class="session-name mt-2">
+                        <p
+                          class="fs-16 font-weight-medium"
+                          :style="{ color: currentTheme.secondary }"
+                        >
+                          {{ item.name }}
+                        </p>
+                      </div>
+                      <div class="session-radio d-none">
+                        <v-radio
+                          dense
+                          :value="item.id"
+                          :ripple="false"
+                        ></v-radio>
+                      </div>
+                    </v-col>
+                  </v-row>
+                </v-radio-group>
+              </div>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-card-actions class="pa-0">
+          <div
+            class="d-flex justify-space-between align-center w-full px-6 pb-6"
+          >
+            <v-checkbox
+              id="remember-me-checkbox"
+              class="field-theme mt-0"
+              hide-details
+              :ripple="false"
+              off-icon="icon-checkbox-off"
+              on-icon="icon-checkbox-on"
+            >
+              <template v-slot:label>
+                <span class="fs-14 text-theme-label">
+                  {{ $tc("caption.keep_for_whole_session", 1) }}
+                </span>
+              </template>
+            </v-checkbox>
+            <div>
+              <v-btn
+                class="text-capitalize rounded-lg mr-3"
+                :color="btnBg"
+                v-shortkey="cancelHotkey"
+                @shortkey="handleClose()"
+                @click="handleClose()"
+                depressed
               >
-                <div class="session-img">
-                  <img :src="item.thumbnail" :alt="item.name" />
-                </div>
-                <div class="session-name">
-                  <p :style="{ color: currentTheme.secondary }">
-                    {{ item.name }}
-                  </p>
-                </div>
-                <div class="session-radio">
-                  <v-radio dense :value="item.id" :ripple="false"></v-radio>
-                </div>
-              </v-col>
-            </v-row>
-          </v-radio-group>
-        </div>
-        <div class="footer">
-          <v-btn
-            class="text-capitalize rounded-lg"
-            :color="btnBg"
-            v-shortkey="cancelHotkey"
-            @shortkey="handleClose()"
-            @click="handleClose()"
-            depressed
-          >
-            {{ $tc("caption.cancel", 1) }}
-          </v-btn>
-          <v-btn
-            class="text-capitalize rounded-lg"
-            depressed
-            :color="currentTheme.primary"
-            :style="{ color: currentTheme.white }"
-            :disabled="!activeSource"
-            v-shortkey="confirmHotkey"
-            @shortkey="handleSelect()"
-            @click="handleSelect()"
-          >
-            {{ $tc("caption.select", 1) }}
-          </v-btn>
-        </div>
-      </div>
+                {{ $tc("caption.cancel", 1) }}
+              </v-btn>
+              <v-btn
+                class="text-capitalize rounded-lg"
+                depressed
+                :color="currentTheme.primary"
+                :style="{ color: currentTheme.white }"
+                :disabled="!activeSource"
+                v-shortkey="confirmHotkey"
+                @shortkey="handleSelect()"
+                @click="handleSelect()"
+              >
+                {{ $tc("caption.select", 1) }}
+              </v-btn>
+            </div>
+          </div>
+        </v-card-actions>
+      </v-card>
     </v-sheet>
   </v-dialog>
 </template>
@@ -137,6 +188,7 @@ export default {
   height: 400px;
   width: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .header {
@@ -200,9 +252,9 @@ export default {
 .session-list .session-item .session-name {
   padding: 5px;
   padding-bottom: 0;
-  text-align: center;
+  text-align: left;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
 }
 .session-list .session-item .session-name p {
@@ -220,5 +272,12 @@ export default {
 .v-input--selection-controls__input {
   width: 16px;
   height: 16px;
+}
+.session-img.selected {
+  border: solid 3px #0c2ff3;
+  border-radius: 8px;
+}
+.session-img {
+  border: solid 3px transparent;
 }
 </style>

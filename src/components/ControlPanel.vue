@@ -113,7 +113,10 @@
       </v-row>
       <v-row
         class="text-center control-btn-wrapper control-btn-shadow control-panel rounded-12px"
-        :style="{ backgroundColor: mainBgReverse }"
+        :style="{
+          backgroundColor: mainBgReverse,
+          right: quickTest ? '8%' : '5%',
+        }"
         v-if="status !== 'pending' && status !== 'end'"
       >
         <v-col cols="12" class="d-flex justify-center px-0 py-1">
@@ -567,9 +570,6 @@
       :credentialItems="credentials"
       :summary="summary"
       @submit-summary="addSummary"
-      :export-button-items="items"
-      :export-button-config="config"
-      :export-button-credentials="credentials"
     />
     <DeleteConfirmDialog
       v-model="deleteConfirmDialog"
@@ -772,6 +772,7 @@ export default {
       postSessionData: "config/postSessionData",
       config: "config/fullConfig",
       credentials: "auth/credentials",
+      quickTest: "sessionQuickTest",
     }),
     isShareSessionAllowed() {
       return !this.config.localOnly;
@@ -1005,6 +1006,7 @@ export default {
           let data = await this.fetchSources();
           this.loaded = true;
           this.sources = data;
+          this.$root.$emit("sources-loaded", data);
 
           this.sourcePickerDialog = true;
         } catch (err) {

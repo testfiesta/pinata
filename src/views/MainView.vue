@@ -9,8 +9,14 @@
       rounded="lg"
     >
       <div class="row w-full align-center">
-        <div class="col col-8 pr-1">
-          <div class="d-flex justify-space-between align-center w-full">
+        <div
+          class="col"
+          :class="{
+            'col-4': quickTest,
+            'col-3': !quickTest,
+          }"
+        >
+          <div class="d-flex align-center justify-start">
             <router-link to="/">
               <img :src="pinataLogo" alt="logo" />
             </router-link>
@@ -36,6 +42,30 @@
                 </v-tab>
               </v-tabs>
             </div>
+          </div>
+        </div>
+        <div
+          class="col px-0"
+          :class="{
+            'col-4': quickTest,
+            'col-6': !quickTest,
+          }"
+        >
+          <div
+            class="d-flex align-center w-full"
+            :class="{
+              'justify-end': quickTest,
+              'justify-between': !quickTest,
+            }"
+          >
+            <div
+              class="d-flex justify-start align-center mr-2"
+              v-if="$store.state.session.status !== 'pending'"
+            >
+              <RestartSessionButton />
+              <ExportSessionButton class="mx-2" />
+              <DeleteSessionButton />
+            </div>
             <v-btn
               class="rounded-lg font-weight-semibold text-capitalize"
               color="primary"
@@ -49,7 +79,13 @@
             </v-btn>
           </div>
         </div>
-        <div class="col col-4">
+        <div
+          class="col"
+          :class="{
+            'col-4': quickTest,
+            'col-3': !quickTest,
+          }"
+        >
           <div class="d-flex justify-end align-center">
             <div class="avatar">
               <div v-if="isAuthenticated">
@@ -160,9 +196,11 @@ import WorkspaceWrapper from "../components/WorkspaceWrapper.vue";
 import ControlPanel from "../components/ControlPanel.vue";
 import CheckTaskWrapper from "@/components/CheckTaskWrapper.vue";
 import MenuPopover from "@/components/MenuPopover.vue";
-
+import ExportSessionButton from "../components/ExportSessionButton.vue";
 import { SESSION_STATUSES } from "../modules/constants";
 import { mapGetters } from "vuex";
+import RestartSessionButton from "../components/RestartSessionButton.vue";
+import DeleteSessionButton from "../components/DeleteSessionButton.vue";
 
 export default {
   name: "MainView",
@@ -179,6 +217,9 @@ export default {
     ControlPanel,
     CheckTaskWrapper,
     MenuPopover,
+    ExportSessionButton,
+    RestartSessionButton,
+    DeleteSessionButton,
   },
   data() {
     return {
@@ -208,11 +249,13 @@ export default {
     this.setInitialPostSession();
     this.$root.$on("start-quick-test", this.showSourcePickerDialog);
     this.$root.$on("update-selected", this.updateSelected);
+    this.$root.$on("sources-loaded", this.setSources);
     this.$root.$on("close-sourcepickerdialog", this.hideSourcePickerDialog);
     this.$root.$on("new-session", () => {
       this.setInitialPreSession();
       this.setInitialPostSession();
     });
+    this.$root.$on("restart-session", this.restartSession);
 
     if (this.$isElectron) {
       this.$electronService.onDataChange(this.fetchItems);
@@ -285,6 +328,9 @@ export default {
     onStartSession(id) {
       this.sourceId = id;
     },
+    restartSession() {
+      this.$refs?.controlPanel?.handleResetConfirmDialog();
+    },
     async showSourcePickerDialog() {
       if (this.$isElectron) {
         try {
@@ -318,6 +364,9 @@ export default {
     },
     getCurrentDateTime() {
       return new Date().toISOString();
+    },
+    setSources(sources) {
+      this.sources = sources;
     },
     updateStoreSession(isForce = false) {
       this.$store.commit("updateSession", {

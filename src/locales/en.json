@@ -193,6 +193,7 @@
     "resume_session": "Resume session",
     "save_session": "Save session",
     "clear_session": "Clear session",
+    "restart": "Restart",
     "restart_session": "Restart session",
     "finish_session": "Finish session",
     "pause_session": "Pause session",
@@ -211,6 +212,7 @@
     "save_current_progress": "Save current progress",
     "error_recording_audio": "Error recording audio",
     "export_session_report": "Export Session Report",
+    "delete_session": "Delete session",
     "optimizing": "Optimizing",
     "start": "Start",
     "end": "End",
@@ -296,7 +298,8 @@
     "no_server_oauth_creds": "No shareable OAuth credentials found.",
     "testrail_instance_url": "Instance URL",
     "screenshot_target": "Screenshot target",
-    "recording_target": "Recording target"
+    "recording_target": "Recording target",
+    "keep_for_whole_session": "Keep this target for the whole session"
   },
   "hotkeys": {
     "general": "General",
@@ -423,6 +426,9 @@
     "client_id": "Client ID",
     "zephyr_squad_api_access_token": "Zephyr Squad API Access Token",
     "zephyr_scale_api_access_token": "Zephyr Scale API Access Token",
-    "client_secret": "Client Secret"
+    "client_secret": "Client Secret",
+    "restart_session": "Restart session?",
+    "delete_session": "Delete session?",
+    "restart_session_description": "All data related to the test sessions including photos, video, audio and other materials will be lost. Сontinue?"
   }
 }

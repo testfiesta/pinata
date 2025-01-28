@@ -13,7 +13,7 @@
               depressed
               height="40px"
               min-width="40px"
-              class="rounded-lg text-capitalize"
+              class="rounded-lg text-capitalize px-0"
               v-on="{ ...evidenceExportDestinationMenu, ...onTooltip }"
             >
               <img
@@ -139,7 +139,6 @@ import ZephyrScaleExportSession from "./zephyr/ZephyrScaleExportSession";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "ExportButton",
   components: {
     //JiraExportSession,
     //TestRailExportSession,

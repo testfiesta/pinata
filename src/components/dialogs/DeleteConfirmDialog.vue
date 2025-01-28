@@ -1,53 +1,58 @@
 <template>
-  <v-dialog v-bind="$attrs" v-on="$listeners" persistent width="350">
+  <v-dialog
+    v-bind="$attrs"
+    v-on="$listeners"
+    persistent
+    width="420"
+    content-class="rounded-12px"
+  >
     <v-sheet outlined rounded>
       <v-card :style="{ backgroundColor: currentTheme.background }">
         <v-card-text class="text" :style="{ color: currentTheme.secondary }">
-          <div class="d-flex justify-space-between align-start">
+          <div class="d-flex justify-space-between align-center">
             <p
-              class="font-weight-medium fs-14 text-start"
+              class="text-theme-black font-weight-semibold fs-20 mb-0"
               :style="{ color: currentTheme.secondary }"
             >
-              {{ text || $t("message.confirm_delete") }}
+              {{ title }}
             </p>
             <button @click="handleCancel">
               <v-icon>mdi-close</v-icon>
             </button>
           </div>
+          <div class="flex mt-4">
+            <p class="text-start fs-14 text-theme-secondary lh-20">
+              {{ text || $t("message.confirm_delete") }}
+            </p>
+          </div>
         </v-card-text>
         <v-card-actions>
-          <div class="row">
-            <v-col cols="6">
-              <v-btn
-                ref="confirmBtn"
-                depressed
-                height="40px"
-                width="100%"
-                :color="currentTheme.primary"
-                class="text-capitalize btn rounded-lg"
-                :style="{ color: currentTheme.white }"
-                v-shortkey="confirmHotkey"
-                @shortkey="handleConfirm()"
-                @click="handleConfirm()"
-              >
-                {{ $tc("caption.confirm", 1) }}
-              </v-btn>
-            </v-col>
-            <v-col cols="6">
-              <v-btn
-                depressed
-                height="40px"
-                width="100%"
-                :color="btnBg"
-                class="text-capitalize btn rounded-lg"
-                :style="{ color: currentTheme.secondary }"
-                v-shortkey="cancelHotkey"
-                @shortkey="handleCancel()"
-                @click="handleCancel()"
-              >
-                {{ $tc("caption.cancel", 1) }}
-              </v-btn>
-            </v-col>
+          <div class="d-flex justify-end align-center w-full">
+            <v-btn
+              depressed
+              height="40px"
+              :color="btnBg"
+              class="text-capitalize btn rounded-lg mr-3"
+              :style="{ color: currentTheme.secondary }"
+              v-shortkey="cancelHotkey"
+              @shortkey="handleCancel()"
+              @click="handleCancel()"
+            >
+              {{ $tc("caption.cancel", 1) }}
+            </v-btn>
+            <v-btn
+              ref="confirmBtn"
+              depressed
+              height="40px"
+              :color="currentTheme.danger"
+              class="text-capitalize btn rounded-lg"
+              :style="{ color: currentTheme.white }"
+              v-shortkey="confirmHotkey"
+              @shortkey="handleConfirm()"
+              @click="handleConfirm()"
+            >
+              {{ btnConfirmText || $tc("caption.confirm", 1) }}
+            </v-btn>
           </div>
         </v-card-actions>
       </v-card>
@@ -63,6 +68,7 @@ export default {
   props: {
     title: String,
     text: String,
+    btnConfirmText: String,
   },
   mixins: [theme],
   data() {
@@ -122,5 +128,10 @@ export default {
 .v-card__actions {
   padding: 0;
   padding-top: 1rem;
+}
+</style>
+<style>
+.lh-20 {
+  line-height: 20px;
 }
 </style>

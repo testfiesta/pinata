@@ -17,6 +17,12 @@ body {
 .text-theme-label {
   color: #344054 !important;
 }
+.text-theme-black {
+  color: #101828;
+}
+.fs-20 {
+  font-size: 20px !important;
+}
 .fs-16 {
   font-size: 16px !important;
 }
@@ -111,6 +117,9 @@ input[type="password"]::placeholder {
 }
 .text-theme-primary {
   color: #0C2FF3 !important;
+}
+.text-theme-secondary {
+  color: #475467 !important;
 }
 .w-full {
   width: 100%;

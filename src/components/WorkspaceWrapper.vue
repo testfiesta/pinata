@@ -1,7 +1,58 @@
 <template>
   <v-container class="workspace pa-0" fluid>
     <div class="row">
-      <div class="col col-8">
+      <div class="col col-3 pr-0" v-if="!quickTest">
+        <div
+          class="app-height-global rounded-lg card pa-6"
+          :style="{ backgroundColor: mainBg }"
+        >
+          <div class="fs-16 font-weight-semibold mb-8">
+            {{ $tc("caption.detail", 1) }}
+          </div>
+          <div class="d-flex align-center mb-8">
+            <div class="fs-14 font-weight-medium mr-8">
+              {{ $tc("caption.time_limit", 1) }}
+            </div>
+            <div class="fs-14 font-weight-medium">05.00 min</div>
+          </div>
+          <div>
+            <div class="fs-14 font-weight-medium mb-2">
+              {{ $tc("caption.charter_description", 1) }}
+            </div>
+            <v-text-field
+              name="charter_description"
+              class="rounded-lg mb-8"
+              flat
+              solo
+              height="40px"
+              :background-color="inputBg"
+              :value="fullCase.charter.text"
+              disabled
+            />
+          </div>
+          <div>
+            <div class="fs-14 font-weight-medium mb-2">
+              {{ $tc("caption.preconditions", 1) }}
+            </div>
+            <v-textarea
+              name="preconditions"
+              class="rounded-lg"
+              flat
+              disabled
+              solo
+              :background-color="inputBg"
+              :value="fullCase.preconditions.text"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="col"
+        :class="{
+          'col-6': !quickTest,
+          'col-8': quickTest,
+        }"
+      >
         <div
           class="app-height-global rounded-lg card pa-6"
           :style="{ backgroundColor: mainBg }"
@@ -22,11 +73,20 @@
               alt="source_thumbnail"
               v-if="!isItemsExist"
             />
-            <EvidenceWrapper :item-data="selectedEvidence" v-else />
+            <EvidenceWrapper
+              :item-data="selectedEvidence"
+              v-if="isSelectedEvidenceNotEmpty"
+            />
           </div>
         </div>
       </div>
-      <div class="col col-4 pl-0">
+      <div
+        class="col pl-0"
+        :class="{
+          'col-3': !quickTest,
+          'col-4': quickTest,
+        }"
+      >
         <div
           class="app-height-global rounded-lg card pa-6 position-relative"
           :style="{ backgroundColor: mainBg }"
@@ -334,6 +394,8 @@ export default {
       items: "sessionItems",
       config: "config/fullConfig",
       credentials: "auth/credentials",
+      quickTest: "sessionQuickTest",
+      fullCase: "fullCase",
     }),
     isItemsExist() {
       return this.items.length > 0;
@@ -344,6 +406,9 @@ export default {
       } else {
         return this.$vuetify.theme.themes.light;
       }
+    },
+    isSelectedEvidenceNotEmpty() {
+      return Object.keys(this.selectedEvidence).length > 0;
     },
     localSourceThumbnail: {
       get() {

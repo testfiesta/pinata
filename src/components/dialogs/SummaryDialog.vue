@@ -32,11 +32,7 @@
                   height="40px"
                   hide-details="true"
                 ></v-select>
-                <ExportButton
-                  :items="exportButtonItems"
-                  :config-item="exportButtonConfig"
-                  :credential-items="exportButtonCredentials"
-                />
+                <ExportSessionButton />
               </div>
             </div>
           </v-card-title>
@@ -244,27 +240,18 @@ import openAIIntegrationHelper from "../../integrations/OpenAIIntegrationHelpers
 import { mapGetters } from "vuex";
 import TipTapLinkDialog from "./TipTapLinkDialog.vue";
 import theme from "../../mixins/theme";
-import ExportButton from "../ExportButton.vue";
+import ExportSessionButton from "../ExportSessionButton.vue";
 
 export default {
   name: "SummaryDialog",
   components: {
     TipTapLinkDialog,
-    ExportButton,
+    ExportSessionButton,
   },
   props: {
     summary: {
       type: Object,
       default: () => {},
-    },
-    exportButtonItems: {
-      type: [String, Array],
-    },
-    exportButtonConfig: {
-      type: Object,
-    },
-    exportButtonCredentials: {
-      type: Object,
     },
   },
   watch: {

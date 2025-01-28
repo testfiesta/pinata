@@ -371,6 +371,9 @@ const store = new Vuex.Store({
     sessionQuickTest(state) {
       return state.session.quickTest;
     },
+    fullCase(state) {
+      return state.case;
+    },
     requiredPreSessionTasksChecked(state) {
       const uncheckedTasks = state.session.preSessionTasks.filter(
         (task) => !task.checked && task.required
