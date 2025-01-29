@@ -9,7 +9,6 @@ const uuidv4 = require("uuid");
 const configDir = (app || remote.app).getPath("userData");
 
 const persistenceUtility = require("./PersistenceUtility");
-const captureUtility = require("./CaptureUtility");
 const { STATUSES, FILE_TYPES } = require("./constants");
 
 module.exports.exportItems = async (ids) => {
@@ -306,7 +305,7 @@ module.exports.exportSession = async (params) => {
 
 const deleteFolder = function (folderPath) {
   if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
-    fs.readdirSync(folderPath).forEach((file, index) => {
+    fs.readdirSync(folderPath).forEach((file) => {
       const curPath = path.join(folderPath, file);
       if (fs.lstatSync(curPath).isDirectory()) {
         deleteFolder(curPath);

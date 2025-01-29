@@ -11,31 +11,33 @@ export const migrationStruct = {
       appLabel: "",
       summary: "summaryRequired",
       templates: (templates) => {
-        return templates.reduce((final, template) => {
-          let newType;
-          switch (template.type) {
-            case "Screenshot":
-              newType = "image";
+        if (typeof templates !== "object") {
+          console.error("Invalid templates data:", templates);
+          return [];
+        }
+        return Object.entries(templates).map(([type, content]) => {
+          let oldType;
+          switch (type) {
+            case "image":
+              oldType = "Screenshot";
               break;
-            case "Video":
-              newType = "video";
+            case "video":
+              oldType = "Video";
               break;
-            case "Audio":
-              newType = "audio";
+            case "audio":
+              oldType = "Audio";
               break;
-            case "Note":
-              newType = "text";
+            case "text":
+              oldType = "Note";
               break;
-            case "Mindmap":
-              newType = "mindmap";
+            case "mindmap":
+              oldType = "Mindmap";
               break;
             default:
-              newType = "file";
+              oldType = "File";
           }
-          return Object.assign(final, {
-            [newType]: template.precondition,
-          });
-        }, {});
+          return { oldType, precondition: content, issue: "", isBug: false };
+        });
       },
     },
     data: {
@@ -74,7 +76,7 @@ export const migrationStruct = {
         let newTemplates = [];
         for (const [type, content] of Object.entries(templates)) {
           let oldType;
-          switch (template.type) {
+          switch (type) {
             case "image":
               oldType = "Screenshot";
               break;

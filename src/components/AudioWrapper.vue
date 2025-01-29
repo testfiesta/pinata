@@ -8,6 +8,7 @@
         >
         <div class="progress">
           <v-slider
+            class="slider-theme"
             v-model="currentProgress"
             max="100"
             min="0"
@@ -17,7 +18,8 @@
             :thumb-size="20"
             hide-details
             hide-spin-buttons
-            track-color="#D1D5DB"
+            track-color="#F2F4F7"
+            thumb-color="#FFFFFF"
             @change="syncSlideWithAudio"
           ></v-slider>
         </div>
@@ -72,7 +74,7 @@
               v-if="!isMute"
               icon
               color="#111827"
-              @click="wavesurfer.toggleMute()"
+              @click="toggleMute()"
             >
               <v-icon>mdi-volume-high</v-icon>
             </v-btn>
@@ -81,21 +83,23 @@
               v-if="isMute"
               icon
               color="#111827"
-              @click="wavesurfer.toggleMute()"
+              @click="toggleMute()"
             >
               <v-icon>mdi-volume-off</v-icon>
             </v-btn>
           </div>
           <div class="volume-progress">
             <v-slider
+              class="slider-theme"
               v-model="volume"
               color="primary"
               step="1"
               thumb-label
+              track-color="#F2F4F7"
+              thumb-color="#FFFFFF"
               :thumb-size="20"
               hide-details
               hide-spin-buttons
-              track-color="#D1D5DB"
               @change="setVolume()"
             ></v-slider>
           </div>
@@ -136,7 +140,7 @@ export default {
     },
     triggerSave: function (oldValue, newValue) {
       if (oldValue !== newValue) {
-        this.handleAudio(true);
+        this.handleAudio();
       }
     },
   },
@@ -154,9 +158,7 @@ export default {
       return this.wavesurfer.isPlaying();
     },
     isMute() {
-      if (!this.wavesurfer) return false;
-
-      return this.wavesurfer.getMute();
+      return this.volume === 0;
     },
     durationTime() {
       let duration;
@@ -219,42 +221,62 @@ export default {
       }
       this.wavesurfer.setVolume(volume);
     },
+    toggleMute() {
+      this.volume = this.isMute ? 20 : 0;
+      this.setVolume();
+    },
     async handleAudio() {
       const uri = this.wavesurfer.exportImage("image/png", 1, "dataURL");
+      console.log("Generated URI:", uri);
+
       if (this.$isElectron) {
-        let posterResult = await this.$electronService.createImage(uri, true);
+        // Ensure sessionItem is serializable
+        const sanitizedItem = JSON.parse(JSON.stringify(this.sessionItem));
 
-        if (posterResult.status === STATUSES.ERROR) {
-          this.$root.$emit("set-snackbar", posterResult.message);
-          console.log(
-            "Unable to generate waveform image: " + posterResult.message
+        try {
+          const posterResult = await this.$electronService.createImage(
+            uri,
+            true
           );
-        }
+          console.log("Poster Result:", posterResult);
 
-        let audioResult = await this.$electronService.updateAudio(
-          this.sessionItem
-        );
+          if (posterResult.status === STATUSES.ERROR) {
+            this.$root.$emit("set-snackbar", posterResult.message);
+            console.error(
+              "Unable to generate waveform image:",
+              posterResult.message
+            );
+          }
 
-        if (audioResult.status === STATUSES.ERROR) {
-          this.$root.$emit("set-snackbar", audioResult.message);
-          console.log("Unable to update audio file: " + audioResult.message);
+          const audioResult = await this.$electronService.updateAudio(
+            sanitizedItem
+          );
+
+          if (audioResult.status === STATUSES.ERROR) {
+            this.$root.$emit("set-snackbar", audioResult.message);
+            console.error("Unable to update audio file:", audioResult.message);
+          }
+
+          this.sessionItem = {
+            ...sanitizedItem,
+            poster: posterResult.item.filePath,
+            ...audioResult.item,
+          };
+        } catch (error) {
+          console.error("Error in Electron service:", error);
         }
-        this.sessionItem = {
-          ...this.sessionItem,
-          poster: posterResult.item.filePath,
-          ...audioResult.item,
-        };
       } else {
-        let posterResult = createImageForWeb(uri);
-        // todo use this logic to recreate the item on timeline
+        const posterResult = createImageForWeb(uri);
+        console.log("Poster Result (Web):", posterResult);
+
         this.sessionItem = {
           ...this.sessionItem,
           poster: posterResult.item.filePath,
         };
       }
 
-      this.$root.$emit("update-edit-item", this.sessionItem);
-      this.$root.$emit("save-data", this.sessionItem);
+      this.$root.$emit("update-edit-item", { ...this.sessionItem });
+      this.$root.$emit("save-data", { ...this.sessionItem });
     },
   },
 };

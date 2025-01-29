@@ -2,7 +2,171 @@ body {
   font-size: 13px;
   margin: 0;
 }
+.theme--light.v-application {
+  background-color: #F2F4F7 !important;
+}
+.fs-30 {
+  font-size: 30px !important;
+}
+.fs-14 {
+  font-size: 14px !important;
+}
+.font-weight-semibold {
+  font-weight: 600;
+}
+.text-theme-label {
+  color: #344054 !important;
+}
+.text-theme-black {
+  color: #101828;
+}
+.fs-20 {
+  font-size: 20px !important;
+}
+.fs-16 {
+  font-size: 16px !important;
+}
+.fs-18 {
+  font-size: 18px !important;
+}
+.fs-24 {
+  font-size: 24px !important;
+}
+.timeline-theme .v-timeline-item__dot .v-timeline-item__inner-dot {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+.timeline-theme .v-timeline-item__dot {
+  box-shadow: none !important;
+  width: 48px;
+  height: 56px;
+}
+.v-timeline.timeline-theme::before {
+  left: calc(24px - 1px) !important;
+  background: #eaecf0 !important;
+}
+.timeline-theme .timeline-item {
+  align-items: start;
+}
+input::placeholder, 
+textarea::placeholder, 
+select::placeholder {
+  color: #667085 !important;
+  opacity: 1 !important; 
+}
 
+/* Specific styles for input types if needed */
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder {
+  color: #667085 !important; 
+}
+.app-height-global {
+  min-height: calc(100vh - 24px);
+  height: 100%;
+}
+.rounded-12px {
+  border-radius: 12px;
+}
+.theme--dark.v-tabs > .v-tabs-bar, .theme--dark.v-tabs-items, .theme--dark.v-card {
+  background-color: initial;
+}
+.tiptap-theme .v-card {
+  border: none !important;
+}
+.tiptap-theme .tiptap.ProseMirror {
+  background: #f9f9fb;
+  min-height: 80px;
+}
+.tiptap-theme header.v-toolbar {
+  border-radius: 8px !important;
+}
+.tiptap-theme .v-select__selection--comma {
+  margin: 0px;
+}
+.tiptap-theme .v-select {
+  padding: 6px 12px 6px 0px !important;
+}
+.tiptap-theme .v-select__selection {
+  max-width: 95%;
+}
+.tiptap-theme .v-toolbar__content {
+  padding: 4px 0px;
+}
+.tiptap-theme .v-select .v-input__slot {
+  margin-bottom: 0px !important;
+}
+.tiptap-theme .ProseMirror {
+  background-color: #f9f9fb;
+  border-radius: 8px;
+}
+.tiptap-theme .v-toolbar__content {
+  padding: 4px 0px !important;
+}
+.v-tiptap .v-toolbar__content .v-select {
+  padding: 6px 12px !important;
+}
+.custom-select .v-input__slot {
+  margin-bottom: 0px !important;
+}
+.tiptap-theme header.v-toolbar.grey.lighten-4 {
+  background-color: transparent !important;
+}
+.font-weight-medium {
+  font-weight: 500;
+}
+.text-theme-primary {
+  color: #0C2FF3 !important;
+}
+.text-theme-secondary {
+  color: #475467 !important;
+}
+.w-full {
+  width: 100%;
+}
+.icon-checkbox-on {
+  background-image: url("/public/icon/checkbox-on.svg");
+}
+.icon-checkbox-off {
+  background-image: url("/public/icon/checkbox-off.svg");
+}
+.icon-indeterminate {
+  background-image: url("/public/icon/indeterminate.svg");
+}
+.slider-theme .v-slider__track-container {
+  height: 8px !important;
+}
+.slider-theme .v-slider__thumb {
+  height: 16px !important;
+  width: 16px !important;
+  border: solid 2px #0c2ff3 !important;
+}
+.field-theme .v-input--selection-controls__input {
+  margin-right: 0px !important;
+}
+.field-theme .v-input--selection-controls {
+  margin-top: 8px !important;
+}
+.field-theme .v-input--selection-controls__input {
+  height: 1rem;
+  margin-top: 1.75px;
+}
+.app-height-global {
+  min-height: calc(100vh - 24px);
+  height: 100%;
+}
+.position-relative {
+  position: relative;
+}
+.opacity-50 {
+  opacity: 0.5;
+}
+.invisible {
+  visibility: hidden;
+}
+.visible {
+  visibility: visible;
+}
 /* width */
 ::-webkit-scrollbar {
   width: 8px;
@@ -166,11 +330,6 @@ body {
 
 .flex {
   display: flex;
-}
-.control-btn {
-  border: 1px solid #d1d5db;
-  color: #6b7280;
-  background-color: #fff;
 }
 .cursor-pointer {
   cursor: pointer;

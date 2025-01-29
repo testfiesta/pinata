@@ -1,91 +1,114 @@
 <template>
   <v-container class="wrapper">
-    <div class="header py-4">
-      <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
-        <v-icon class="ma-0">mdi-chevron-left</v-icon>
-        {{ $tc("caption.back", 1) }}
-      </v-btn>
-      <div
-        class="subtitle-1 signup-title text-center"
-        :style="{ color: currentTheme.secondary }"
-      >
-        <span>{{ $tc("caption.sign_in", 1) }}</span>
+    <div
+      class="d-flex justify-center align-center flex-column pa-6 rounded-lg login-wrapper mt-16"
+      :style="{ backgroundColor: mainBg }"
+    >
+      <div class="d-flex justify-space-between align-center w-full">
+        <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
+        <router-link to="/">
+          <img :src="pinataLogo" alt="logo" />
+        </router-link>
+        <v-btn class="text-capitalize pa-0 back-btn invisible">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          {{ $tc("caption.back", 1) }}
+        </v-btn>
       </div>
-    </div>
-    <div class="content mt-2">
-      <div class="loading-wrapper" v-if="loading">
-        <v-progress-circular
-          :size="70"
-          :width="7"
-          color="primary"
-          indeterminate
-        ></v-progress-circular>
+      <div class="fs-30 font-weight-semibold mt-4 mb-6">
+        {{ $tc("caption.log_in") }}
       </div>
-      <v-row>
-        <v-col cols="12">
+      <v-row class="w-full">
+        <v-col cols="12" class="px-0">
           <v-btn
-            class="mb-4 outline-btn jira"
+            class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+            :color="btnBg"
             block
-            outlined
-            color="white"
+            height="40px"
+            depressed
             @click="signinJira"
           >
-            <img :src="require('../../assets/icon/jira.png')" />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
-              {{ $tc("caption.signin_jira", 1) }}
+            <div class="d-flex align-center justify-center">
+              <img :src="require('../../assets/icon/jira.png')" />
+              <div
+                class="btn-text fs-14 ml-2"
+                :style="{ color: currentTheme.secondary }"
+              >
+                {{ $tc("caption.signin_jira", 1) }}
+              </div>
             </div>
           </v-btn>
           <v-btn
-            class="mb-4 outline-btn jira"
+            class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+            :color="btnBg"
             block
-            outlined
-            color="white"
+            height="40px"
+            depressed
             @click="signinTestRail"
           >
-            <img :src="require('../../assets/icon/testrail.png')" />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
-              {{ $tc("caption.signin_testrail", 1) }}
+            <div class="d-flex align-center justify-center">
+              <img :src="require('../../assets/icon/testrail.png')" />
+              <div
+                class="btn-text fs-14 ml-2"
+                :style="{ color: currentTheme.secondary }"
+              >
+                {{ $tc("caption.signin_testrail", 1) }}
+              </div>
             </div>
           </v-btn>
           <v-btn
-            class="mb-4 outline-btn jira"
+            class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+            :color="btnBg"
             block
-            outlined
-            color="white"
+            height="40px"
+            depressed
             @click="signinXray"
           >
             <img :src="require('../../assets/icon/xray-logo.png')" width="12" />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
+            <div
+              class="btn-text fs-14 ml-2"
+              :style="{ color: currentTheme.secondary }"
+            >
               {{ $tc("caption.signin_xray", 1) }}
             </div>
           </v-btn>
           <v-btn
-            class="mb-4 outline-btn jira"
+            class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+            :color="btnBg"
             block
-            outlined
-            color="white"
+            height="40px"
+            depressed
             @click="signinZephyrSquad"
           >
             <img
               :src="require('../../assets/icon/zephyr-squad.png')"
               width="16"
             />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
+            <div
+              class="btn-text fs-14 ml-2"
+              :style="{ color: currentTheme.secondary }"
+            >
               {{ $tc("caption.signin_zephyr_squad", 1) }}
             </div>
           </v-btn>
           <v-btn
-            class="mb-4 outline-btn jira"
+            class="mb-4 text-capitalize btn_signup rounded-lg white--text"
+            :color="btnBg"
             block
-            outlined
-            color="white"
+            height="40px"
+            depressed
             @click="signinZephyrScale"
           >
             <img
               :src="require('../../assets/icon/zephyr-scale.png')"
               width="16"
             />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
+            <div
+              class="btn-text fs-14 ml-2"
+              :style="{ color: currentTheme.secondary }"
+            >
               {{ $tc("caption.signin_zephyr_scale", 1) }}
             </div>
           </v-btn>
@@ -124,6 +147,7 @@
         </v-col>
       </v-row> -->
     </div>
+
     <v-snackbar v-model="snackBar.enabled" timeout="3000">
       {{ snackBar.message }}
       <template v-slot:action="{ attrs }">
@@ -173,6 +197,17 @@ export default {
         return this.$vuetify.theme.themes.light;
       }
     },
+    pinataLogo() {
+      return this.$vuetify.theme.dark
+        ? "/pinata-logo-white.svg"
+        : "/pinata-logo.svg";
+    },
+    mainBg() {
+      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
+    },
+    btnBg() {
+      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
+    },
   },
   mounted() {},
   methods: {
@@ -205,6 +240,9 @@ export default {
 };
 </script>
 <style scoped>
+.login-wrapper {
+  max-width: 408px;
+}
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -224,7 +262,6 @@ export default {
   align-items: center;
   font-size: 14px;
   font-style: normal;
-  font-weight: 500;
   line-height: 20px;
 }
 .header .signup-title {
@@ -249,26 +286,17 @@ export default {
 }
 .outline-btn {
   display: flex;
-  border: 1px solid #d1d5db;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  border: none;
   border-radius: 6px;
   text-transform: none !important;
-}
-.outline-btn:hover {
-  background-color: #d1d5db;
-}
-.theme--dark .outline-btn {
-  background-color: #4b5563;
-  border: 0;
 }
 .outline-btn .btn-text {
   flex-grow: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 13px;
-  font-weight: 500;
   line-height: 16px;
+  font-weight: 600;
 }
 .divider {
   display: flex;

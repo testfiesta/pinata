@@ -3,7 +3,7 @@
     class="d-flex flex-column"
     style="width: 100%; height: 100%; row-gap: 10px"
   >
-    <div class="image-editor" ref="imageEditor"></div>
+    <div :ref="editorId" class="image-editor"></div>
   </div>
 </template>
 
@@ -17,32 +17,22 @@ import { updateImageForWeb } from "@/helpers/WebHelpers";
 
 export default {
   name: "EditorPanel",
-  components: {},
   props: {
     item: {
       type: Object,
-      default: () => {},
+      default: () => ({}),
     },
     triggerSave: {
       type: Boolean,
-      default: () => false,
+      default: false,
     },
     defaultColor: {
       type: String,
-      default: () => "#000000",
+      default: "#000000",
     },
-  },
-  watch: {
-    item: function (newValue) {
-      this.editSessionItem = newValue;
-      this.imageEditorInst.destroy();
-      this.imageEditorInst = null;
-      this.handleEditor();
-    },
-    triggerSave: function (oldValue, newValue) {
-      if (oldValue !== newValue) {
-        this.handleImage(true);
-      }
+    editorId: {
+      type: String,
+      required: true,
     },
   },
   data() {
@@ -51,139 +41,146 @@ export default {
       imageEditorInst: null,
     };
   },
+  watch: {
+    item(newValue, oldValue) {
+      if (newValue.attachmentID !== oldValue.attachmentID) {
+        this.editSessionItem = newValue;
+        this.reinitializeEditor();
+      }
+    },
+    triggerSave(newValue) {
+      if (newValue) {
+        this.handleImage(true);
+      }
+    },
+  },
   mounted() {
-    this.handleEditor();
+    this.initializeEditor();
+  },
+  beforeDestroy() {
+    this.destroyEditor();
   },
   methods: {
-    handleEditor() {
+    initializeEditor() {
+      this.destroyEditor(); // Ensure any previous instance is removed
+
+      if (!this.editSessionItem || !this.editSessionItem.filePath) return;
+
       try {
         let imgPath = this.editSessionItem.filePath;
         if (this.$isElectron) {
           imgPath = `file://${this.editSessionItem.filePath}`;
         }
-        this.imageEditorInst = new ImageEditor(
-          document.querySelector(".image-editor"),
-          {
-            includeUI: {
-              loadImage: {
-                path: imgPath,
-                name: "image",
-              },
-              menu: ["draw", "shape", "resize", "text", "icon", "crop"],
-              initMenu: "",
-              uiSize: {
-                width: "100%",
-                height: "600px",
-              },
-              menuBarPosition: "bottom",
+
+        this.imageEditorInst = new ImageEditor(this.$refs[this.editorId], {
+          includeUI: {
+            loadImage: {
+              path: imgPath,
+              name: "image",
             },
-            cssMaxHeight: 300,
-            selectionStyle: {
-              cornerSize: 20,
-              rotatingPointOffset: 70,
+            menu: ["draw", "shape", "resize", "text", "icon", "crop"],
+            initMenu: "",
+            uiSize: {
+              width: "100%",
+              height: "600px",
             },
-          }
-        );
+            menuBarPosition: "bottom",
+          },
+          cssMaxHeight: 300,
+          selectionStyle: {
+            cornerSize: 20,
+            rotatingPointOffset: 70,
+          },
+        });
 
-        const drawColorPicker =
-          this.imageEditorInst.ui.draw._els.drawColorPicker;
-        this.imageEditorInst.ui.draw.color = this.defaultColor;
-        drawColorPicker.colorElement.style.backgroundColor = this.defaultColor;
-        drawColorPicker.colorpickerElement.querySelector(
-          ".tui-colorpicker-palette-preview"
-        ).style.backgroundColor = this.defaultColor;
-        drawColorPicker.colorpickerElement.querySelector(
-          ".tui-colorpicker-palette-preview"
-        ).style.color = this.defaultColor;
-        this.imageEditorInst.ui.draw.colorPickerInputBox.defaultValue =
-          this.defaultColor;
-
-        const shapeColorPicker =
-          this.imageEditorInst.ui.shape.colorPickerControls[1];
-        this.imageEditorInst.ui.shape.options.stroke = this.defaultColor;
-        this.imageEditorInst.ui.shape._els.strokeColorpicker._color =
-          this.defaultColor;
-        shapeColorPicker.colorElement.style.backgroundColor = this.defaultColor;
-        shapeColorPicker.colorpickerElement.querySelector(
-          ".tui-colorpicker-palette-hex"
-        ).defaultValue = this.defaultColor;
-        shapeColorPicker.colorpickerElement.querySelector(
-          ".tui-colorpicker-palette-preview"
-        ).style.color = this.defaultColor;
-        shapeColorPicker.colorpickerElement.querySelector(
-          ".tui-colorpicker-palette-preview"
-        ).style.backgroundColor = this.defaultColor;
-
-        const textColorPicker =
-          this.imageEditorInst.ui.text._els.textColorpicker;
-        this.imageEditorInst.ui.text.colorPickerInputBox.defaultValue =
-          this.defaultColor;
-        this.imageEditorInst.ui.text._els.color = this.defaultColor;
-        textColorPicker.color = this.defaultColor;
-        textColorPicker.colorElement.style.backgroundColor = this.defaultColor;
-        textColorPicker.colorpickerElement.querySelector(
-          ".tui-colorpicker-palette-preview"
-        ).style.color = this.defaultColor;
-        textColorPicker.colorpickerElement.querySelector(
-          ".tui-colorpicker-palette-preview"
-        ).style.backgroundColor = this.defaultColor;
-
-        const iconColorPicker =
-          this.imageEditorInst.ui.icon._els.iconColorpicker;
-        this.imageEditorInst.ui.icon.color = this.defaultColor;
-        iconColorPicker.color = this.defaultColor;
-        iconColorPicker.colorElement.style.backgroundColor = this.defaultColor;
-        iconColorPicker.colorpickerElement.querySelector(
-          ".tui-colorpicker-palette-preview"
-        ).style.backgroundColor = this.defaultColor;
-        iconColorPicker.colorpickerElement.querySelector(
-          ".tui-colorpicker-palette-preview"
-        ).style.color = this.defaultColor;
-        this.imageEditorInst.ui.icon.colorPickerInputBox.defaultValue =
-          this.defaultColor;
+        this.applyDefaultColors();
       } catch (e) {
-        console.log(e);
+        console.error(e);
+      }
+    },
+    reinitializeEditor() {
+      this.destroyEditor();
+      this.initializeEditor();
+    },
+    destroyEditor() {
+      if (this.imageEditorInst) {
+        this.imageEditorInst.destroy();
+        this.imageEditorInst = null;
+      }
+    },
+    applyDefaultColors() {
+      if (!this.imageEditorInst) return;
+
+      const { draw, shape, text, icon } = this.imageEditorInst.ui;
+
+      // Apply color settings to Draw menu
+      draw.color = this.defaultColor;
+      this.setPickerColor(draw._els.drawColorPicker, this.defaultColor);
+
+      // Apply color settings to Shape menu
+      shape.options.stroke = this.defaultColor;
+      this.setPickerColor(shape.colorPickerControls[1], this.defaultColor);
+
+      // Apply color settings to Text menu
+      text._els.color = this.defaultColor;
+      this.setPickerColor(text._els.textColorpicker, this.defaultColor);
+
+      // Apply color settings to Icon menu
+      icon.color = this.defaultColor;
+      this.setPickerColor(icon._els.iconColorpicker, this.defaultColor);
+    },
+    setPickerColor(picker, color) {
+      if (!picker) return;
+      picker.color = color;
+      picker.colorElement.style.backgroundColor = color;
+      const preview = picker.colorpickerElement.querySelector(
+        ".tui-colorpicker-palette-preview"
+      );
+      if (preview) {
+        preview.style.backgroundColor = color;
+        preview.style.color = color;
       }
     },
     async handleImage(needCallback = false) {
+      if (!this.imageEditorInst) return;
+
+      const imgURI = this.imageEditorInst.toDataURL();
+
       if (this.$isElectron) {
-        // todo add web handler
-        const imgURI = this.imageEditorInst.toDataURL();
         const { status, message, item } =
           await this.$electronService.updateImage(this.editSessionItem, imgURI);
         if (status === STATUSES.ERROR) {
           this.$root.$emit("set-snackbar", message);
         } else {
-          // Force the timeline component to update the image through a fake QS
-          this.editSessionItem.filePath =
-            this.editSessionItem.filePath.substring(item.filePath.length) ===
-            "?"
-              ? item.filePath
-              : item.filePath + "?";
-          this.editSessionItem.fileSize = item.fileSize;
-          this.editSessionItem.fileChecksum = item.fileChecksum;
-          this.$root.$emit("update-edit-item", this.editSessionItem);
+          this.updateEditSessionItem(item);
           if (needCallback) {
             this.$root.$emit("save-data", this.editSessionItem);
           }
         }
       } else {
-        const imgURI = this.imageEditorInst.toDataURL();
         const { item } = updateImageForWeb({
           item: this.editSessionItem,
           url: imgURI,
         });
-        this.editSessionItem.filePath = item.filePath;
-        this.editSessionItem.fileSize = item.fileSize;
-        this.editSessionItem.fileChecksum = item.fileChecksum;
-
-        this.$root.$emit("update-edit-item", this.editSessionItem);
-        this.$root.$emit("save-data", this.editSessionItem);
+        this.updateEditSessionItem(item);
+        if (needCallback) {
+          this.$root.$emit("save-data", this.editSessionItem);
+        }
       }
+    },
+    updateEditSessionItem(item) {
+      this.editSessionItem.filePath =
+        this.editSessionItem.filePath.substring(item.filePath.length) === "?"
+          ? item.filePath
+          : item.filePath + "?";
+      this.editSessionItem.fileSize = item.fileSize;
+      this.editSessionItem.fileChecksum = item.fileChecksum;
+      this.$root.$emit("update-edit-item", this.editSessionItem);
     },
   },
 };
 </script>
+
 <style scoped>
 .tui-image-editor {
   width: 300px;

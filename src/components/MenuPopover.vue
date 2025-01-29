@@ -10,47 +10,61 @@
       class="mr-3"
       @click="openSettingsDialog"
     >
-      <v-icon dark> mdi-cog </v-icon>
+      <img
+        :src="require('../../public/icon/gear.svg')"
+        width="20"
+        height="20"
+      />
     </v-btn>
     <div class="flex flex-row justify-center mr-5">
       <v-btn
         id="btn__setting"
         class="mx-1"
         fab
-        outlined
+        icon
         small
+        depressed
         color="default"
         @click="openSettingWindow"
       >
         <img
-          :src="require('../assets/icon/setting.svg')"
-          width="24"
-          height="24"
+          :src="require('../../public/icon/gear.svg')"
+          width="20"
+          height="20"
         />
       </v-btn>
-      <v-btn id="btn__bell" class="mx-1" fab outlined small color="default">
+      <!-- <v-btn id="btn__bell" class="mx-1" fab outlined small color="default">
         <img :src="require('../assets/icon/bell.svg')" width="24" height="24" />
-      </v-btn>
+      </v-btn> -->
     </div>
     <v-menu
       v-model="showMenu"
       :close-on-content-click="false"
       :nudge-width="100"
       bottom
-      z-index="99"
+      z-index="99999"
       offset-y
+      min-width="280px"
+      class="rounded-lg"
+      content-class="shadow-theme"
     >
       <template v-slot:activator="{ on, attrs }">
-        <div class="flex flex-row justify-center">
-          <v-btn icon small v-bind="attrs" v-on="on">
-            <img
-              style="border-radius: 15px"
-              :src="profileAvatar"
-              width="32"
-              alt="avatar"
-            />
-          </v-btn>
-          <strong class="ml-2">{{ profileName }}</strong>
+        <div
+          class="flex flex-row justify-center align-center"
+          v-bind="attrs"
+          v-on="on"
+        >
+          <img
+            style="border-radius: 100%; border: solid 1px #eaecf0"
+            :src="profileAvatar"
+            width="40"
+            alt="avatar"
+          />
+          <strong
+            class="ml-3 fs-14"
+            :style="{ color: currentTheme.secondary }"
+            >{{ profileName }}</strong
+          >
         </div>
       </template>
 
@@ -105,19 +119,11 @@
           </div>
         </v-list>
 
-        <v-divider></v-divider>
-
         <v-list>
-          <v-list-item class="px-0">
-            <v-btn
-              block
-              large
-              text
-              class="logout_btn px-0"
-              style="border-radius: 0px"
-              @click="logout"
-              >Log out</v-btn
-            >
+          <v-list-item @click="logout">
+            <v-list-item-title class="fs-16 font-weight-medium">
+              {{ $tc("caption.logout", 1) }}
+            </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-card>
@@ -134,6 +140,7 @@ import uuidv4 from "uuid";
 import { VBtn } from "vuetify/lib/components";
 import { mapGetters } from "vuex";
 import SettingsDialog from "@/components/dialogs/SettingsDialog.vue";
+import theme from "../mixins/theme";
 
 export default {
   name: "MenuPopover",
@@ -142,6 +149,7 @@ export default {
     SettingsDialog,
   },
   props: {},
+  mixins: [theme],
   data() {
     return {
       showMenu: false,
@@ -160,7 +168,7 @@ export default {
           }
         }
       }
-      return "Pinata";
+      return this.$t("caption.personal_workspace");
     },
     profileAvatar() {
       for (const cList of Object.values(this.credentials)) {

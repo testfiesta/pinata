@@ -6,7 +6,7 @@
         class="mindmap-wrapper-svg"
         ref="mindmapWrapper"
       ></svg>
-      <div v-else class="center">
+      <div v-else class="center text-theme-label">
         {{ $tc("message.empty_workspace") }}
       </div>
 

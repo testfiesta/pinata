@@ -1,82 +1,153 @@
 <template>
   <v-container class="wrapper" fluid>
-    <div class="header">
-      <div class="logo mb-4">
-        <LogoWrapper :height="34" :width="120" />
-      </div>
-      <div class="tabs">
-        <v-tabs
-          class="tabs"
-          centered
-          v-model="activeTab"
-          color="primary"
-          background-color="transparent"
-          :height="26"
-          hide-slider
+    <v-app-bar
+      :color="mainBg"
+      class="app-navbar px-2"
+      max-height="80px"
+      height="80px"
+      elevation="0"
+      rounded="lg"
+    >
+      <div class="row w-full align-center">
+        <div
+          class="col"
+          :class="{
+            'col-4': quickTest || sidebarActive,
+            'col-3': !quickTest && !sidebarActive,
+          }"
         >
-          <v-tab class="test-tab" to="/main" exact>
-            {{ $tc("caption.test", 1) }}
-          </v-tab>
-          <v-tab
-            class="workspace-tab"
-            :disabled="this.status === 'pending'"
-            to="/main/workspace"
-          >
-            {{ $tc("caption.workspace", 1) }}
-          </v-tab>
-        </v-tabs>
-      </div>
-      <div class="avatar" style="display: none">
-        <div v-if="isAuthenticated">
-          <MenuPopover />
-        </div>
-        <div v-else>
-          <v-menu :nudge-width="100" bottom z-index="99999" offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                fab
-                small
+          <div class="d-flex align-center justify-start">
+            <router-link to="/">
+              <img :src="pinataLogo" alt="logo" />
+            </router-link>
+            <div class="tabs" style="display: none">
+              <v-tabs
+                class="tabs"
+                centered
+                v-model="activeTab"
                 color="primary"
-                height="32"
-                width="32"
-                v-bind="attrs"
-                v-on="on"
+                background-color="transparent"
+                :height="26"
+                hide-slider
               >
-                <v-icon dark> mdi-account </v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item link to="/authentication/signin">
-                <v-list-item-title>Log In</v-list-item-title>
-              </v-list-item>
-              <!--<v-list-item link to="/authentication/signupMain">
+                <v-tab class="test-tab" to="/main" exact>
+                  {{ $tc("caption.test", 1) }}
+                </v-tab>
+                <v-tab
+                  class="workspace-tab"
+                  :disabled="this.status === 'pending'"
+                  to="/main/workspace"
+                >
+                  {{ $tc("caption.workspace", 1) }}
+                </v-tab>
+              </v-tabs>
+            </div>
+          </div>
+        </div>
+        <div
+          class="col px-0"
+          :class="{
+            'col-4': quickTest || sidebarActive,
+            'col-6': !quickTest && !sidebarActive,
+          }"
+        >
+          <div
+            class="d-flex align-center w-full"
+            :class="{
+              'justify-end': quickTest || sidebarActive,
+              'justify-space-between': !quickTest && !sidebarActive,
+            }"
+          >
+            <div
+              class="d-flex justify-start align-center mr-2"
+              v-if="$store.state.session.status !== 'pending'"
+            >
+              <RestartSessionButton />
+              <ExportSessionButton class="mx-2" />
+              <DeleteSessionButton />
+            </div>
+            <v-btn
+              class="rounded-lg font-weight-semibold text-capitalize"
+              color="primary"
+              height="40"
+              depressed
+              offset-y
+              @click="endSession"
+              v-if="$store.state.session.status !== 'pending'"
+            >
+              {{ $tc("caption.end_session", 1) }} {{ elapsedTime }}
+            </v-btn>
+          </div>
+        </div>
+        <div
+          class="col"
+          :class="{
+            'col-4': quickTest || sidebarActive,
+            'col-3': !quickTest && !sidebarActive,
+          }"
+        >
+          <div class="d-flex justify-end align-center">
+            <div class="avatar">
+              <div v-if="isAuthenticated">
+                <MenuPopover />
+              </div>
+              <div v-else>
+                <v-menu
+                  :nudge-width="100"
+                  bottom
+                  z-index="99999"
+                  offset-y
+                  min-width="280px"
+                  class="rounded-lg"
+                  content-class="shadow-theme"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      small
+                      color="primary"
+                      height="40"
+                      width="40"
+                      depressed
+                      offset-y
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon dark> mdi-account </v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item link to="/authentication/signin">
+                      <v-list-item-title class="fs-16 font-weight-medium">{{
+                        $tc("caption.login", 1)
+                      }}</v-list-item-title>
+                    </v-list-item>
+                    <!--<v-list-item link to="/authentication/signupMain">
                 <v-list-item-title>Register</v-list-item-title>
               </v-list-item>-->
-            </v-list>
-          </v-menu>
+                  </v-list>
+                </v-menu>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div
-      :class="
-        activeTab === `/main` && this.quickTest
-          ? 'content-container'
-          : 'content-container vh-full'
-      "
-    >
-      <div
-        :class="
-          activeTab === `/main` && this.quickTest
-            ? 'content w-400'
-            : 'content h-full w-60'
-        "
-      >
-        <v-tabs-items v-model="activeTab" style="height: 100%">
+    </v-app-bar>
+    <div class="mt-3">
+      <div class="position-relative">
+        <v-tabs-items
+          v-model="activeTab"
+          style="height: 100%"
+          class="tabs-items-theme"
+        >
           <v-tab-item
             value="/main"
             :transition="false"
             style="height: 100%"
-            v-if="this.$store.state.session.status == 'pending'"
+            v-if="
+              this.$store.state.session.status == 'pending' ||
+              this.$store.state.session.status == 'start'
+            "
           >
             <QuickTestWrapper v-if="this.quickTest" />
             <ExploratoryTestWrapper style="height: 100%" v-else />
@@ -86,29 +157,26 @@
               @taskToggle="handleTaskCheck"
             />
           </v-tab-item>
-          <v-tab-item
-            value="/main/workspace"
-            :transition="false"
-            style="height: 65vh"
-          >
+          <v-tab-item value="/main/workspace" :transition="false">
             <WorkspaceWrapper
               :items="items"
               :selectedItems="selected"
               event-type="dblclick"
+              :sourceThumbnail.sync="sourceThumbnail"
             />
           </v-tab-item>
         </v-tabs-items>
+        <ControlPanel
+          class="pa-0"
+          @add-item="addItem"
+          @update-item="updateItem"
+          :selectedItems="selected"
+          :preSessionRequirementsMet="presessionValid"
+          view-mode="normal"
+          ref="controlPanel"
+          @start-session="onStartSession"
+        />
       </div>
-    </div>
-    <div class="footer">
-      <ControlPanel
-        @add-item="addItem"
-        @update-item="updateItem"
-        :selectedItems="selected"
-        :preSessionRequirementsMet="presessionValid"
-        view-mode="normal"
-      />
-      <TimeCounter v-if="$store.state.session.status !== 'pending'" />
     </div>
   </v-container>
 </template>
@@ -126,18 +194,17 @@ import ExploratoryTestWrapper from "../components/ExploratoryTestWrapper.vue";
 import QuickTestWrapper from "@/components/QuickTestWrapper.vue";
 import WorkspaceWrapper from "../components/WorkspaceWrapper.vue";
 import ControlPanel from "../components/ControlPanel.vue";
-import TimeCounter from "../components/TimeCounter.vue";
 import CheckTaskWrapper from "@/components/CheckTaskWrapper.vue";
 import MenuPopover from "@/components/MenuPopover.vue";
-
+import ExportSessionButton from "../components/ExportSessionButton.vue";
 import { SESSION_STATUSES } from "../modules/constants";
 import { mapGetters } from "vuex";
-import LogoWrapper from "@/components/LogoWrapper.vue";
+import RestartSessionButton from "../components/RestartSessionButton.vue";
+import DeleteSessionButton from "../components/DeleteSessionButton.vue";
 
 export default {
   name: "MainView",
   components: {
-    LogoWrapper,
     VContainer,
     VBtn,
     VTabs,
@@ -148,9 +215,11 @@ export default {
     ExploratoryTestWrapper,
     WorkspaceWrapper,
     ControlPanel,
-    TimeCounter,
     CheckTaskWrapper,
     MenuPopover,
+    ExportSessionButton,
+    RestartSessionButton,
+    DeleteSessionButton,
   },
   data() {
     return {
@@ -158,6 +227,19 @@ export default {
       selected: [],
       showTaskError: false,
       showMenu: false,
+      sourcePickerDialog: false,
+      sources: [],
+      sourceId: "",
+      loaded: false,
+      interval: null,
+      timer: this.$store.state.session.timer,
+      duration: this.$store.state.case.duration,
+      isDuration: false,
+      started: "",
+      durationConfirmDialog: false,
+      status: this.$store.state.session.status,
+      viewMode: "normal",
+      sidebarActive: false,
     };
   },
   created() {
@@ -166,12 +248,15 @@ export default {
   mounted() {
     this.setInitialPreSession();
     this.setInitialPostSession();
+    this.$root.$on("start-quick-test", this.showSourcePickerDialog);
+    this.$root.$on("toggle-sidebar", this.toggleSidebar);
     this.$root.$on("update-selected", this.updateSelected);
+    this.$root.$on("sources-loaded", this.setSources);
+    this.$root.$on("close-sourcepickerdialog", this.hideSourcePickerDialog);
     this.$root.$on("new-session", () => {
       this.setInitialPreSession();
       this.setInitialPostSession();
     });
-
     if (this.$isElectron) {
       this.$electronService.onDataChange(this.fetchItems);
       this.$electronService.onMetaChange(this.fetchItems);
@@ -196,8 +281,12 @@ export default {
         return this.$store.getters.requiredPreSessionTasksChecked;
       }
     },
-    status() {
-      return this.$store.state.session.status;
+    elapsedTime() {
+      const timer = this.$store.state.session.timer || 0;
+      const date = new Date(null);
+      date.setSeconds(timer);
+      const result = date.toISOString().substr(11, 8);
+      return result;
     },
     showCheckList() {
       return (
@@ -205,8 +294,105 @@ export default {
         this.checklistPresessionStatus
       );
     },
+    sourceThumbnail() {
+      return (
+        this.sources.find((source) => source.id === this.sourceId)?.thumbnail ||
+        ""
+      );
+    },
+    pinataLogo() {
+      return this.$vuetify.theme.dark
+        ? "/pinata-logo-white.svg"
+        : "/pinata-logo.svg";
+    },
+    currentTheme() {
+      if (this.$vuetify.theme.dark) {
+        return this.$vuetify.theme.themes.dark;
+      } else {
+        return this.$vuetify.theme.themes.light;
+      }
+    },
+    btnBg() {
+      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
+    },
+    mainBg() {
+      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
+    },
   },
   methods: {
+    fetchSources() {
+      if (this.$isElectron) {
+        return this.$electronService.getMediaSource();
+      }
+    },
+    onStartSession(id) {
+      this.sourceId = id;
+    },
+    async showSourcePickerDialog() {
+      if (this.$isElectron) {
+        try {
+          let data = await this.fetchSources();
+          this.loaded = true;
+          this.sources = data;
+
+          this.sourcePickerDialog = true;
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        this.mediaStream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            displaySurface: "window",
+            cursor: "always",
+          },
+          audio: true,
+        });
+
+        await this.startSession();
+      }
+    },
+    hideSourcePickerDialog() {
+      this.sourcePickerDialog = false;
+    },
+    changeSessionStatus(status) {
+      if (this.$isElectron) {
+        this.$electronService.changeMenuBySessionStatus(status);
+      }
+    },
+    getCurrentDateTime() {
+      return new Date().toISOString();
+    },
+    setSources(sources) {
+      this.sources = sources;
+    },
+    updateStoreSession(isForce = false) {
+      this.$store.commit("updateSession", {
+        status: this.status,
+        timer: this.timer,
+        duration: this.duration,
+        isForce,
+      });
+    },
+    toggleSidebar(value) {
+      this.sidebarActive = !value;
+    },
+    startInterval() {
+      if (!this.interval) {
+        this.interval = setInterval(() => {
+          this.timer += 1;
+
+          this.updateStoreSession();
+          if (this.isDuration && this.duration <= 0) {
+            this.durationConfirmDialog = true;
+            this.isDuration = false;
+            this.stopInterval();
+          }
+        }, 1000);
+      }
+    },
+    endSession() {
+      this.$refs?.controlPanel?.endSession();
+    },
     handleTaskCheck(taskId, checked) {
       this.$store.commit("togglePreSessionTask", {
         taskId,
@@ -271,7 +457,6 @@ export default {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: #f2f4f7;
   overflow-y: auto;
   border-left: 1px solid rgba(0, 0, 0, 0.12);
   border-right: 1px solid rgba(0, 0, 0, 0.12);
@@ -309,9 +494,8 @@ export default {
 }
 .content {
   overflow: auto;
-  min-width: 400px;
-  box-shadow: -10px 12px 34px 0px rgba(48, 98, 254, 0.15);
-  border-radius: 15px;
+  min-width: 408px;
+  border-radius: 8px;
 }
 .footer {
   width: 100%;
@@ -349,8 +533,8 @@ export default {
   font-weight: 500;
 }
 .v-tab.v-tab--active {
-  background: #0a26c3;
-  border: 1px solid #586af3;
+  background: rgb(12, 47, 243);
+  border: 1px solid rgb(12, 47, 243);
   color: #fff;
 }
 .v-tab.test-tab {
@@ -363,13 +547,21 @@ export default {
 }
 .theme--light.v-tabs .v-tabs-bar .v-tab--disabled,
 .theme--light.v-tabs .v-tabs-bar .v-tab:not(.v-tab--active) {
-  color: #0a26c3;
-  border: 1px solid #596def;
+  color: rgb(12, 47, 243);
+  border: 1px solid rgb(12, 47, 243);
 }
 .theme--dark.v-tabs .v-tabs-bar .v-tab--disabled,
 .theme--dark.v-tabs .v-tabs-bar .v-tab:not(.v-tab--active) {
   border-color: #4b5563;
   background-color: #374151;
   color: #ffffff;
+}
+</style>
+<style>
+.shadow-theme {
+  box-shadow: 0px 16px 40px 0px rgba(0, 0, 0, 0.0588235294) !important;
+}
+.v-tabs-items.tabs-items-theme {
+  background-color: initial;
 }
 </style>

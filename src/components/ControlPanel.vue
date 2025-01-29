@@ -17,130 +17,24 @@
         @show-source-picker="showSourcePickerDialog()"
       />
     </div>
-    <div className="nml-ctrl-wrapper" v-if="viewMode === 'normal'">
-      <v-row class="mb-1" v-if="selected.length > 0">
-        <v-col cols="6" class="pa-1">
-          <v-btn
-            id="btn_delete"
-            fill
-            small
-            block
-            :color="currentTheme.primary"
-            :style="{ color: currentTheme.white }"
-            @click="handleDeleteConfirmDialog"
-          >
-            <v-icon left>mdi-delete</v-icon> {{ $tc("caption.delete", 1) }}
-          </v-btn>
-        </v-col>
-        <v-col cols="6" class="pa-1">
-          <v-menu
-            top
-            :offset-y="true"
-            :close-on-content-click="false"
-            v-model="evidenceExportDestinationMenu"
-          >
-            <template v-slot:activator="{ on: evidenceExportDestinationMenu }">
-              <v-tooltip top>
-                <template v-slot:activator="{ on: onTooltip }">
-                  <v-btn
-                    id="btn_download"
-                    fill
-                    small
-                    block
-                    color="white"
-                    :style="{ color: currentTheme.black }"
-                    v-on="{ ...evidenceExportDestinationMenu, ...onTooltip }"
-                  >
-                    <v-icon left>mdi-download</v-icon>
-                    {{ $tc("caption.export", 1) }}
-                  </v-btn>
-                </template>
-                <span>{{ $tc("caption.export", 1) }}</span>
-              </v-tooltip>
-            </template>
-            <v-card tile>
-              <v-list dense>
-                <v-list-item @click="exportItems">
-                  <v-list-item-icon class="mr-4">
-                    <v-icon>mdi-download</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{ $tc("caption.save_as", 1) }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <div v-if="credentials.jira && credentials.jira.length > 0">
-                  <jira-export-session
-                    :title="$tc(`caption.export_to_jira`, 1)"
-                    :credential-items="credentials.jira"
-                    :items="items"
-                    :selected="selected"
-                    @close-menu="() => (evidenceExportDestinationMenu = false)"
-                  />
-                </div>
-                <div
-                  v-if="credentials.testrail && credentials.testrail.length > 0"
-                >
-                  <test-rail-export-session
-                    :title="$tc(`caption.export_to_testrail`, 1)"
-                    :credential-items="credentials.testrail"
-                    :items="items"
-                    :selected="selected"
-                  />
-                </div>
-                <div v-if="credentials.xray && credentials.xray.length > 0">
-                  <xray-export-session
-                    :title="$tc(`caption.export_to_xray`, 1)"
-                    :credential-items="credentials.xray"
-                    :items="items"
-                    :selected="selected"
-                  />
-                </div>
-                <div
-                  v-if="
-                    credentials.zephyrSquad &&
-                    credentials.zephyrSquad.length > 0 &&
-                    // Adding the false to make it invisible
-                    false
-                  "
-                >
-                  <zephyr-squad-export-session
-                    :title="$tc(`caption.export_to_zephyr_squad`, 1)"
-                    :credential-items="credentials.zephyrSquad"
-                    :items="items"
-                    :selected="selected"
-                  />
-                </div>
-                <div
-                  v-if="
-                    credentials.zephyrScale &&
-                    credentials.zephyrScale.length > 0 &&
-                    // // Adding the false to make it invisible
-                    false
-                  "
-                >
-                  <zephyr-scale-export-session
-                    :title="$tc(`caption.export_to_zephyr_scale`, 1)"
-                    :credential-items="credentials.zephyrScale"
-                    :items="items"
-                    :selected="selected"
-                  />
-                </div>
-              </v-list>
-            </v-card>
-          </v-menu>
-        </v-col>
-      </v-row>
-      <v-row class="text-center control-btn-wrapper" v-if="status === 'end'">
+    <div
+      className="nml-ctrl-wrapper"
+      class="d-flex justify-end"
+      v-if="viewMode === 'normal'"
+    >
+      <v-row
+        class="text-center control-btn-wrapper rounded-12px"
+        :style="{ backgroundColor: mainBgReverse }"
+        v-if="status === 'end'"
+      >
         <v-col cols="12" class="d-flex justify-center px-0">
-          <v-tooltip top v-if="status !== 'pause'">
+          <!-- <v-tooltip open-on-hover top v-if="status !== 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_resume"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -155,13 +49,13 @@
             <span>{{ $tc("caption.resume_session", 1) }}</span>
           </v-tooltip>
 
-          <v-tooltip top v-if="status !== 'pause'">
+          <v-tooltip open-on-hover top v-if="status !== 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_save"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -175,13 +69,13 @@
             </template>
             <span>{{ $tc("caption.save_session") }}</span>
           </v-tooltip>
-          <v-tooltip top v-if="status !== 'pause'">
+          <v-tooltip open-on-hover top v-if="status !== 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_reset"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -194,14 +88,14 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.restart_session", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top v-if="status !== 'pause'">
+          </v-tooltip> -->
+          <v-tooltip open-on-hover top v-if="status !== 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_reset"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -218,17 +112,21 @@
         </v-col>
       </v-row>
       <v-row
-        class="text-center control-btn-wrapper"
+        class="text-center control-btn-wrapper control-btn-shadow control-panel rounded-12px"
+        :style="{
+          backgroundColor: mainBgReverse,
+          right: quickTest ? '8%' : '5%',
+        }"
         v-if="status !== 'pending' && status !== 'end'"
       >
-        <v-col cols="12" class="d-flex justify-center px-0">
-          <v-tooltip top v-if="status !== 'pause'">
-            <template v-slot:activator="{ on }">
+        <v-col cols="12" class="d-flex justify-center px-0 py-1">
+          <!-- <v-tooltip open-on-hover top v-if="status !== 'pause'"> -->
+          <!-- <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_pause_session"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -251,14 +149,14 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.pause_session", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top v-if="status === 'pause'">
+          </v-tooltip> -->
+          <!-- <v-tooltip open-on-hover top v-if="status === 'pause'">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_resume_session"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -281,14 +179,14 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.resume_session", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top>
+          </v-tooltip> -->
+          <!-- <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_end_session"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -311,93 +209,24 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.end_session", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top v-if="!recordVideoStarted">
-            <template v-slot:activator="{ on }">
-              <v-btn
-                id="btn_start_record_video"
-                class="control-btn mx-1"
-                fab
-                outlined
-                small
-                color="default"
-                :disabled="status === 'pause'"
-                v-on="on"
-                v-shortkey="startVideoHotkey"
-                @shortkey="startRecordVideo()"
-                @click="startRecordVideo()"
-              >
-                <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/video-solid.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/video-solid-gray.svg')"
-                  width="24"
-                  height="24"
-                />
-              </v-btn>
-            </template>
-            <span>{{ $tc("caption.start_video_record", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top v-if="recordVideoStarted">
-            <template v-slot:activator="{ on }">
-              <v-btn
-                id="btn_stop_record_video"
-                class="control-btn mx-1"
-                fab
-                outlined
-                small
-                color="default"
-                :disabled="status === 'pause'"
-                v-on="on"
-                v-shortkey="stopVideoHotkey"
-                @shortkey="stopRecordVideo()"
-                @click="stopRecordVideo()"
-              >
-                <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/video-slash-solid.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/video-slash-solid-gray.svg')"
-                  width="24"
-                  height="24"
-                />
-              </v-btn>
-            </template>
-            <span>{{ $tc("caption.stop_video_record", 1) }}</span>
-          </v-tooltip>
-          <v-tooltip top>
+          </v-tooltip> -->
+          <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_screenshot"
                 class="control-btn mx-1"
-                fab
-                outlined
-                small
+                width="40px"
+                icon
+                height="40px"
                 color="default"
                 :disabled="status === 'pause'"
                 v-on="on"
                 v-shortkey="screenshotHotkey"
-                @shortkey="handleScreenshot()"
-                @click="handleScreenshot()"
+                @shortkey="onSelectScreenshot()"
+                @click="onSelectScreenshot()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/camera.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/camera-gray.svg')"
+                  :src="require('../assets/icon/control-panel-icon/camera.svg')"
                   width="24"
                   height="24"
                 />
@@ -405,14 +234,61 @@
             </template>
             <span>{{ $tc("caption.screenshot", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top v-if="!recordAudioStarted">
+          <v-tooltip open-on-hover top v-if="!recordVideoStarted">
+            <template v-slot:activator="{ on }">
+              <v-btn
+                id="btn_start_record_video"
+                class="control-btn mx-1"
+                width="40px"
+                icon
+                height="40px"
+                color="default"
+                :disabled="status === 'pause'"
+                v-on="on"
+                v-shortkey="startVideoHotkey"
+                @shortkey="onSelectRecordVideo()"
+                @click="onSelectRecordVideo()"
+              >
+                <img
+                  :src="require('../assets/icon/control-panel-icon/video.svg')"
+                  width="24"
+                  height="24"
+                />
+              </v-btn>
+            </template>
+            <span>{{ $tc("caption.start_video_record", 1) }}</span>
+          </v-tooltip>
+          <v-tooltip open-on-hover top v-if="recordVideoStarted">
+            <template v-slot:activator="{ on }">
+              <v-btn
+                class="mx-1 rounded-lg"
+                width="40px"
+                height="40px"
+                min-width="40px"
+                color="primary"
+                :disabled="status === 'pause'"
+                v-on="on"
+                v-shortkey="stopVideoHotkey"
+                @shortkey="stopRecordVideo()"
+                @click="stopRecordVideo()"
+              >
+                <img
+                  :src="require('../assets/icon/control-panel-icon/video.svg')"
+                  width="24"
+                  height="24"
+                />
+              </v-btn>
+            </template>
+            <span>{{ $tc("caption.stop_video_record", 1) }}</span>
+          </v-tooltip>
+          <v-tooltip open-on-hover top v-if="!recordAudioStarted">
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_start_record_audio"
                 class="control-btn mx-1"
-                fab
-                outlined
-                small
+                width="40px"
+                icon
+                height="40px"
                 color="default"
                 :disabled="status === 'pause'"
                 v-on="on"
@@ -421,31 +297,26 @@
                 @click="startRecordAudio()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/microphone-solid.svg')"
-                  width="28"
-                  height="28"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/microphone-solid-gray.svg')"
-                  width="28"
-                  height="28"
+                  :src="
+                    require('../assets/icon/control-panel-icon/microphone.svg')
+                  "
+                  width="24"
+                  height="24"
                 />
               </v-btn>
             </template>
             <span>{{ $tc("caption.start_audio_record", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top v-if="recordAudioStarted">
+          <v-tooltip open-on-hover top v-if="recordAudioStarted">
             <!-- TODO test same binding for start/stop -->
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_stop_record_audio"
-                class="control-btn mx-1"
-                fab
-                outlined
-                small
-                color="default"
+                class="rounded-lg mx-1"
+                width="40px"
+                height="40px"
+                min-width="40px"
+                color="primary"
                 v-on="on"
                 :disabled="status === 'pause'"
                 v-shortkey="stopAudioHotkey"
@@ -453,30 +324,23 @@
                 @click="stopRecordAudio()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/microphone-slash-solid.svg')"
-                  width="28"
-                  height="28"
-                />
-                <img
-                  v-else
                   :src="
-                    require('../assets/icon/microphone-slash-solid-gray.svg')
+                    require('../assets/icon/control-panel-icon/microphone.svg')
                   "
-                  width="28"
-                  height="28"
+                  width="24"
+                  height="24"
                 />
               </v-btn>
             </template>
             <span>{{ $tc("caption.stop_audio_record", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top>
+          <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 id="btn_note"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 :disabled="status === 'pause'"
@@ -486,14 +350,9 @@
                 @click="showNoteDialog()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/pencil.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/pencil-gray.svg')"
+                  :src="
+                    require('../assets/icon/control-panel-icon/notification.svg')
+                  "
                   width="24"
                   height="24"
                 />
@@ -501,12 +360,12 @@
             </template>
             <span>{{ $tc("caption.note", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top>
+          <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 :disabled="status === 'pause'"
@@ -516,14 +375,9 @@
                 @click="addMindmap()"
               >
                 <img
-                  v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/connect.svg')"
-                  width="24"
-                  height="24"
-                />
-                <img
-                  v-else
-                  :src="require('../assets/icon/connect-gray.svg')"
+                  :src="
+                    require('../assets/icon/control-panel-icon/mindmap.svg')
+                  "
                   width="24"
                   height="24"
                 />
@@ -531,13 +385,36 @@
             </template>
             <span>{{ $tc("caption.mind_map", 1) }}</span>
           </v-tooltip>
-          <v-tooltip top>
+          <v-tooltip open-on-hover top>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                class="control-btn mx-1"
+                fab
+                icon
+                small
+                color="default"
+                :disabled="status === 'pause'"
+                v-on="on"
+                @click="uploadEvidence"
+              >
+                <img
+                  :src="
+                    require('../assets/icon/control-panel-icon/evidence.svg')
+                  "
+                  width="24"
+                  height="24"
+                />
+              </v-btn>
+            </template>
+            <span>{{ $tc("caption.upload_evidence", 1) }}</span>
+          </v-tooltip>
+          <!-- <v-tooltip open-on-hover top>
             <template v-slot:activator="{ on }">
               <v-btn
                 class="control-btn mx-1"
                 v-if="$isElectron"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -558,14 +435,14 @@
               </v-btn>
             </template>
             <span>{{ $tc("caption.minimize", 1) }}</span>
-          </v-tooltip>
-          <v-menu offset-y>
+          </v-tooltip> -->
+          <!-- <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 id="btn_change_source"
                 class="control-btn mx-1"
                 fab
-                outlined
+                icon
                 small
                 color="default"
                 v-on="on"
@@ -601,7 +478,7 @@
                 </v-list-item-content>
               </v-list-item>
             </v-list>
-          </v-menu>
+          </v-menu> -->
         </v-col>
         <v-col
           cols="12"
@@ -618,26 +495,21 @@
             v-model="issueCreateDestinationMenu"
           >
             <template v-slot:activator="{ on: issueCreateDestinationMenu }">
-              <v-tooltip top>
+              <v-tooltip open-on-hover top>
                 <template v-slot:activator="{ on: onTooltip }">
                   <v-btn
                     id="btn__bug"
                     class="control-btn mx-1"
                     fab
-                    outlined
+                    icon
                     small
                     color="default"
                     v-on="{ ...issueCreateDestinationMenu, ...onTooltip }"
                   >
                     <img
-                      v-if="$vuetify.theme.dark === false"
-                      :src="require('../assets/icon/bug.svg')"
-                      width="24"
-                      height="24"
-                    />
-                    <img
-                      v-else
-                      :src="require('../assets/icon/bug-gray.svg')"
+                      :src="
+                        require('../assets/icon/control-panel-icon/bug.svg')
+                      "
                       width="24"
                       height="24"
                     />
@@ -667,6 +539,14 @@
       :sourceId="sourceId"
       :loaded="loaded"
       @submit-source="startSession"
+    />
+    <ChangeSourceTargetDialog
+      v-model="changeSourceTargetDialog"
+      :titleDialog="selectedControlPanelTitleDialog"
+      :sources="sources"
+      :sourceId="sourceId"
+      :loaded="loaded"
+      @change-source="changeSource"
     />
     <ShareSessionDialog
       v-if="isShareSessionAllowed"
@@ -757,8 +637,8 @@ import { VBtn, VCol, VContainer, VIcon, VRow } from "vuetify/lib/components";
 import uuidv4 from "uuid";
 
 import testfiestaIntegrationHelper from "../integrations/TestfiestaIntegrationHelpers";
-
 import SourcePickerDialog from "./dialogs/SourcePickerDialog.vue";
+import ChangeSourceTargetDialog from "./dialogs/ChangeSourceTargetDialog.vue";
 import ShareSessionDialog from "./dialogs/ShareSessionDialog.vue";
 import NoteDialog from "./dialogs/NoteDialog.vue";
 import SummaryDialog from "./dialogs/SummaryDialog.vue";
@@ -770,14 +650,8 @@ import DurationConfirmDialog from "./dialogs/DurationConfirmDialog.vue";
 import AudioErrorDialog from "./dialogs/AudioErrorDialog.vue";
 import EndSessionDialog from "./dialogs/EndSessionDialog.vue";
 import LowProfileControlWrapper from "../components/LowProfileControlWrapper.vue";
-import JiraExportSession from "./jira/JiraExportSession";
-import TestRailExportSession from "./testrail/TestRailExportSession";
-import XrayExportSession from "./xray/XrayExportSession";
-import ZephyrSquadExportSession from "./zephyr/ZephyrSquadExportSession";
-import ZephyrScaleExportSession from "./zephyr/ZephyrScaleExportSession";
 import AddEvidenceDialog from "@/components/dialogs/AddEvidenceDialog.vue";
-
-import JiraAddIssue from "./jira/JiraAddIssue";
+import theme from "../mixins/theme";
 
 import {
   DEFAULT_MAP_CONNECTIONS,
@@ -807,6 +681,7 @@ export default {
     VBtn,
     VIcon,
     SourcePickerDialog,
+    ChangeSourceTargetDialog,
     ShareSessionDialog,
     NoteDialog,
     SummaryDialog,
@@ -818,12 +693,6 @@ export default {
     AudioErrorDialog,
     EndSessionDialog,
     LowProfileControlWrapper,
-    JiraExportSession,
-    TestRailExportSession,
-    XrayExportSession,
-    ZephyrSquadExportSession,
-    ZephyrScaleExportSession,
-    JiraAddIssue,
   },
   props: {
     selectedItems: {
@@ -851,6 +720,7 @@ export default {
       console.log(e);
     }
   },
+  mixins: [theme],
   watch: {
     selectedItems: function (newValue) {
       this.selected = newValue;
@@ -902,6 +772,7 @@ export default {
       postSessionData: "config/postSessionData",
       config: "config/fullConfig",
       credentials: "auth/credentials",
+      quickTest: "sessionQuickTest",
     }),
     isShareSessionAllowed() {
       return !this.config.localOnly;
@@ -1016,11 +887,17 @@ export default {
       selected: [],
       selectedNodes: [],
       callback: null,
-      evidenceExportDestinationMenu: false,
       issueCreateDestinationMenu: false,
       evidenceData: null,
       addEvidenceDialog: false,
       mediaStream: null,
+      changeSourceTargetDialog: false,
+      selectedControlPanel: null,
+      selectedControlPanelTitleDialog: "",
+      controlPanelActions: {
+        screenshot: this.handleScreenshot,
+        video: this.startRecordVideo,
+      },
     };
   },
   mounted() {
@@ -1033,6 +910,10 @@ export default {
     this.$root.$on("update-selected-nodes", this.updateSelectedNodes);
     this.$root.$on("close-sourcepickerdialog", this.hideSourcePickerDialog);
     this.$root.$on("close-sharesessiondialog", this.hideShareSessionDialog);
+    this.$root.$on(
+      "close-changesourcetargetdialog",
+      this.hideChangeSourceTargetDialog
+    );
     this.$root.$on("close-notedialog", this.hideNoteDialog);
     this.$root.$on("start-quick-test", this.showSourcePickerDialog);
     this.$root.$on("start-new-exploratory-session", this.startNewSession);
@@ -1057,6 +938,10 @@ export default {
   beforeDestroy() {
     this.updateStoreSession(true);
     this.$root.$off("close-sourcepickerdialog", this.hideSourcePickerDialog);
+    this.$root.$off(
+      "close-changesourcetargetdialog",
+      this.hideChangeSourceTargetDialog
+    );
     this.$root.$on("close-notedialog", this.hideNoteDialog);
     // clear timer
     clearInterval(this.interval);
@@ -1121,6 +1006,7 @@ export default {
           let data = await this.fetchSources();
           this.loaded = true;
           this.sources = data;
+          this.$root.$emit("sources-loaded", data);
 
           this.sourcePickerDialog = true;
         } catch (err) {
@@ -1136,6 +1022,18 @@ export default {
         });
 
         await this.startSession();
+      }
+    },
+    async showChangeSourceTargetDialog() {
+      if (this.$isElectron) {
+        try {
+          let data = await this.fetchSources();
+          this.loaded = true;
+          this.sources = data;
+          this.changeSourceTargetDialog = true;
+        } catch (err) {
+          console.log(err);
+        }
       }
     },
     async showShareSessionDialog() {
@@ -1155,6 +1053,11 @@ export default {
     hideSourcePickerDialog() {
       this.sourcePickerDialog = false;
     },
+    hideChangeSourceTargetDialog() {
+      this.changeSourceTargetDialog = false;
+      this.selectedControlPanel = null;
+      this.selectedControlPanelTitleDialog = "";
+    },
     hideShareSessionDialog() {
       this.shareSessionDialog = false;
     },
@@ -1169,12 +1072,6 @@ export default {
     },
     updateSelectedNodes(value) {
       this.selectedNodes = value;
-    },
-    handleDeleteConfirmDialog() {
-      this.deleteConfirmDialog = true;
-      setTimeout(() => {
-        this.$refs.deleteConfirmDialog.$refs.confirmBtn.$el.focus();
-      }, 100);
     },
     startInterval() {
       if (!this.interval) {
@@ -1203,9 +1100,17 @@ export default {
         isForce,
       });
     },
+    async changeSource(id = null) {
+      this.sourceId = id;
+      this.changeSourceTargetDialog = false;
+      if (this.selectedControlPanel) {
+        this.controlPanelActions[this.selectedControlPanel]();
+      }
+    },
     async startSession(id = null) {
       if (this.$isElectron) {
         this.sourceId = id;
+        this.$emit("start-session", id);
       }
       this.sourcePickerDialog = false;
 
@@ -1293,6 +1198,24 @@ export default {
         this.showSummaryDialog();
       }
     },
+    async uploadEvidence() {
+      // todo add relative handler for web app
+      if (this.$isElectron) {
+        const { status, message, item } =
+          await this.$electronService.uploadEvidence();
+
+        if (status === STATUSES.ERROR) {
+          this.$root.$emit("set-snackbar", message);
+        } else {
+          const data = {
+            ...item,
+            timer_mark: this.$store.state.session.timer,
+          };
+          this.evidenceData = data;
+          this.addEvidenceDialog = true;
+        }
+      }
+    },
     async endSessionProcess() {
       this.sourceId = "";
       this.ended = this.getCurrentDateTime();
@@ -1301,7 +1224,8 @@ export default {
       this.changeSessionStatus(SESSION_STATUSES.END);
       this.stopInterval();
       this.$root.$emit("handle-mindmap");
-      await this.$router.push({ path: "/result" });
+      this.finishSession();
+      // await this.$router.push({ path: "/result" });
     },
     showSummaryDialog() {
       this.summaryDialog = true;
@@ -1354,6 +1278,18 @@ export default {
         },
         audio: true,
       });
+    },
+    async onSelectScreenshot() {
+      this.selectedControlPanel = "screenshot";
+      this.selectedControlPanelTitleDialog = this.$tc(
+        "caption.screenshot_target",
+        1
+      );
+      if (this.$store.state.session.isTargetForAll) {
+        this.handleScreenshot();
+      } else {
+        this.showChangeSourceTargetDialog();
+      }
     },
     async handleScreenshot() {
       if (this.$isElectron) {
@@ -1441,6 +1377,18 @@ export default {
         this.handleError(e);
       }
     },
+    async onSelectRecordVideo() {
+      this.selectedControlPanel = "video";
+      this.selectedControlPanelTitleDialog = this.$tc(
+        "caption.recording_target",
+        1
+      );
+      if (this.$store.state.session.isTargetForAll) {
+        this.startRecordVideo();
+      } else {
+        this.showChangeSourceTargetDialog();
+      }
+    },
     async startRecordVideo() {
       if (this.$isElectron) {
         this.fetchSources().then((data) => {
@@ -1516,7 +1464,6 @@ export default {
               await this.$electronService.createVideo(buffer);
             if (status === STATUSES.ERROR) {
               this.$root.$emit("set-snackbar", message);
-              console.log(message);
             } else {
               const data = {
                 ...item,
@@ -1821,14 +1768,6 @@ export default {
       this.$root.$emit("update-selected", this.selected);
       this.deleteConfirmDialog = false;
     },
-    async exportItems() {
-      if (this.$isElectron) {
-        await this.$electronService.exportItems(this.selected);
-        this.selected = [];
-        this.$root.$emit("update-selected", this.selected);
-      }
-      // todo add web handler for items export
-    },
     async saveSession(callback = null) {
       this.newSessionDialog = false;
       const data = {
@@ -1935,7 +1874,6 @@ export default {
       await this.$storageService.resetData();
       await this.$router.push("/");
     },
-
     async resetSession() {
       if (this.resetConfirmDialog) {
         this.resetConfirmDialog = false;
@@ -1993,17 +1931,20 @@ export default {
   column-gap: 5px;
   width: 100%;
 }
-.nml-ctrl-wrapper .control-btn-wrapper {
-  background: #f3f4f6;
-}
+
 .v-btn--disabled img {
   opacity: 0.5;
 }
-.theme--dark .control-btn-wrapper {
-  background-color: #374151;
+.control-btn-wrapper {
+  max-width: 300px;
 }
-.theme--dark .control-btn {
-  background-color: #4b5563;
-  border-color: #4b5563;
+.control-btn-shadow {
+  box-shadow: 0px 12px 16px -4px #10182814 !important;
+}
+.control-panel {
+  margin-top: 1.25rem;
+  position: absolute;
+  top: 0;
+  right: 8%;
 }
 </style>

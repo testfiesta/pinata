@@ -21,7 +21,7 @@
     <div class="video-wrapper" v-if="!isProcessing">
       <div class="video-player">
         <video
-          ref="videoPlayer"
+          :ref="videoPlayerRef"
           controls
           @loadedmetadata="logDuration"
           style="width: 100%"
@@ -48,9 +48,13 @@
             <v-text-field
               placeholder="00:00"
               v-mask="'##:##'"
-              outlined
               dense
+              flat
+              solo
+              height="40px"
+              :background-color="inputBg"
               v-model="start"
+              class="rounded-lg"
               hide-details="true"
             ></v-text-field>
           </div>
@@ -65,7 +69,11 @@
             <v-text-field
               placeholder="00:00"
               v-mask="'##:##'"
-              outlined
+              flat
+              solo
+              class="rounded-lg"
+              height="40px"
+              :background-color="inputBg"
               dense
               v-model="end"
               hide-details="true"
@@ -84,6 +92,7 @@
 
 <script>
 import { STATUSES } from "../modules/constants";
+import theme from "../mixins/theme";
 export default {
   name: "VideoWrapper",
   components: {},
@@ -100,6 +109,10 @@ export default {
       type: Boolean,
       default: () => false,
     },
+    videoPlayerId: {
+      type: String,
+      required: true,
+    },
   },
   watch: {
     item: function (newValue) {
@@ -114,6 +127,7 @@ export default {
       }
     },
   },
+  mixins: [theme],
   data() {
     return {
       editSessionItem: this.item,
@@ -123,8 +137,10 @@ export default {
       duration: 0,
     };
   },
-  mounted() {},
   computed: {
+    videoPlayerRef() {
+      return `videoPlayer-${this.videoPlayerId}`;
+    },
     durationTime() {
       try {
         const date = new Date(null);
@@ -186,7 +202,7 @@ export default {
       this.$root.$emit("update-processing", this.isProcessing);
     },
     logDuration() {
-      this.duration = this.$refs.videoPlayer.duration;
+      this.duration = this.$refs[this.videoPlayerRef].duration;
     },
     setEndTime(value) {
       this.end = value;
@@ -201,6 +217,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .preview-wrapper {
   text-align: center;

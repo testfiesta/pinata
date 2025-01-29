@@ -8,28 +8,55 @@
   >
     <v-sheet outlined rounded>
       <v-card :style="{ backgroundColor: currentTheme.background }">
-        <LogoWrapper :height="20" :width="60" />
         <v-card-text class="text" :style="{ color: currentTheme.secondary }">
           <v-form ref="form" v-model="valid">
+            <div
+              class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+              :style="{ color: currentTheme.secondary }"
+            >
+              {{ $tc("caption.node_title", 1) }}
+            </div>
             <v-text-field
               v-model="text"
               :rules="textRules"
-              :label="$tc('caption.node_title', 1)"
+              autofocus
+              class="rounded-lg"
+              :background-color="inputBg"
+              dense
+              height="40px"
+              :placeholder="$t('caption.enterNodeTitle')"
+              flat
+              solo
               required
             ></v-text-field>
           </v-form>
         </v-card-text>
+        <div
+          class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
+          :style="{ color: currentTheme.secondary }"
+        >
+          {{ $tc("caption.status", 1) }}
+        </div>
         <v-select
           label="Status"
+          background-color="#F9F9FB"
+          class="rounded-lg custom-select"
+          item-text="text"
+          item-value="level"
+          width="100%"
+          height="40px"
+          solo
+          flat
           :items="commentTypes"
+          append-icon="mdi-chevron-down"
+          :menu-props="{ offsetY: true }"
           v-model="status"
         ></v-select>
         <v-card-actions>
           <v-btn
-            small
             :color="currentTheme.primary"
-            :style="{ color: currentTheme.white }"
-            class="text-capitalize"
+            depressed
+            class="text-capitalize rounded-lg white--text"
             v-shortkey="confirmHotkey"
             @shortkey="handleSave()"
             @click="handleSave()"
@@ -37,10 +64,9 @@
             {{ $tc("caption.save", 1) }}
           </v-btn>
           <v-btn
-            small
-            :color="currentTheme.background"
-            :style="{ color: currentTheme.secondary }"
-            class="text-capitalize"
+            :color="btnBg"
+            depressed
+            class="text-capitalize rounded-lg"
             v-shortkey="cancelHotkey"
             @shortkey="handleCancel()"
             @click="handleCancel()"
@@ -54,15 +80,12 @@
 </template>
 
 <script>
-import LogoWrapper from "../LogoWrapper.vue";
 import { mapGetters } from "vuex";
 import { TEXT_TYPES } from "@/modules/constants";
+import theme from "../../mixins/theme";
 
 export default {
   name: "NodeEditDialog",
-  components: {
-    LogoWrapper,
-  },
   props: {
     title: {
       type: String,
@@ -81,6 +104,7 @@ export default {
       this.status = this.type;
     },
   },
+  mixins: [theme],
   data() {
     return {
       commentTypes: Object.keys(TEXT_TYPES).filter(

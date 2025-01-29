@@ -12,9 +12,10 @@
             <v-tooltip top>
               <template v-slot:activator="{ on: onTooltip }">
                 <v-btn
-                  fill
-                  small
+                  depressed
+                  height="40px"
                   block
+                  class="rounded-lg text-capitalize w-full"
                   color="primary"
                   v-on="{ ...evidenceExportDestinationMenu, ...onTooltip }"
                 >

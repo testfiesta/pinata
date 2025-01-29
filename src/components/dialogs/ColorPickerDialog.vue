@@ -133,10 +133,11 @@
           <v-row class="action-wrapper">
             <v-col cols="6">
               <v-btn
-                class="btn secondary-btn"
-                small
+                class="btn secondary-btn rounded-lg text-capitalize"
                 fill
                 block
+                height="40px"
+                depressed
                 plain
                 color="secondary"
                 v-shortkey="closeHotkey"
@@ -148,9 +149,10 @@
             </v-col>
             <v-col cols="6">
               <v-btn
-                class="btn"
-                small
+                class="btn rounded-lg text-capitalize"
                 block
+                height="40px"
+                depressed
                 :color="currentTheme.primary"
                 :style="{ color: currentTheme.white }"
                 v-shortkey="saveHotkey"

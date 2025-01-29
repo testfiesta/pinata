@@ -1,82 +1,81 @@
 <template>
-  <v-container style="height: 100%">
+  <div class="pa-6" style="height: 100%" :style="{ backgroundColor: mainBg }">
     <div class="top">
       <v-btn
         class="text-capitalize pa-0 back-btn"
         plain
-        rounded
+        :color="btnColor"
         solid
         v-shortkey="backHotkey"
         @shortkey="handleResetConfirmDialog"
         @click="handleResetConfirmDialog"
       >
-        <v-icon class="ma-0">mdi-chevron-left</v-icon>
-        {{ $tc("caption.back", 1) }}
+        <div class="d-flex justify-center align-center">
+          <v-icon class="ma-0">mdi-chevron-left</v-icon>
+          <span class="font-weight-semibold">{{ $tc("caption.back", 1) }}</span>
+        </div>
       </v-btn>
     </div>
-    <v-row class="text-left" style="height: 100%">
-      <v-col cols="12" style="height: 100%; overflow-y: auto">
-        <div class="title title-text mb-4">
+    <div class="text-left" style="height: 100%">
+      <div style="height: 100%; overflow-y: auto" class="py-5">
+        <div class="fs-30 font-weight-semibold mt-4 mb-6">
           {{ $tc("caption.exploratory_session", 1) }}
         </div>
-        <v-tabs
-          class="charter-tab"
-          hide-slider
-          :background-color="currentTheme.primary"
-          :color="currentTheme.white"
-          :height="32"
-        >
+        <v-tabs class="charter-tab mb-5" hide-slider :height="40">
           <v-tab
-            ripple
-            class="text-capitalize"
+            plain
+            link
+            class="text-capitalize font-weight-semibold fs-16"
             @click="activeTab = 'textDescription'"
           >
             {{ $tc("caption.text_description", 1) }}
           </v-tab>
-          <v-tab ripple class="text-capitalize" @click="activeTab = 'mindMap'">
+          <v-tab
+            plain
+            link
+            class="text-capitalize font-weight-semibold fs-16"
+            @click="activeTab = 'mindMap'"
+          >
             {{ $tc("caption.mind_map", 1) }}
           </v-tab>
         </v-tabs>
         <v-tabs-items v-model="activeTab">
           <v-tab-item :transition="false" value="textDescription">
             <TestSettingWrapper :isMindmap="false" />
-            <v-col cols="6" class="mt-4" style="float: right">
+            <div class="d-flex justify-end mt-4">
               <v-btn
                 id="btn_new_session"
-                class="text-capitalize font-weight-regular"
-                fill
-                small
-                block
-                :color="currentTheme.primary"
+                class="text-capitalize rounded-lg font-weight-regular white--text"
+                color="#0C2FF3"
+                depressed
+                height="40px"
                 :style="{ color: currentTheme.white }"
-                :height="30"
+                max-width="94px"
                 @click="startNewSession"
               >
                 {{ $tc("caption.continue", 1) }}
               </v-btn>
-            </v-col>
+            </div>
           </v-tab-item>
           <v-tab-item :transition="false" value="mindMap">
             <TestSettingWrapper :isMindmap="true" />
-            <v-col cols="6" class="mt-4" style="float: right">
+            <div class="d-flex justify-end mt-4">
               <v-btn
                 id="btn_new_session"
-                class="text-capitalize font-weight-regular"
-                fill
-                small
-                block
-                :color="currentTheme.primary"
+                class="text-capitalize rounded-lg font-weight-regular white--text"
+                color="#0C2FF3"
+                depressed
+                height="40px"
                 :style="{ color: currentTheme.white }"
-                :height="30"
                 @click="startNewSession"
               >
                 {{ $tc("caption.start_session", 1) }}
               </v-btn>
-            </v-col>
+            </div>
           </v-tab-item>
         </v-tabs-items>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
     <ResetConfirmDialog
       v-model="resetConfirmDialog"
       ref="resetConfirmDialog"
@@ -84,24 +83,22 @@
       @confirm="back"
       @cancel="resetConfirmDialog = false"
     />
-  </v-container>
+  </div>
 </template>
 
 <script>
-import { VContainer, VRow, VCol } from "vuetify/lib/components";
 import TestSettingWrapper from "./TestSettingWrapper.vue";
 import { mapGetters } from "vuex";
 import ResetConfirmDialog from "./dialogs/ResetConfirmDialog.vue";
+import theme from "../mixins/theme";
 
 export default {
   name: "ExploratoryTestWrapper",
   components: {
-    VContainer,
-    VRow,
-    VCol,
     ResetConfirmDialog,
     TestSettingWrapper,
   },
+  mixins: [theme],
   data() {
     return {
       resetConfirmDialog: false,
@@ -185,5 +182,19 @@ export default {
   border-top: none;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
+}
+.charter-tab .v-tab {
+  color: #667085 !important;
+}
+.charter-tab .v-tab.v-tab--active {
+  color: #0a26c3 !important;
+  border-bottom: solid 2px #0a26c3;
+}
+.charter-tab.theme--dark .v-tab.v-tab--active {
+  color: #fff !important;
+  border-bottom: solid 2px #fff;
+}
+.charter-tab {
+  border-bottom: solid 1px #eaecf0;
 }
 </style>

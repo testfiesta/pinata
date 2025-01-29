@@ -1,111 +1,208 @@
 <template>
-  <v-dialog
-    v-bind="$attrs"
-    v-on="$listeners"
-    persistent
-    width="100%"
-    max-width="500px"
-    eager
-  >
-    <v-sheet outlined rounded>
-      <v-card :style="{ backgroundColor: currentTheme.background }">
-        <v-card-title
-          class="dialog-title"
-          :style="{ color: currentTheme.secondary }"
-        >
-          {{ $tc("caption.summarize_session", 1) }}
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-card
-                v-if="commentLoading"
-                class="loading-wrapper"
-                outlined
-                flat
-              >
-                <v-progress-circular
-                  :color="currentTheme.primary"
-                  size="70"
-                  absolute
-                  indeterminate
-                ></v-progress-circular>
-              </v-card>
-              <v-tiptap
-                v-else
-                v-model="comment.content"
-                :placeholder="$t('message.insert_summary')"
-                ref="comment"
-                :toolbar="[
-                  'headings',
-                  '|',
-                  'bold',
-                  'italic',
-                  'underline',
-                  '|',
-                  'color',
-                  '|',
-                  'bulletList',
-                  'orderedList',
-                  '|',
-                  'link',
-                  'emoji',
-                  'blockquote',
-                  '|',
-                  '#aiAssist',
-                ]"
-                @input="updateComment"
-              >
-                <template #aiAssist="">
-                  <v-btn
-                    v-if="aiAssistEnabled"
-                    icon
-                    small
-                    :title="$tc('caption.ai_assist', 1)"
-                    @click="handleAISuggestion('comment', $event)"
+  <div>
+    <v-dialog
+      v-bind="$attrs"
+      v-on="$listeners"
+      persistent
+      width="100%"
+      max-width="656px"
+      eager
+      content-class="rounded-12px"
+    >
+      <v-sheet outlined rounded>
+        <v-card :style="{ backgroundColor: currentTheme.background }">
+          <v-card-title class="pa-6" :style="{ color: currentTheme.secondary }">
+            <div class="d-flex justify-space-between align-center w-full">
+              <span class="dialog-title">
+                {{ $tc("caption.test_session_summary", 1) }}
+              </span>
+              <div class="d-flex align-center justify-end">
+                <v-select
+                  :items="commentTypes"
+                  v-model="comment.type"
+                  :placeholder="$tc('caption.comment_type', 1)"
+                  solo
+                  dense
+                  flat
+                  :color="currentTheme.secondary"
+                  :background-color="inputBg"
+                  class="rounded-lg custom-select select-comment-type pa-0 mr-3"
+                  append-icon="mdi-chevron-down"
+                  :menu-props="{ offsetY: true }"
+                  height="40px"
+                  hide-details="true"
+                ></v-select>
+                <ExportSessionButton />
+              </div>
+            </div>
+          </v-card-title>
+          <v-container>
+            <v-row>
+              <v-col cols="12" class="px-6 pt-0">
+                <v-card
+                  v-if="commentLoading"
+                  class="loading-wrapper"
+                  outlined
+                  flat
+                >
+                  <v-progress-circular
+                    :color="currentTheme.primary"
+                    size="70"
+                    absolute
+                    indeterminate
+                  ></v-progress-circular>
+                </v-card>
+                <div v-else>
+                  <v-tiptap
+                    class="tiptap-theme"
+                    v-model="comment.content"
+                    :placeholder="$t('message.insert_summary')"
+                    ref="comment"
+                    :toolbar="[
+                      '#headings',
+                      '#bold',
+                      '#italic',
+                      '#underline',
+                      '#bulletList',
+                      '#orderedList',
+                      '#link',
+                      '#blockquote',
+                      '#aiAssist',
+                    ]"
+                    @input="updateComment"
                   >
-                    <v-icon>{{
-                      previousComment?.content
-                        ? "mdi-robot-off-outline"
-                        : "mdi-robot-outline"
-                    }}</v-icon>
-                  </v-btn>
-                </template>
-              </v-tiptap>
-              <div class="error px-2 py-1" v-if="isEmpty">
-                <span style="color: #fff">{{
-                  $tc("caption.required_field", 1)
-                }}</span>
-              </div>
-            </v-col>
-          </v-row>
-          <v-row class="mt-0">
-            <v-col>
-              <div :style="{ color: currentTheme.secondary }">
-                {{ $tc("caption.comment_type", 1) }}
-              </div>
-              <v-select
-                :items="commentTypes"
-                v-model="comment.type"
-                :placeholder="$tc('caption.comment_type', 1)"
-                solo
-                dense
-                disabled
-                hide-details="true"
-              ></v-select>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-row class="action-wrapper">
-            <v-col cols="6" class="pr-1">
+                    <template #headings="{ editor }">
+                      <v-select
+                        v-model="selectedHeading"
+                        :items="headingOptions"
+                        :background-color="inputBg"
+                        :color="currentTheme.secondary"
+                        class="rounded-lg pa-0 mr-3"
+                        item-text="text"
+                        item-value="level"
+                        width="100%"
+                        height="40px"
+                        solo
+                        dense
+                        flat
+                        :placeholder="$t('Heading')"
+                        append-icon="mdi-chevron-down"
+                        :menu-props="{ offsetY: true }"
+                        @change="setHeading(editor, $event)"
+                      />
+                    </template>
+                    <template #bold="{ editor }">
+                      <v-btn
+                        icon
+                        small
+                        @click="editor.chain().focus().toggleBold().run()"
+                        :class="{ 'v-btn--active': editor.isActive('bold') }"
+                      >
+                        <img src="/tiptap/bold.svg" />
+                      </v-btn>
+                    </template>
+                    <template #italic="{ editor }">
+                      <v-btn
+                        icon
+                        small
+                        @click="editor.chain().focus().toggleItalic().run()"
+                        :class="{ 'v-btn--active': editor.isActive('italic') }"
+                      >
+                        <img src="/tiptap/italic.svg" />
+                      </v-btn>
+                    </template>
+                    <template #underline="{ editor }">
+                      <v-btn
+                        icon
+                        small
+                        @click="editor.chain().focus().toggleUnderline().run()"
+                        :class="{
+                          'v-btn--active': editor.isActive('underline'),
+                        }"
+                      >
+                        <img src="/tiptap/underline.svg" />
+                      </v-btn>
+                    </template>
+                    <template #bulletList="{ editor }">
+                      <v-btn
+                        icon
+                        small
+                        @click="editor.chain().focus().toggleBulletList().run()"
+                        :class="{
+                          'v-btn--active': editor.isActive('bulletList'),
+                        }"
+                      >
+                        <img src="/tiptap/list.svg" />
+                      </v-btn>
+                    </template>
+                    <template #orderedList="{ editor }">
+                      <v-btn
+                        icon
+                        small
+                        @click="
+                          editor.chain().focus().toggleOrderedList().run()
+                        "
+                        :class="{
+                          'v-btn--active': editor.isActive('orderedList'),
+                        }"
+                      >
+                        <img src="/tiptap/list-number.svg" />
+                      </v-btn>
+                    </template>
+                    <template #link="{ editor }">
+                      <v-btn
+                        icon
+                        small
+                        @click="toggleLink(editor)"
+                        :class="{ 'v-btn--active': editor.isActive('link') }"
+                      >
+                        <img src="/tiptap/link.svg" />
+                      </v-btn>
+                    </template>
+                    <template #blockquote="{ editor }">
+                      <v-btn
+                        icon
+                        small
+                        @click="editor.chain().focus().toggleBlockquote().run()"
+                        :class="{
+                          'v-btn--active': editor.isActive('blockquote'),
+                        }"
+                      >
+                        <img src="/tiptap/quotes.svg" />
+                      </v-btn>
+                    </template>
+                    <template #aiAssist="">
+                      <v-btn
+                        v-if="aiAssistEnabled"
+                        icon
+                        small
+                        :title="$tc('caption.ai_assist', 1)"
+                        @click="handleAISuggestion('comment', $event)"
+                      >
+                        <v-icon>{{
+                          previousComment?.content
+                            ? "mdi-robot-off-outline"
+                            : "mdi-robot-outline"
+                        }}</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-tiptap>
+                </div>
+                <div class="error px-2 py-1" v-if="isEmpty">
+                  <span style="color: #fff">{{
+                    $tc("caption.required_field", 1)
+                  }}</span>
+                </div>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-card-actions>
+            <div class="d-flex justify-end align-center w-full">
               <v-btn
-                class="btn px-8"
-                small
-                block
-                :color="currentTheme.background"
+                class="btn px-8 rounded-lg text-capitalize mr-3"
+                height="40px"
+                depressed
+                :color="btnBg"
                 :style="{ color: currentTheme.secondary }"
                 v-shortkey="cancelHotkey"
                 @shortkey="handleCancel()"
@@ -113,12 +210,10 @@
               >
                 {{ $tc("caption.cancel", 1) }}
               </v-btn>
-            </v-col>
-            <v-col cols="6" class="pr-1">
               <v-btn
-                class="btn px-8"
-                small
-                block
+                class="btn px-8 rounded-lg text-capitalize"
+                height="40px"
+                depressed
                 :color="currentTheme.primary"
                 :style="{ color: currentTheme.white }"
                 v-shortkey="confirmHotkey"
@@ -127,22 +222,32 @@
               >
                 {{ $tc("caption.save", 1) }}
               </v-btn>
-            </v-col>
-          </v-row>
-        </v-card-actions>
-      </v-card>
-    </v-sheet>
-  </v-dialog>
+            </div>
+          </v-card-actions>
+        </v-card>
+      </v-sheet>
+    </v-dialog>
+    <TipTapLinkDialog
+      ref="linkModal"
+      :placeholder="$tc('caption.enter_url', 1)"
+    />
+  </div>
 </template>
 
 <script>
 import { TEXT_TYPES, AI_ENABLED_FIELDS } from "../../modules/constants";
 import openAIIntegrationHelper from "../../integrations/OpenAIIntegrationHelpers";
 import { mapGetters } from "vuex";
+import TipTapLinkDialog from "./TipTapLinkDialog.vue";
+import theme from "../../mixins/theme";
+import ExportSessionButton from "../ExportSessionButton.vue";
 
 export default {
   name: "SummaryDialog",
-  components: {},
+  components: {
+    TipTapLinkDialog,
+    ExportSessionButton,
+  },
   props: {
     summary: {
       type: Object,
@@ -160,6 +265,7 @@ export default {
       }
     },
   },
+  mixins: [theme],
   data() {
     return {
       comment: {
@@ -172,6 +278,13 @@ export default {
         content: "",
         text: "",
       },
+      headingOptions: [
+        { text: "Normal Text", level: 0 }, // Normal text option
+        { text: "Heading 1", level: 1 },
+        { text: "Heading 2", level: 2 },
+        { text: "Heading 3", level: 3 },
+      ],
+      selectedHeading: 0,
       commentLoading: false,
       commentTypes: Object.keys(TEXT_TYPES),
       isRequired: this.config?.summaryRequired,
@@ -205,6 +318,30 @@ export default {
     },
   },
   methods: {
+    async toggleLink(editor) {
+      const url = await this.$refs.linkModal.open({
+        title: "Enter URL",
+        value: editor.getAttributes("link").href || "",
+      });
+
+      if (url === null) {
+        return;
+      }
+
+      if (url === "") {
+        editor.chain().focus().unsetLink().run();
+        return;
+      }
+
+      editor.chain().focus().setLink({ href: url }).run();
+    },
+    setHeading(editor, level) {
+      if (level === 0) {
+        editor.chain().focus().setParagraph().run();
+      } else {
+        editor.chain().focus().setHeading({ level }).run();
+      }
+    },
     handleCancel() {
       this.$root.$emit("close-summarydialog");
     },
@@ -325,12 +462,9 @@ export default {
   height: 250px;
 }
 .dialog-title {
-  /* border-bottom: 1px solid #e5e7eb; */
-  font-size: 14px;
-  font-style: normal;
+  font-size: 18px;
   font-weight: 600;
-  line-height: 20px;
-  padding: 12px;
+  line-height: 28px;
 }
 .dialog-content {
   max-height: 250px;
@@ -338,5 +472,8 @@ export default {
 }
 .v-card__actions {
   padding: 12px;
+}
+.select-comment-type {
+  max-width: 132px;
 }
 </style>

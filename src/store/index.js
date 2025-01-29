@@ -46,6 +46,7 @@ const store = new Vuex.Store({
       ended: "",
       quickTest: false,
       path: "",
+      isTargetForAll: true,
       remote: false,
       preSessionTasks: [],
       postSessionTasks: [],
@@ -122,6 +123,10 @@ const store = new Vuex.Store({
     },
     setSessionRemote(state, payload) {
       state.session.remote = payload;
+      this._vm.$storageService.updateState(state);
+    },
+    setTargetForAll(state, payload) {
+      state.session.isTargetForAll = payload;
       this._vm.$storageService.updateState(state);
     },
     setPreSessionTasks(state, payload) {
@@ -370,6 +375,9 @@ const store = new Vuex.Store({
     },
     sessionQuickTest(state) {
       return state.session.quickTest;
+    },
+    fullCase(state) {
+      return state.case;
     },
     requiredPreSessionTasksChecked(state) {
       const uncheckedTasks = state.session.preSessionTasks.filter(
