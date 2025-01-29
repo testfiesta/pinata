@@ -46,6 +46,7 @@ const store = new Vuex.Store({
       ended: "",
       quickTest: false,
       path: "",
+      isTargetForAll: true,
       remote: false,
       preSessionTasks: [],
       postSessionTasks: [],

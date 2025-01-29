@@ -28,12 +28,14 @@
       :btn-confirm-text="$tc('caption.delete', 1)"
       :title="$t('message.delete_session')"
       @cancel="deleteConfirmDialog = false"
+      @confirm="confirmDelete"
     />
   </div>
 </template>
 
 <script>
 import DeleteConfirmDialog from "../components/dialogs/DeleteConfirmDialog.vue";
+import { SESSION_STATUSES } from "@/modules/constants";
 
 export default {
   components: {
@@ -47,6 +49,33 @@ export default {
   methods: {
     handleDelete() {
       this.deleteConfirmDialog = true;
+    },
+    async confirmDelete() {
+      if (this.deleteConfirmDialog) {
+        this.deleteConfirmDialog = false;
+      }
+      this.changeSessionStatus(SESSION_STATUSES.END);
+      this.updateStoreSession();
+      this.$root.$emit("handle-mindmap");
+      this.finishSession();
+    },
+    async finishSession() {
+      this.$store.commit("clearState");
+      await this.$storageService.resetData();
+      await this.$router.push("/");
+    },
+    updateStoreSession(isForce = false) {
+      this.$store.commit("updateSession", {
+        status: SESSION_STATUSES.END,
+        timer: 0,
+        duration: 0,
+        isForce,
+      });
+    },
+    changeSessionStatus(status) {
+      if (this.$isElectron) {
+        this.$electronService.changeMenuBySessionStatus(status);
+      }
     },
   },
 };

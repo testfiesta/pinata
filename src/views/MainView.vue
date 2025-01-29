@@ -55,7 +55,7 @@
             class="d-flex align-center w-full"
             :class="{
               'justify-end': quickTest,
-              'justify-between': !quickTest,
+              'justify-space-between': !quickTest,
             }"
           >
             <div
@@ -255,8 +255,6 @@ export default {
       this.setInitialPreSession();
       this.setInitialPostSession();
     });
-    this.$root.$on("restart-session", this.restartSession);
-
     if (this.$isElectron) {
       this.$electronService.onDataChange(this.fetchItems);
       this.$electronService.onMetaChange(this.fetchItems);
@@ -327,9 +325,6 @@ export default {
     },
     onStartSession(id) {
       this.sourceId = id;
-    },
-    restartSession() {
-      this.$refs?.controlPanel?.handleResetConfirmDialog();
     },
     async showSourcePickerDialog() {
       if (this.$isElectron) {

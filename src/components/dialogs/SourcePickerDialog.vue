@@ -76,12 +76,14 @@
             class="d-flex justify-space-between align-center w-full px-6 pb-6"
           >
             <v-checkbox
+              v-model="isTargetForAll"
               id="remember-me-checkbox"
               class="field-theme mt-0"
               hide-details
               :ripple="false"
               off-icon="icon-checkbox-off"
               on-icon="icon-checkbox-on"
+              @change="setTargetForAll"
             >
               <template v-slot:label>
                 <span class="fs-14 text-theme-label">
@@ -138,6 +140,7 @@ export default {
   data() {
     return {
       activeSource: "",
+      isTargetForAll: true,
     };
   },
   watch: {
@@ -173,6 +176,9 @@ export default {
     },
     handleSelect() {
       this.$emit("submit-source", this.activeSource);
+    },
+    setTargetForAll() {
+      this.$emit("set-target-for-all", this.isTargetForAll);
     },
     setActiveSource(value) {
       this.activeSource = value;
