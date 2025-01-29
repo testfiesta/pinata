@@ -539,7 +539,6 @@
       :sourceId="sourceId"
       :loaded="loaded"
       @submit-source="startSession"
-      @set-target-for-all="setTargetForAll"
     />
     <ChangeSourceTargetDialog
       v-model="changeSourceTargetDialog"
@@ -548,7 +547,6 @@
       :sourceId="sourceId"
       :loaded="loaded"
       @change-source="changeSource"
-      @set-target-for-all="setTargetForAll"
     />
     <ShareSessionDialog
       v-if="isShareSessionAllowed"
@@ -886,7 +884,6 @@ export default {
       isDuration: false,
       started: "",
       ended: "",
-      targetForAll: true,
       selected: [],
       selectedNodes: [],
       callback: null,
@@ -1002,9 +999,6 @@ export default {
         return this.$electronService.getMediaSource();
       }
       // todo implement web version for this functionality
-    },
-    setTargetForAll(value) {
-      this.targetForAll = value;
     },
     async showSourcePickerDialog() {
       if (this.$isElectron) {
@@ -1152,7 +1146,6 @@ export default {
             ended: this.$store.state.session.ended,
             quickTest: this.$store.state.session.quickTest,
             path: this.$route.path,
-            isTargetForAll: this.targetForAll,
           },
         };
 
@@ -1292,7 +1285,7 @@ export default {
         "caption.screenshot_target",
         1
       );
-      if (this.targetForAll) {
+      if (this.$store.state.session.isTargetForAll) {
         this.handleScreenshot();
       } else {
         this.showChangeSourceTargetDialog();
@@ -1390,7 +1383,7 @@ export default {
         "caption.recording_target",
         1
       );
-      if (this.targetForAll) {
+      if (this.$store.state.session.isTargetForAll) {
         this.startRecordVideo();
       } else {
         this.showChangeSourceTargetDialog();

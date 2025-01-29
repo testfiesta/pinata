@@ -144,7 +144,7 @@ export default {
   data() {
     return {
       activeSource: "",
-      isTargetForAll: true,
+      isTargetForAll: this.$store.state.session.isTargetForAll,
     };
   },
   watch: {
@@ -185,7 +185,7 @@ export default {
       this.activeSource = value;
     },
     setTargetForAll() {
-      this.$emit("set-target-for-all", this.isTargetForAll);
+      this.$store.commit("setTargetForAll", this.isTargetForAll);
     },
   },
 };

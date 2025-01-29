@@ -140,7 +140,7 @@ export default {
   data() {
     return {
       activeSource: "",
-      isTargetForAll: true,
+      isTargetForAll: this.$store.state.session.isTargetForAll,
     };
   },
   watch: {
@@ -178,7 +178,7 @@ export default {
       this.$emit("submit-source", this.activeSource);
     },
     setTargetForAll() {
-      this.$emit("set-target-for-all", this.isTargetForAll);
+      this.$store.commit("setTargetForAll", this.isTargetForAll);
     },
     setActiveSource(value) {
       this.activeSource = value;

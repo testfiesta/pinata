@@ -125,6 +125,10 @@ const store = new Vuex.Store({
       state.session.remote = payload;
       this._vm.$storageService.updateState(state);
     },
+    setTargetForAll(state, payload) {
+      state.session.isTargetForAll = payload;
+      this._vm.$storageService.updateState(state);
+    },
     setPreSessionTasks(state, payload) {
       state.session.preSessionTasks = payload;
     },
