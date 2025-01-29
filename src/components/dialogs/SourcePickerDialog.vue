@@ -86,7 +86,7 @@
               @change="setTargetForAll"
             >
               <template v-slot:label>
-                <span class="fs-14 text-theme-label">
+                <span class="fs-14" :style="{ color: currentTheme.secondary }">
                   {{ $tc("caption.keep_for_whole_session", 1) }}
                 </span>
               </template>

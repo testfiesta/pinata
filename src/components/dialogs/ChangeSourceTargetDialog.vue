@@ -18,7 +18,7 @@
             >
               {{ titleDialog }}
             </span>
-            <v-btn icon color="#98a2b3" @click="dialog = false">
+            <v-btn icon color="#98a2b3" @click="handleClose()">
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </div>

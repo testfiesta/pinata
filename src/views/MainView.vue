@@ -12,8 +12,8 @@
         <div
           class="col"
           :class="{
-            'col-4': quickTest,
-            'col-3': !quickTest,
+            'col-4': quickTest || sidebarActive,
+            'col-3': !quickTest && !sidebarActive,
           }"
         >
           <div class="d-flex align-center justify-start">
@@ -47,15 +47,15 @@
         <div
           class="col px-0"
           :class="{
-            'col-4': quickTest,
-            'col-6': !quickTest,
+            'col-4': quickTest || sidebarActive,
+            'col-6': !quickTest && !sidebarActive,
           }"
         >
           <div
             class="d-flex align-center w-full"
             :class="{
-              'justify-end': quickTest,
-              'justify-space-between': !quickTest,
+              'justify-end': quickTest || sidebarActive,
+              'justify-space-between': !quickTest && !sidebarActive,
             }"
           >
             <div
@@ -82,8 +82,8 @@
         <div
           class="col"
           :class="{
-            'col-4': quickTest,
-            'col-3': !quickTest,
+            'col-4': quickTest || sidebarActive,
+            'col-3': !quickTest && !sidebarActive,
           }"
         >
           <div class="d-flex justify-end align-center">
@@ -239,6 +239,7 @@ export default {
       durationConfirmDialog: false,
       status: this.$store.state.session.status,
       viewMode: "normal",
+      sidebarActive: false,
     };
   },
   created() {
@@ -248,6 +249,7 @@ export default {
     this.setInitialPreSession();
     this.setInitialPostSession();
     this.$root.$on("start-quick-test", this.showSourcePickerDialog);
+    this.$root.$on("toggle-sidebar", this.toggleSidebar);
     this.$root.$on("update-selected", this.updateSelected);
     this.$root.$on("sources-loaded", this.setSources);
     this.$root.$on("close-sourcepickerdialog", this.hideSourcePickerDialog);
@@ -370,6 +372,9 @@ export default {
         duration: this.duration,
         isForce,
       });
+    },
+    toggleSidebar(value) {
+      this.sidebarActive = !value;
     },
     startInterval() {
       if (!this.interval) {

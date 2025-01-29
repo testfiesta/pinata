@@ -1,7 +1,7 @@
 <template>
   <v-container class="workspace pa-0" fluid>
     <div class="row">
-      <div class="col col-3 pr-0" v-if="!quickTest">
+      <div class="col col-3 pr-0" v-if="!quickTest" v-show="sidebarActive">
         <div
           class="app-height-global rounded-lg card pa-6"
           :style="{ backgroundColor: mainBg }"
@@ -13,7 +13,9 @@
             <div class="fs-14 font-weight-medium mr-8">
               {{ $tc("caption.time_limit", 1) }}
             </div>
-            <div class="fs-14 font-weight-medium">05.00 min</div>
+            <div class="fs-14 font-weight-medium">
+              {{ sessionDuration }} min
+            </div>
           </div>
           <div>
             <div class="fs-14 font-weight-medium mb-2">
@@ -47,10 +49,10 @@
         </div>
       </div>
       <div
-        class="col"
+        class="col position-relative"
         :class="{
           'col-6': !quickTest,
-          'col-8': quickTest,
+          'col-8': quickTest || !sidebarActive,
         }"
       >
         <div
@@ -79,12 +81,30 @@
             />
           </div>
         </div>
+        <v-btn
+          class="rounded-lg btn-toggle-sidebar px-0"
+          width="36px"
+          min-width="36px"
+          height="36px"
+          v-if="!quickTest"
+          elevation="0"
+          color="#fff"
+          @click="toggleSidebar"
+          :style="{ left: sidebarActive ? '-0.75rem' : '0.075rem' }"
+        >
+          <img
+            :src="require('../assets/icon/double-arrow.svg')"
+            width="20"
+            height="20"
+            :class="{ 'reverse-img': !sidebarActive }"
+          />
+        </v-btn>
       </div>
       <div
         class="col pl-0"
         :class="{
           'col-3': !quickTest,
-          'col-4': quickTest,
+          'col-4': quickTest || !sidebarActive,
         }"
       >
         <div
@@ -133,13 +153,14 @@
                   fill
                   depressed
                   height="40px"
-                  :color="currentTheme.danger"
+                  color="rgba(251, 165, 181, 0.25)"
                   block
-                  :style="{ color: currentTheme.white }"
+                  :style="{ color: '#AB1934' }"
                   @click="handleDeleteConfirmDialog"
                 >
-                  <v-icon left>mdi-delete</v-icon>
-                  {{ $tc("caption.delete", 1) }}
+                  <div class="font-weight-semibold">
+                    {{ $tc("caption.delete", 1) }}
+                  </div>
                 </v-btn>
               </div>
               <div class="col col-6">
@@ -168,8 +189,13 @@
                             ...onTooltip,
                           }"
                         >
-                          <v-icon left>mdi-download</v-icon>
                           {{ $tc("caption.export", 1) }}
+                          <img
+                            :src="require('../assets/icon/download-white.svg')"
+                            width="20"
+                            height="20"
+                            class="ml-2"
+                          />
                         </v-btn>
                       </template>
                       <span>{{ $tc("caption.export", 1) }}</span>
@@ -387,6 +413,7 @@ export default {
       evidenceExportDestinationMenu: false,
       deleteConfirmDialog: false,
       selectedEvidence: {},
+      sidebarActive: true,
     };
   },
   computed: {
@@ -397,6 +424,9 @@ export default {
       quickTest: "sessionQuickTest",
       fullCase: "fullCase",
     }),
+    sessionDuration() {
+      return this.fullCase.duration ? Number(this.fullCase.duration) / 60 : 0;
+    },
     isItemsExist() {
       return this.items.length > 0;
     },
@@ -448,6 +478,10 @@ export default {
     },
     editEvidence(item) {
       this.selectedEvidence = item;
+    },
+    toggleSidebar() {
+      this.sidebarActive = !this.sidebarActive;
+      this.$root.$emit("toggle-sidebar", this.sidebarActive);
     },
   },
 };
@@ -524,5 +558,13 @@ export default {
 }
 .workspace-container-bg {
   background-color: #f2f4f7;
+}
+.btn-toggle-sidebar {
+  position: absolute;
+  top: 2rem;
+  box-shadow: 0px 2px 20px -2px #1018281a !important;
+}
+.reverse-img {
+  transform: rotate(180deg);
 }
 </style>
