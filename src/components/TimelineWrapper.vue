@@ -58,7 +58,7 @@
                 v-for="(item, i) in filteredItemLists"
                 :key="i"
                 :class="`drag-item`"
-                @dragstart="dragStartHandler"
+                @dragstart="(event) => dragItem(event, item)"
               >
                 <v-timeline-item
                   v-if="getType(item.fileType) === 'image'"
