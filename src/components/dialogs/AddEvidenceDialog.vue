@@ -543,7 +543,6 @@ export default {
   },
   created() {
     this.fetchItems();
-    this.getConfig();
     this.getCredentials();
   },
   computed: {
@@ -727,10 +726,6 @@ export default {
         const sessionItems = await this.$storageService.getItems();
         this.$store.commit("setSessionItemsFromExternalWindow", sessionItems);
       }
-    },
-    async getConfig() {
-      const config = await this.$storageService.getConfig();
-      this.$store.commit("config/setFullConfig", config);
     },
     async getCredentials() {
       const credentials = await this.$storageService.getCredentials();

@@ -79,7 +79,6 @@ export default {
   },
   created() {
     this.fetchItems();
-    this.getConfig();
     this.getCredentials();
   },
   mounted() {
@@ -90,11 +89,9 @@ export default {
 
     if (this.$isElectron) {
       this.$electronService.onDataChange(this.fetchItems);
-      this.$electronService.onConfigChange(this.getConfig);
       this.$electronService.onCredentialChange(this.getCredentials);
       this.$electronService.onMetaChange(() => {
         this.fetchItems();
-        this.getConfig();
         this.getCredentials();
       });
     }
@@ -102,6 +99,7 @@ export default {
   computed: {
     ...mapGetters({
       items: "sessionItems",
+      config: "config/fullConfig",
     }),
     currentTheme() {
       if (this.$vuetify.theme.dark) {
@@ -134,10 +132,6 @@ export default {
       } else {
         // todo check if something required for web version here
       }
-    },
-    async getConfig() {
-      const config = await this.$storageService.getConfig();
-      this.$store.commit("config/setFullConfig", config);
     },
     async getCredentials() {
       const credentials = await this.$storageService.getCredentials();

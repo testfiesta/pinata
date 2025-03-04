@@ -353,7 +353,6 @@ export default {
   },
   created() {
     this.fetchItems();
-    this.getConfig();
     this.getCredentials();
     // if (this.$isElectron) {
     this.activeSession();
@@ -485,10 +484,6 @@ export default {
     },
     updateProcessing(value) {
       this.processing = value;
-    },
-    async getConfig() {
-      const config = await this.$storageService.getConfig();
-      this.$store.commit("config/setFullConfig", config);
     },
     async getCredentials() {
       const credentials = await this.$storageService.getCredentials();
