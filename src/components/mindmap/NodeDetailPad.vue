@@ -73,6 +73,12 @@
         </template>
         <span>{{ $tc("caption.upload_attachment", 1) }}</span>
       </v-tooltip>
+      <v-divider vertical />
+      <div>
+        <v-btn icon small @click="handleAddNode" style="padding: 0; margin: 0">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </div>
     </div>
 
     <div
@@ -230,6 +236,9 @@ export default {
     handleFileUpload() {
       this.attachments.push(this.attachment);
       this.$root.$emit("update:attachments", this.currentId, this.attachments);
+    },
+    handleAddNode() {
+      this.$root.$emit("add:node", this.currentId);
     },
     getAllTags() {
       const defaultTagTexts = this.defaultTags

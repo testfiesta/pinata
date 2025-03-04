@@ -396,6 +396,7 @@ export default {
     this.$root.$on("update:commentType", this.handleUpdateCommentType);
     this.$root.$on("update:tags", this.handleUpdateTags);
     this.$root.$on("update:attachments", this.handleUpdateAttachments);
+    this.$root.$on("add:node", this.addNewNodeFromDetailsTab);
     this.nodes = structuredClone(this.nodesData);
     this.connections = structuredClone(this.connectionsData);
     this.renderMap();
@@ -657,6 +658,11 @@ export default {
         status: status,
         fx: target.fx + random_offset,
         fy: target.fy + random_offset,
+        comment: target.comment,
+        fileType: target.fileType,
+        height: target.height,
+        width: target.width,
+        url: target.url,
       });
       this.connections.push({
         source: target.id,
@@ -666,6 +672,17 @@ export default {
       if (this.autoSave) {
         this.handleMindmap();
       }
+    },
+
+    addNewNodeFromDetailsTab(targetId) {
+      const target = this.nodes.find((node) => node.id === targetId);
+
+      if (!target) return;
+
+      const content = target.content;
+      const status = target.status;
+
+      this.addNewNode(target, content, status);
     },
     /**
      * remove a node
