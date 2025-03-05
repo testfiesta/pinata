@@ -39,6 +39,7 @@ export default {
     ...mapGetters({
       credentials: "auth/credentials",
       items: "sessionItems",
+      config: "config/fullConfig",
     }),
   },
   data() {
@@ -73,7 +74,6 @@ export default {
     }
   },
   mounted() {
-    this.getConfig();
     // this.getCredentials();
 
     if (!window.ipc) return;
@@ -88,15 +88,6 @@ export default {
     });
   },
   methods: {
-    getConfig() {
-      if (!window.ipc) return;
-
-      window.ipc
-        .invoke(IPC_HANDLERS.PERSISTENCE, { func: IPC_FUNCTIONS.GET_CONFIG })
-        .then((result) => {
-          this.config = result;
-        });
-    },
     getCredentials() {
       if (!window.ipc) return;
 

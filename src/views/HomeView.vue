@@ -382,6 +382,7 @@ export default {
       credentials: "auth/credentials",
       isAuthenticated: "auth/isAuthenticated",
       loggedInServices: "auth/loggedInServices",
+      config: "config/fullConfig",
     }),
     currentTheme() {
       if (this.$vuetify.theme.dark) {
@@ -421,16 +422,9 @@ export default {
     if (this.$isElectron) {
       // handle electron menu -> New Session
       this.$electronService.onNewSession(this.newSession);
-      this.$electronService.onConfigChange(() => {
-        this.getConfig();
-      });
     }
   },
   methods: {
-    async getConfig() {
-      const config = await this.$storageService.getConfig();
-      this.$store.commit("config/setFullConfig", config);
-    },
     async newSession() {
       this.$store.commit("clearState");
       this.$store.commit("setSessionQuickTest", false);

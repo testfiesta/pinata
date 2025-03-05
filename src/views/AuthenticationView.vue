@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "AuthenticationView",
   components: {},
@@ -31,6 +33,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      config: "config/fullConfig",
+    }),
     currentTheme() {
       if (this.$vuetify.theme.dark) {
         return this.$vuetify.theme.themes.dark;
@@ -48,7 +53,6 @@ export default {
     },
   },
   created() {
-    this.getConfig();
     this.getCredentials();
   },
   beforeRouteEnter(to, from, next) {
@@ -58,15 +62,10 @@ export default {
   },
   mounted() {
     if (this.$isElectron) {
-      this.$electronService.onConfigChange(this.getConfig);
       this.$electronService.onCredentialChange(this.getCredentials);
     }
   },
   methods: {
-    async getConfig() {
-      const config = await this.$storageService.getConfig();
-      this.$store.commit("config/setFullConfig", config);
-    },
     async getCredentials() {
       const credentials = await this.$storageService.getCredentials();
       this.$store.commit("auth/setCredentials", credentials);

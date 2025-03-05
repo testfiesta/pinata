@@ -89,6 +89,7 @@ export default {
   computed: {
     ...mapGetters({
       isAuthenticated: "auth/isAuthenticated",
+      config: "config/fullConfig",
     }),
     currentTheme() {
       if (this.$vuetify.theme.dark) {
@@ -161,14 +162,13 @@ export default {
     if (this.$isElectron) {
       this.getMetadata();
     }
-    this.getConfig();
     this.getCredentials();
   },
   mounted() {
     if (this.$isElectron) {
       this.$root.$on("change-meta", () => {
         this.getMetadata();
-        this.getConfig().then(() => this.updateConfig(this.config));
+        this.updateConfig(this.config);
         this.getCredentials().then(() =>
           this.updateCredentials(this.credentials)
         );
@@ -178,10 +178,6 @@ export default {
   methods: {
     async getMetadata() {
       this.metadata = await this.$storageService.getMetaData();
-    },
-    async getConfig() {
-      this.config = await this.$storageService.getConfig();
-      this.$store.commit("config/setFullConfig", this.config);
     },
     updateConfig(value) {
       this.config = value;
