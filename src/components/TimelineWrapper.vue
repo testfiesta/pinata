@@ -1483,10 +1483,14 @@ export default {
     },
     async dragItem(event, item) {
       event.preventDefault();
+
+      let modifiedItem = { ...item };
+      modifiedItem.filePath = modifiedItem.filePath.split("?")[0];
+
       if (this.$isElectron) {
         // todo make dragging work in the web app
         this.itemDragging = true;
-        await this.$electronService.dragItem(item);
+        await this.$electronService.dragItem(modifiedItem);
         this.itemDragging = false;
       }
     },
