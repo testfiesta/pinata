@@ -1483,12 +1483,10 @@ export default {
     },
     async dragItem(event, item) {
       event.preventDefault();
-      // Create a local copy of the item to avoid direct mutation
+
       let modifiedItem = { ...item };
-      // Clean the filePath
-      if (modifiedItem.filePath.includes("?")) {
-        modifiedItem.filePath = modifiedItem.filePath.split("?")[0];
-      }
+      modifiedItem.filePath = modifiedItem.filePath.split("?")[0];
+
       if (this.$isElectron) {
         // todo make dragging work in the web app
         this.itemDragging = true;
