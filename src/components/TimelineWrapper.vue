@@ -1483,6 +1483,9 @@ export default {
     },
     async dragItem(event, item) {
       event.preventDefault();
+      if (item.filePath.includes("?")) {
+        item.filePath = item.filePath.split("?")[0];
+      }
       if (this.$isElectron) {
         // todo make dragging work in the web app
         this.itemDragging = true;
