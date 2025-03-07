@@ -1533,11 +1533,6 @@ export default {
       event.preventDefault();
       event.stopPropagation();
     },
-    dragStartHandler(e) {
-      const img = new Image();
-      img.src = require("../assets/icon/drag-drop.png");
-      e.dataTransfer.setDragImage(img, 0, 0);
-    },
     handleSelectedItem(id) {
       this.selectedId = id;
     },
