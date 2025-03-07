@@ -692,7 +692,7 @@ export default {
       this.name = splitName.slice(0, -1).join(".");
 
       // optimize video
-      if (this.item.fileType === "video") {
+      if (this.item.fileType.startsWith("video")) {
         await this.optimizeVideo();
       } else {
         this.processing = false;
