@@ -3,7 +3,7 @@
   "version": "0.11.3",
   "engines": {
     "npm": ">=8.0.0 <9.0.0",
-    "node": ">=16.0.0 <17.0.0"
+    "node": ">=16.0.0 <19.0.0"
   },
   "keywords": [],
   "author": {
@@ -94,7 +94,7 @@
     "prettier": "^2.4.1",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
-    "vue-cli-plugin-electron-builder": "~2.1.1",
+    "vue-cli-plugin-electron-builder": "nklayman/vue-cli-plugin-electron-builder#5b4046a1a2b38afc2e36e959841fc1ccf64de7fc",
     "vue-cli-plugin-i18n": "~2.3.1",
     "vue-cli-plugin-vuetify": "^2.5.8",
     "vue-template-compiler": "^2.7.13",
