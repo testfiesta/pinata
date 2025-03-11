@@ -6,6 +6,8 @@ import router from "./router";
 import store from "./store";
 import integrationHelpers from "./integrations/IntegrationHelpers";
 import hotkeyHelpers from "./helpers/HotkeyHelpers";
+import { app, ipcMain } from "electron";
+import { GlobalHotkeyUtility } from "./modules/GlobalHotkeyUtility";
 
 import DefaultLayout from "./layouts/Default.vue";
 import MinimizeLayout from "./layouts/Minimize.vue";
@@ -48,6 +50,96 @@ Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.config.productionTip = false;
 
 const isElectronApp = navigator.userAgent.includes("Electron");
+
+// Initialize GlobalHotkeyUtility for Electron app
+let globalHotkeyUtility = null;
+
+if (isElectronApp && process.type === "browser") {
+  // Initialize the global hotkey utility in the main process only
+  globalHotkeyUtility = new GlobalHotkeyUtility();
+
+  // Set up IPC handlers for global hotkeys
+  ipcMain.handle("register-global-hotkey", async (event, hotkeyConfig) => {
+    try {
+      const result = await globalHotkeyUtility.registerHotkey(hotkeyConfig);
+      return { success: true, id: result.id };
+    } catch (error) {
+      console.error("Failed to register global hotkey:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("unregister-global-hotkey", async (event, hotkeyId) => {
+    try {
+      await globalHotkeyUtility.unregisterHotkey(hotkeyId);
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to unregister global hotkey:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle("unregister-all-global-hotkeys", async () => {
+    try {
+      await globalHotkeyUtility.unregisterAllHotkeys();
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to unregister all global hotkeys:", error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  // Clean up global hotkeys when the app is about to quit
+  app.on("will-quit", () => {
+    console.log("Application is quitting, cleaning up global hotkeys...");
+    if (globalHotkeyUtility) {
+      try {
+        globalHotkeyUtility.unregisterAllHotkeys();
+        globalHotkeyUtility.dispose(); // Ensure any listeners or resources are cleaned up
+        globalHotkeyUtility = null;
+        console.log("Successfully cleaned up all global hotkeys");
+      } catch (error) {
+        console.error(
+          "Error cleaning up global hotkeys during app exit:",
+          error
+        );
+      }
+    }
+  });
+
+  // Also clean up on before-quit event to ensure we don't miss anything
+  app.on("before-quit", () => {
+    console.log(
+      "Before application quit, ensuring global hotkeys are cleaned up..."
+    );
+    if (globalHotkeyUtility) {
+      try {
+        globalHotkeyUtility.unregisterAllHotkeys();
+      } catch (error) {
+        console.error(
+          "Error cleaning up global hotkeys before app quit:",
+          error
+        );
+      }
+    }
+  });
+
+  // Additional cleanup on window-all-closed event
+  app.on("window-all-closed", () => {
+    console.log("All windows closed, performing cleanup...");
+    // Only perform cleanup if we're not on macOS (as the app stays running)
+    if (process.platform !== "darwin" && globalHotkeyUtility) {
+      try {
+        globalHotkeyUtility.unregisterAllHotkeys();
+      } catch (error) {
+        console.error(
+          "Error cleaning up global hotkeys when all windows closed:",
+          error
+        );
+      }
+    }
+  });
+}
 
 const plugins = {
   install() {

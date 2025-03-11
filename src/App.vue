@@ -48,6 +48,11 @@ export default {
     const credentials = await this.$storageService.getCredentials();
     this.$store.commit("auth/setCredentials", credentials);
     await this.updateAuth();
+
+    // Initialize global hotkeys if running in Electron
+    if (this.$isElectron) {
+      this.initializeGlobalHotkeys();
+    }
   },
   async mounted() {
     if (this.renderRestoreSessionDialog && this.$isElectron) {
@@ -61,6 +66,25 @@ export default {
     }
   },
   methods: {
+    /**
+     * Initialize global hotkeys based on the application configuration
+     */
+    async initializeGlobalHotkeys() {
+      try {
+        const config = this.$store.getters["config/fullConfig"];
+        if (config && config.hotkeys) {
+          // Register all configured hotkeys as global hotkeys
+          await this.$electronService.registerGlobalHotkeys(config.hotkeys);
+          console.log("Global hotkeys initialized successfully");
+        } else {
+          console.warn(
+            "No hotkey configuration found, global hotkeys not initialized"
+          );
+        }
+      } catch (error) {
+        console.error("Failed to initialize global hotkeys:", error);
+      }
+    },
     async restoreSession() {
       await this.$store.commit("restoreState", this.stateToRestore);
       const currentPath = this.$router.history.current.path;
@@ -108,6 +132,12 @@ export default {
         }
       }
     },
+  },
+  beforeDestroy() {
+    // Unregister global hotkeys when the app is about to be destroyed
+    if (this.$isElectron) {
+      this.$electronService.unregisterAllGlobalHotkeys();
+    }
   },
 };
 </script>
