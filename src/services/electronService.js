@@ -69,6 +69,23 @@ export default class ElectronService {
     window.ipc.on(IPC_BIND_KEYS.MODAL_DATA, callback);
   }
 
+  // Global hotkey listeners
+  onGlobalHotkeyTriggered(callback) {
+    window.ipc.on("GLOBAL_HOTKEY_TRIGGERED", callback);
+  }
+
+  onGlobalHotkeyRegistered(callback) {
+    window.ipc.on("GLOBAL_HOTKEY_REGISTERED", callback);
+  }
+
+  onGlobalHotkeyUnregistered(callback) {
+    window.ipc.on("GLOBAL_HOTKEY_UNREGISTERED", callback);
+  }
+
+  onGlobalHotkeyError(callback) {
+    window.ipc.on("GLOBAL_HOTKEY_ERROR", callback);
+  }
+
   // Invokers
   setWindowSize({ width, height }) {
     window.ipc.invoke(IPC_HANDLERS.WINDOW, {
@@ -284,6 +301,82 @@ export default class ElectronService {
   async resetSession() {
     return await window.ipc.invoke(IPC_HANDLERS.WINDOW, {
       func: IPC_FUNCTIONS.RESET_SESSION,
+    });
+  }
+
+  // Global hotkey methods
+
+  /**
+   * Register a global hotkey
+   * @param {Object} hotkeyConfig - Configuration for the hotkey
+   * @param {string} hotkeyConfig.id - Unique identifier for the hotkey
+   * @param {Array} hotkeyConfig.keys - Array of keys that make up the hotkey
+   * @param {string} hotkeyConfig.action - Action to perform when hotkey is triggered
+   * @returns {Promise<Object>} Registration result
+   */
+  async registerGlobalHotkey(hotkeyConfig) {
+    return await window.ipc.invoke(IPC_HANDLERS.HOTKEYS, {
+      func: IPC_FUNCTIONS.REGISTER_GLOBAL_HOTKEY,
+      data: hotkeyConfig,
+    });
+  }
+
+  /**
+   * Unregister a previously registered global hotkey
+   * @param {string} hotkeyId - ID of the hotkey to unregister
+   * @returns {Promise<Object>} Unregistration result
+   */
+  async unregisterGlobalHotkey(hotkeyId) {
+    return await window.ipc.invoke(IPC_HANDLERS.HOTKEYS, {
+      func: IPC_FUNCTIONS.UNREGISTER_GLOBAL_HOTKEY,
+      data: { id: hotkeyId },
+    });
+  }
+
+  /**
+   * Unregister all global hotkeys
+   * @returns {Promise<Object>} Unregistration result
+   */
+  async unregisterAllGlobalHotkeys() {
+    return await window.ipc.invoke(IPC_HANDLERS.HOTKEYS, {
+      func: IPC_FUNCTIONS.UNREGISTER_ALL_GLOBAL_HOTKEYS,
+    });
+  }
+
+  /**
+   * Check if a global hotkey is registered
+   * @param {string} hotkeyId - ID of the hotkey to check
+   * @returns {Promise<boolean>} Whether the hotkey is registered
+   */
+  async isGlobalHotkeyRegistered(hotkeyId) {
+    return await window.ipc.invoke(IPC_HANDLERS.HOTKEYS, {
+      func: IPC_FUNCTIONS.IS_GLOBAL_HOTKEY_REGISTERED,
+      data: { id: hotkeyId },
+    });
+  }
+
+  /**
+   * Get all registered global hotkeys
+   * @returns {Promise<Array>} List of registered global hotkeys
+   */
+  async getRegisteredGlobalHotkeys() {
+    return await window.ipc.invoke(IPC_HANDLERS.HOTKEYS, {
+      func: IPC_FUNCTIONS.GET_REGISTERED_GLOBAL_HOTKEYS,
+    });
+  }
+
+  /**
+   * Update an existing global hotkey
+   * @param {Object} hotkeyConfig - Updated configuration for the hotkey
+   * @param {string} hotkeyConfig.id - ID of the hotkey to update
+   * @param {Array} hotkeyConfig.keys - New array of keys
+   * @param {string} hotkeyConfig.action - New action to perform
+   * @returns {Promise<Object>} Update result
+   */
+  async updateGlobalHotkey(hotkeyConfig) {
+    return await window.ipc.invoke(IPC_HANDLERS.HOTKEYS, {
+      func: IPC_FUNCTIONS.UPDATE_GLOBAL_HOTKEY,
+      data: hotkeyConfig,
     });
   }
 }

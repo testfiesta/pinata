@@ -264,7 +264,7 @@ export default {
       credentials: "auth/credentials",
       isAuthenticated: "auth/isAuthenticated",
       loggedInServices: "auth/loggedInServices",
-      config: "config/fullConfig"
+      config: "config/fullConfig",
     }),
     quickTestHotkey() {
       return this.$hotkeyHelpers.findBinding("home.quickTest", this.hotkeys);
