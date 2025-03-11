@@ -47,6 +47,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "form-data": "^4.0.0",
     "lodash": "^4.17.21",
+    "node-global-key-listener": "^0.3.0",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "os": "^0.1.2",
     "simple-json-db": "^2.0.0",

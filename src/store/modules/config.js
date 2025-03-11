@@ -113,8 +113,22 @@ export const config = {
       }
       this._vm.$storageService.updateConfig(state);
     },
+    updateHotkeys(state, payload) {
+      state.hotkeys = payload;
+      this._vm.$storageService.updateConfig(state);
+
+      // Notify the main process of hotkey changes
+      if (window.electron && window.electron.globalHotkeys) {
+        window.electron.globalHotkeys.configChanged(payload);
+      }
+    },
   },
-  actions: {},
+  actions: {
+    // Action to update hotkeys configuration
+    updateHotkeys({ commit }, payload) {
+      commit("updateHotkeys", payload);
+    },
+  },
   getters: {
     fullConfig: (state) => {
       return state;

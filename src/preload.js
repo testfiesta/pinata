@@ -17,4 +17,23 @@ contextBridge.exposeInMainWorld("ipc", {
   eventNames: () => {
     return ipcRenderer.eventNames();
   },
+  // Add global hotkey related methods
+  registerGlobalHotkey: async (accelerator, id) => {
+    return await ipcRenderer.invoke("register-global-hotkey", {
+      accelerator,
+      id,
+    });
+  },
+  unregisterGlobalHotkey: async (id) => {
+    return await ipcRenderer.invoke("unregister-global-hotkey", id);
+  },
+  unregisterAllGlobalHotkeys: async () => {
+    return await ipcRenderer.invoke("unregister-all-global-hotkeys");
+  },
+  isGlobalHotkeyRegistered: async (id) => {
+    return await ipcRenderer.invoke("is-global-hotkey-registered", id);
+  },
+  getRegisteredGlobalHotkeys: async () => {
+    return await ipcRenderer.invoke("get-registered-global-hotkeys");
+  },
 });
