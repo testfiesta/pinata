@@ -139,12 +139,14 @@
                   :src="require('../assets/icon/pause.svg')"
                   width="24"
                   height="24"
+                  draggable="false"
                 />
                 <img
                   v-else
                   :src="require('../assets/icon/pause-gray.svg')"
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -168,13 +170,15 @@
                   v-if="$vuetify.theme.dark === false"
                   :src="require('../assets/icon/play.svg')"
                   width="24"
-                  height="24"
+                                    height="24"
+                  draggable="false"
                 />
                 <img
                   v-else
                   :src="require('../assets/icon/play-gray.svg')"
                   width="24"
-                  height="24"
+                                    height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -199,12 +203,14 @@
                   :src="require('../assets/icon/stop.svg')"
                   width="24"
                   height="24"
+                  draggable="false"
                 />
                 <img
                   v-else
                   :src="require('../assets/icon/stop-gray.svg')"
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -229,6 +235,7 @@
                   :src="require('../assets/icon/control-panel-icon/camera.svg')"
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -253,6 +260,7 @@
                   :src="require('../assets/icon/control-panel-icon/video.svg')"
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -276,6 +284,7 @@
                   :src="require('../assets/icon/control-panel-icon/video.svg')"
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -302,6 +311,7 @@
                   "
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -329,6 +339,7 @@
                   "
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -355,6 +366,7 @@
                   "
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -380,6 +392,7 @@
                   "
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -403,6 +416,7 @@
                   "
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -425,12 +439,14 @@
                   :src="require('../assets/icon/union.svg')"
                   width="24"
                   height="24"
+                  draggable="false"
                 />
                 <img
                   v-else
                   :src="require('../assets/icon/union-gray.svg')"
                   width="24"
                   height="24"
+                  draggable="false"
                 />
               </v-btn>
             </template>
@@ -512,6 +528,7 @@
                       "
                       width="24"
                       height="24"
+                      draggable="false"
                     />
                   </v-btn>
                 </template>
