@@ -97,8 +97,11 @@ export default {
     },
   },
   watch: {
-    item: function (newValue) {
-      this.editSessionItem = newValue;
+    item: {
+      handler(newValue) {
+        this.editSessionItem = { ...newValue };
+      },
+      deep: true,
     },
     triggerSave: function (newValue) {
       this.triggerSaveEvent = newValue;
