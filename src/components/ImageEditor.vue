@@ -43,8 +43,8 @@ export default {
   },
   watch: {
     item(newValue, oldValue) {
+      this.editSessionItem = newValue;
       if (newValue.attachmentID !== oldValue.attachmentID) {
-        this.editSessionItem = newValue;
         this.reinitializeEditor();
       }
     },

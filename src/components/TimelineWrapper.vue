@@ -17,6 +17,7 @@
                     src="../assets/icon/timeline-icon/play.svg"
                     alt="play"
                     class="icon"
+                    draggable="false"
                   />
                 </div>
               </template>
@@ -39,26 +40,28 @@
                   src="../assets/icon/timeline-icon/message.svg"
                   alt="message"
                   class="icon"
+                  draggable="false"
                 />
                 <img
                   src="../assets/icon/timeline-icon/face-smile.svg"
                   alt="emoticon"
                   class="icon mx-2"
+                  draggable="false"
                 />
               </div>
             </v-timeline-item>
-            <draggable
-              v-if="itemLists.length"
-              v-model="itemLists"
-              draggable=".drag-item"
-              :animation="200"
-              @change="handleChange"
-            >
+
+            <div v-if="itemLists.length">
               <div
                 v-for="(item, i) in filteredItemLists"
-                :key="i"
-                :class="`drag-item`"
-                @dragstart="(event) => dragItem(event, item)"
+                :key="item.stepID"
+                class="drag-item"
+                :draggable="true"
+                @dragstart="startDrag($event, i)"
+                @dragover="dragOverItem($event, i)"
+                @drop="dropItem($event, i)"
+                @dragend="dragEnd"
+                @dragstart.self="dragItem($event, item)"
               >
                 <v-timeline-item
                   v-if="getType(item.fileType) === 'image'"
@@ -79,6 +82,7 @@
                         "
                         alt="camera"
                         class="icon"
+                        draggable="false"
                       />
                     </div>
                   </template>
@@ -160,6 +164,7 @@
                                   src="../assets/icon/timeline-icon/message.svg"
                                   width="20"
                                   height="20"
+                                  draggable="false"
                                 />
                               </v-btn>
                             </template>
@@ -195,6 +200,7 @@
                                       src="../assets/icon/timeline-icon/face-smile.svg"
                                       width="20"
                                       height="20"
+                                      draggable="false"
                                     />
                                   </v-btn>
                                 </template>
@@ -265,6 +271,7 @@
                         "
                         alt="video"
                         class="icon"
+                        draggable="false"
                       />
                     </div>
                   </template>
@@ -346,6 +353,7 @@
                                   src="../assets/icon/timeline-icon/message.svg"
                                   width="20"
                                   height="20"
+                                  draggable="false"
                                 />
                               </v-btn>
                             </template>
@@ -380,6 +388,7 @@
                                       src="../assets/icon/timeline-icon/face-smile.svg"
                                       width="20"
                                       height="20"
+                                      draggable="false"
                                     />
                                   </v-btn>
                                 </template>
@@ -450,6 +459,7 @@
                         "
                         alt="microphone"
                         class="icon"
+                        draggable="false"
                       />
                     </div>
                   </template>
@@ -521,6 +531,7 @@
                                   src="../assets/icon/timeline-icon/message.svg"
                                   width="20"
                                   height="20"
+                                  draggable="false"
                                 />
                               </v-btn>
                             </template>
@@ -555,6 +566,7 @@
                                       src="../assets/icon/timeline-icon/face-smile.svg"
                                       width="20"
                                       height="20"
+                                      draggable="false"
                                     />
                                   </v-btn>
                                 </template>
@@ -628,6 +640,7 @@
                         "
                         alt="message"
                         class="icon"
+                        draggable="false"
                       />
                     </div>
                   </template>
@@ -704,6 +717,7 @@
                                   src="../assets/icon/timeline-icon/message.svg"
                                   width="20"
                                   height="20"
+                                  draggable="false"
                                 />
                               </v-btn>
                             </template>
@@ -738,6 +752,7 @@
                                       src="../assets/icon/timeline-icon/face-smile.svg"
                                       width="20"
                                       height="20"
+                                      draggable="false"
                                     />
                                   </v-btn>
                                 </template>
@@ -807,6 +822,7 @@
                         "
                         alt="mindmap"
                         class="icon"
+                        draggable="false"
                       />
                     </div>
                   </template>
@@ -890,6 +906,7 @@
                                   src="../assets/icon/timeline-icon/message.svg"
                                   width="20"
                                   height="20"
+                                  draggable="false"
                                 />
                               </v-btn>
                             </template>
@@ -993,6 +1010,7 @@
                         "
                         alt="message"
                         class="icon"
+                        draggable="false"
                       />
                     </div>
                   </template>
@@ -1069,6 +1087,7 @@
                                   src="../assets/icon/timeline-icon/message.svg"
                                   width="20"
                                   height="20"
+                                  draggable="false"
                                 />
                               </v-btn>
                             </template>
@@ -1103,6 +1122,7 @@
                                       src="../assets/icon/timeline-icon/face-smile.svg"
                                       width="20"
                                       height="20"
+                                      draggable="false"
                                     />
                                   </v-btn>
                                 </template>
@@ -1154,7 +1174,7 @@
                   </div>
                 </v-timeline-item>
               </div>
-            </draggable>
+            </div>
           </v-timeline>
         </div>
       </v-col>
@@ -1200,7 +1220,6 @@ import {
 } from "vuetify/lib/components";
 import { VEmojiPicker } from "v-emoji-picker";
 
-import draggable from "vuedraggable";
 import dayjs from "dayjs";
 
 import { STATUSES, TEXT_TYPES, FILE_TYPES } from "@/modules/constants";
@@ -1239,7 +1258,6 @@ export default {
     VTimelineItem,
     VBtn,
     VEmojiPicker,
-    draggable,
     WaveForm,
   },
   props: {
@@ -1294,6 +1312,7 @@ export default {
       editEvidenceDialog: false,
       posterUrl: null,
       selectedEvidence: null,
+      draggingIndex: null,
     };
   },
   computed: {
@@ -1359,6 +1378,31 @@ export default {
         .attr("viewBox", getViewBox(nodes.data()))
         .on(".zoom", null)
         .on("mousedown.drag", null);
+    },
+    startDrag(event, index) {
+      this.draggingIndex = index;
+      event.dataTransfer.setData("text/plain", index);
+    },
+    dragOverItem(event) {
+      event.preventDefault();
+    },
+    dropItem(event, dropIndex) {
+      event.preventDefault();
+      const dragIndex = this.draggingIndex;
+
+      if (dragIndex !== null && dragIndex !== dropIndex) {
+        const newItems = [...this.itemLists];
+        const [draggedItem] = newItems.splice(dragIndex, 1);
+        newItems.splice(dropIndex, 0, draggedItem);
+        this.itemLists = newItems;
+        this.saveData();
+      }
+
+      // Reset dragging state
+      this.draggingIndex = null;
+    },
+    dragEnd() {
+      this.draggingIndex = null;
     },
     editEvidence(item) {
       this.$root.$emit("edit-evidence", item);
@@ -1442,9 +1486,6 @@ export default {
       }
       this.$root.$emit("update-selected", this.selected);
     },
-    handleChange() {
-      this.saveData();
-    },
     handleItemClick(id) {
       this.clicks++;
       if (this.clicks === 1) {
@@ -1466,16 +1507,6 @@ export default {
           200
         );
       }
-    },
-    handleFollowUp($event, id) {
-      this.itemLists = this.itemLists.map((item) => {
-        let temp = structuredClone(item);
-        if (temp.stepID === id) {
-          temp.followUp = $event.target.checked;
-        }
-        return temp;
-      });
-      this.saveData();
     },
     async handleActivateEditSession(id) {
       this.itemToEdit = await this.$storageService.getItemById(id);
@@ -1807,6 +1838,10 @@ export default {
   font-size: 12px;
   font-weight: 400;
   color: #475467;
+}
+.drag-item {
+  position: relative;
+  transition: transform 0.2s ease;
 }
 </style>
 <style>
