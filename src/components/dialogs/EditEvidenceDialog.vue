@@ -423,7 +423,7 @@ export default {
     // }
     this.$root.$on("update-edit-item", this.updateEditItem);
     this.$root.$on("update-processing", this.updateProcessing);
-    // this.$root.$on("save-data", this.saveData);
+    this.$root.$on("save-data", this.saveData);
   },
   watch: {
     itemData: function () {
@@ -522,11 +522,7 @@ export default {
       this.$emit("close");
     },
     async handleSave() {
-      if (this.item.comment.type === "Summary") {
-        this.triggerSaveEvent = !this.triggerSaveEvent;
-      } else {
-        await this.saveData(this.item);
-      }
+      this.triggerSaveEvent = !this.triggerSaveEvent;
     },
     handleName() {
       this.item.fileName = this.name + this.fileSuffix;
