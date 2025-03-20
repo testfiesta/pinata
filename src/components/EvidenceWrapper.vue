@@ -259,10 +259,6 @@ export default {
       selectedHeading: 0,
     };
   },
-  created() {
-    this.fetchItems();
-    this.getCredentials();
-  },
   computed: {
     ...mapGetters({
       items: "sessionItems",
@@ -444,16 +440,6 @@ export default {
       );
       input.click();
       input.focus();
-    },
-    async fetchItems() {
-      if (this.$isElectron) {
-        const sessionItems = await this.$storageService.getItems();
-        this.$store.commit("setSessionItemsFromExternalWindow", sessionItems);
-      }
-    },
-    async getCredentials() {
-      const credentials = await this.$storageService.getCredentials();
-      this.$store.commit("auth/setCredentials", credentials);
     },
     async optimizeVideo() {
       if (this.$isElectron) {

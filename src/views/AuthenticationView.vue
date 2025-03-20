@@ -27,13 +27,12 @@ export default {
   components: {},
   data() {
     return {
-      config: {},
-      credentials: {},
       prevRoute: null,
     };
   },
   computed: {
     ...mapGetters({
+      credentials: "auth/credentials",
       config: "config/fullConfig",
     }),
     currentTheme() {
@@ -52,9 +51,7 @@ export default {
         : "/pinata-logo.svg";
     },
   },
-  created() {
-    this.getCredentials();
-  },
+  created() {},
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.prevRoute = from;
@@ -65,12 +62,7 @@ export default {
       this.$electronService.onCredentialChange(this.getCredentials);
     }
   },
-  methods: {
-    async getCredentials() {
-      const credentials = await this.$storageService.getCredentials();
-      this.$store.commit("auth/setCredentials", credentials);
-    },
-  },
+  methods: {},
 };
 </script>
 <style scoped>

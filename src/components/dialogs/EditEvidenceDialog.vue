@@ -333,7 +333,6 @@ export default {
   data() {
     return {
       item: {},
-      items: [],
       previousComment: {
         type: "",
         content: "",
@@ -352,14 +351,13 @@ export default {
     };
   },
   created() {
-    this.fetchItems();
-    this.getCredentials();
     // if (this.$isElectron) {
     this.activeSession();
     // }
   },
   computed: {
     ...mapGetters({
+      items: "sessionItems",
       hotkeys: "config/hotkeys",
       config: "config/fullConfig",
       credentials: "auth/credentials",
@@ -472,22 +470,11 @@ export default {
       input.click();
       input.focus();
     },
-    async fetchItems() {
-      if (this.$isElectron) {
-        this.items = await this.$storageService.getItems();
-      } else {
-        this.items = structuredClone(this.$store.state.session.items);
-      }
-    },
     updateEditItem(value) {
       this.item = value;
     },
     updateProcessing(value) {
       this.processing = value;
-    },
-    async getCredentials() {
-      const credentials = await this.$storageService.getCredentials();
-      this.$store.commit("auth/setCredentials", credentials);
     },
     updateComment() {
       const regex = /(<([^>]+)>)/gi;
@@ -533,31 +520,38 @@ export default {
       this.item.followUp = $event.target.checked;
     },
     async saveData(data) {
-      if (data) {
-        this.item.fileName = data.fileName;
-        this.item.filePath = data.filePath;
+      this.item.fileName = this.name + this.fileSuffix;
+      let updatedItem = {
+        ...this.item,
+        comment: this.item.comment,
+        tags: this.item.tags,
+        emoji: this.item.emoji,
+        followUp: this.item.followUp,
+      };
+
+      if (data && typeof data === "object" && !Array.isArray(data)) {
+        updatedItem = { ...data, ...updatedItem };
       }
 
-      this.items = this.items.map((item) => {
-        let temp = Object.assign({}, item);
-        if (temp.stepID === this.item.stepID) {
-          temp = this.item;
-        }
-        return temp;
-      });
-      const updatedItems = [...this.items];
-      let updatedNodes = [];
-      let tempItems = updatedItems
+      let tempItems = structuredClone(this.items);
+      tempItems = tempItems.map((item) =>
+        item.stepID === updatedItem.stepID ? { ...updatedItem } : { ...item }
+      );
+
+      const updatedItems = [...tempItems];
+      tempItems = updatedItems
         .slice()
         .filter((item) => item?.comment?.type !== "Summary");
 
+      let updatedNodes = [];
       tempItems.forEach((item) => {
         item.id = item.stepID;
-        updatedNodes.push({ ...item, content: item.comment.text });
+        updatedNodes.push({ ...item, content: item?.comment?.text ?? "" });
       });
 
       await this.$store.commit("setSessionItems", [...updatedItems]);
       await this.$store.commit("setSessionNodes", [...updatedNodes]);
+      this.$root.$emit("edit-evidence", updatedItem);
       this.$emit("close");
       this.$root.$emit("render-mindmap");
     },

@@ -242,9 +242,6 @@ export default {
       sidebarActive: false,
     };
   },
-  created() {
-    this.fetchItems();
-  },
   mounted() {
     this.setInitialPreSession();
     this.setInitialPostSession();
@@ -257,10 +254,9 @@ export default {
       this.setInitialPreSession();
       this.setInitialPostSession();
     });
-    if (this.$isElectron) {
-      this.$electronService.onDataChange(this.fetchItems);
-      this.$electronService.onMetaChange(this.fetchItems);
-    } else this.getCurrentExecution();
+    if (!this.$isElectron) {
+      this.getCurrentExecution();
+    }
   },
 
   computed: {
@@ -414,12 +410,6 @@ export default {
           return { ...task, checked: false };
         })
       );
-    },
-    async fetchItems() {
-      if (this.$isElectron) {
-        const sessionItems = await this.$storageService.getItems();
-        this.$store.commit("setSessionItemsFromExternalWindow", sessionItems);
-      }
     },
     async getCurrentExecution() {
       let currentPath = this.$route.path;

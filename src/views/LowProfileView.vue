@@ -49,10 +49,7 @@ export default {
       duration: 0,
       sourceId: "",
       overlay: false,
-
       selected: [],
-      config: {},
-      credentials: {},
     };
   },
   created() {
@@ -74,8 +71,6 @@ export default {
     }
   },
   mounted() {
-    // this.getCredentials();
-
     if (!window.ipc) return;
 
     window.ipc.on("OPEN_CHILD_WINDOW", () => {
@@ -88,17 +83,6 @@ export default {
     });
   },
   methods: {
-    getCredentials() {
-      if (!window.ipc) return;
-
-      window.ipc
-        .invoke(IPC_HANDLERS.PERSISTENCE, {
-          func: IPC_FUNCTIONS.GET_CREDENTIALS,
-        })
-        .then((result) => {
-          this.credentials = result;
-        });
-    },
     maximize() {
       const data = {
         status: this.$store.state.session.status,
