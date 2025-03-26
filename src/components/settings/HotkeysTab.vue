@@ -122,6 +122,7 @@ export default {
 <style scoped>
 .content-wrapper {
   width: 100%;
+  height: 90vh;
   overflow-y: auto;
 }
 .body-1 {

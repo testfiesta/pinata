@@ -61,6 +61,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 25px;
+  height: 90vh;
 }
 .tab-bar {
   margin-top: 20px;

@@ -143,7 +143,7 @@ import SettingsDialog from "@/components/dialogs/SettingsDialog.vue";
 import theme from "../mixins/theme";
 
 export default {
-  name: "MenuPopover",
+  name: "LoggedInMenu",
   components: {
     VBtn,
     SettingsDialog,

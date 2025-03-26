@@ -1,52 +1,9 @@
 <template>
   <v-container class="wrapper" fluid>
-    <v-app-bar
-      :color="mainBg"
-      class="px-4 app-navbar"
-      max-height="80px"
-      height="80px"
-      elevation="0"
-      rounded="lg"
-    >
-      <div class="d-flex justify-space-between align-center w-full">
-        <router-link to="/">
-          <img :src="pinataLogo" alt="logo" />
-        </router-link>
-        <div class="avatar" style="display: none">
-          <div v-if="isAuthenticated">
-            <MenuPopover />
-          </div>
-          <div v-else>
-            <v-menu :nudge-width="100" bottom z-index="99999" offset-y>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  fab
-                  small
-                  color="primary"
-                  height="32"
-                  width="32"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon dark> mdi-account </v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item link to="/authentication/signin">
-                  <v-list-item-title>Log In</v-list-item-title>
-                </v-list-item>
-                <!--<v-list-item link to="/authentication/signupMain">
-                <v-list-item-title>Register</v-list-item-title>
-              </v-list-item>-->
-              </v-list>
-            </v-menu>
-          </div>
-        </div>
-      </div>
-    </v-app-bar>
-    <div class="d-flex justify-center">
+    <HeaderView />
+    <div class="d-flex justify-center flex-grow-1 align-center">
       <div
-        class="d-flex justify-center align-center flex-column pa-6 rounded-lg home-wrapper mt-16 w-full"
+        class="d-flex justify-center align-center flex-column pa-6 rounded-lg home-wrapper w-full"
         :style="{ backgroundColor: mainBg }"
       >
         <div class="logo mb-6 w-full">
@@ -358,18 +315,19 @@
     </div>
   </v-container>
 </template>
+
 <script>
 import { VContainer, VBtn } from "vuetify/lib/components";
-import MenuPopover from "../components/MenuPopover.vue";
-
 import { STATUSES } from "../modules/constants";
 import { mapGetters } from "vuex";
+import HeaderView from "../components/HeaderView.vue";
+
 export default {
   name: "HomeView",
   components: {
     VContainer,
     VBtn,
-    MenuPopover,
+    HeaderView,
   },
   data() {
     return {};
@@ -464,12 +422,12 @@ export default {
 
 <style scoped>
 .home-wrapper {
-  max-width: 408px;
+  max-width: 460px;
 }
 .wrapper {
   height: 100vh;
   width: 100%;
-  overflow-y: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -558,7 +516,6 @@ export default {
   flex-direction: column;
   justify-content: center;
 }
-
 .social-logo {
   border-radius: 50%;
   border: 2px solid #ebebeb;

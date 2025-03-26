@@ -165,6 +165,7 @@ export default {
 </script>
 <style scoped>
 .content-wrapper {
+  height: 90vh;
   width: 100%;
   overflow-y: auto;
 }
