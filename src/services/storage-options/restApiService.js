@@ -5,111 +5,145 @@ import store from "@/store";
 import TestfiestaIntegrationHelpers from "@/integrations/TestfiestaIntegrationHelpers";
 
 export default class RestApiService extends StorageInterface {
+  constructor() {
+    super();
+    this.baseURL =
+      process.env.VUE_APP_TESTFIESTA_API_URL || "http://localhost:5050/core";
+  }
+  async apiCall(credential, method, url, data = null) {
+    try {
+      const headers = await TestfiestaIntegrationHelpers.getHeaders(credential);
+      const config = {
+        method,
+        url,
+        data,
+        headers,
+      };
+      return await axios(config);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        console.error("Session expired.");
+      }
+      throw error;
+    }
+  }
   async getState(executionId) {
-    const credential = store.state.auth.credentials?.testfiesta[0];
-    const headers = await TestfiestaIntegrationHelpers.getHeaders(credential);
-    const { data } = await axios.get(
-      `http://localhost:5000/v1/pinata/executions/${executionId}`,
-      headers
+    const handle = store.state.auth.handle; // TODO: Ensure this is set in Vuex
+    const key = store.state.auth.key; // TODO: Ensure this is set in Vuex
+    const { data } = await this.apiCall(
+      "get",
+      `${this.baseUrl}/${handle}/projects/${key}/executions/${executionId}`
     );
     return data;
   }
 
   async updateState(state) {
+    const handle = store.state.auth.handle; // TODO: Ensure this is set in Vuex
+    const key = store.state.auth.key; // TODO: Ensure this is set in Vuex
     const data = {
       case: state.case,
       session: state.session,
     };
-    const credential = state.auth.credentials?.testfiesta[0];
 
     let returnResponse = {
       link: "",
     };
-    const headers = await TestfiestaIntegrationHelpers.getHeaders(credential);
-    await axios
-      .patch(`http://localhost:5000/v1/pinata/executions`, data, headers)
-      .then((postedSession) => {
-        returnResponse = postedSession.data;
-      })
-      .catch((error) => {
-        returnResponse.error = error.response.data.errors;
-      });
 
-    if (returnResponse?.steps) {
-      returnResponse.steps.map(async (step) => {
-        if (step.uploadURL) {
-          const match = state.session.items.find(
-            (item) => item.stepID === step.external_id
-          );
-          if (match?.filePath) {
-            const fetchResponse = await fetch(match.filePath);
-            const fileBlob = await fetchResponse.blob();
-            const file = new File([fileBlob], step?.uid, {
-              type: match.fileType,
-            });
-            await axios
-              .put(step.uploadURL, file, {
-                headers: {
-                  "Content-Type": match.fileType,
-                  "X-Upload-Content-Length": match.fileSize,
-                },
-              })
-              .then(async (resp) => {
-                console.log("File upload response");
-                console.log(resp);
-                const attachmentResp = await this.getAttachment(
-                  step.custom_fields.attachmentID
-                );
-                console.log({ attachmentResp });
-                store.commit("replaceAttachmentUrl", {
-                  attachmentID: attachmentResp.external_id,
-                  url: attachmentResp.url,
-                });
-              })
-              .catch((error) => {
-                returnResponse.error.push(...error.response.data.errors);
+    try {
+      const response = await this.apiCall(
+        "patch",
+        `${this.baseUrl}/${handle}/projects/${key}/executions`,
+        data
+      );
+      returnResponse = response.data;
+
+      if (returnResponse?.steps) {
+        returnResponse.steps.map(async (step) => {
+          if (step.uploadURL) {
+            const match = state.session.items.find(
+              (item) => item.stepID === step.external_id
+            );
+            if (match?.filePath) {
+              const fetchResponse = await fetch(match.filePath);
+              const fileBlob = await fetchResponse.blob();
+              const file = new File([fileBlob], step?.uid, {
+                type: match.fileType,
               });
+              await axios
+                .put(step.uploadURL, file, {
+                  headers: {
+                    "Content-Type": match.fileType,
+                    "X-Upload-Content-Length": match.fileSize,
+                  },
+                })
+                .then(async (resp) => {
+                  console.log("File upload response");
+                  console.log(resp);
+                  const attachmentResp = await this.getAttachment(
+                    step.custom_fields.attachmentID
+                  );
+                  console.log({ attachmentResp });
+                  store.commit("replaceAttachmentUrl", {
+                    attachmentID: attachmentResp.external_id,
+                    url: attachmentResp.url,
+                  });
+                })
+                .catch((error) => {
+                  returnResponse.error.push(...error.response.data.errors);
+                });
+            }
           }
-        }
-      });
+        });
+      }
+      if (returnResponse?.data) {
+        store.commit("setSessionIDFromBackend", returnResponse.data.sessionID);
+        store.commit("setCaseIDFromBackend", returnResponse.data.caseID);
+      }
+    } catch (error) {
+      console.error("Error updating state:", error.response?.data?.errors);
+      returnResponse.error = error.response?.data?.errors;
     }
-    if (returnResponse?.data) {
-      store.commit("setSessionIDFromBackend", returnResponse.data.sessionID);
-      store.commit("setCaseIDFromBackend", returnResponse.data.caseID);
+    return returnResponse;
+  }
+  async getConfig(configUid = null) {
+    const handle = store.state.auth.handle; // TODO: Ensure this is set in Vuex
+    if (!handle) {
+      throw new Error(
+        "Organization handle is not defined. Ensure the user is logged in."
+      );
     }
-  }
 
-  async getConfig() {
-    const response = await axios.get(
-      `http://localhost:5000/v1/app/org/f352ae63-11fc-4dbe-bab1-72561aa25fca/config/5e0f71ff-987d-4240-85eb-df6adf568c31`
+    const endpoint = configUid
+      ? `${this.baseUrl}/${handle}/configs/${configUid}` // Fetch a specific config
+      : `${this.baseUrl}/${handle}/configs`; // Fetch all configs for the organization
+
+    const { data } = await this.apiCall("get", endpoint);
+    return data;
+  }
+  async getAttachment(type, attachmentId) {
+    const handle = store.state.auth.handle; // TODO: Ensure this is set in Vuex
+
+    const { data } = await this.apiCall(
+      "get",
+      `${this.baseUrl}/${handle}/${type}/attachments/${attachmentId}/object`
     );
-    return response.data.config;
+    return data;
   }
 
-  async getAttachment(attachmentId) {
-    const credential = store.state.auth.credentials?.testfiesta[0];
-    const headers = await TestfiestaIntegrationHelpers.getHeaders(credential);
-    const response = await axios.get(
-      `http://localhost:5000/v1/attachments/${attachmentId}/object`,
-      headers
-    );
-    return response.data;
-  }
-
+  // TODO: implement backend for pinata config
   async updateConfig(config) {
-    const credential = store.state.auth.credentials?.testfiesta[0];
-    const headers = await TestfiestaIntegrationHelpers.getHeaders(credential);
-    const response = await axios.put(
-      `http://localhost:5000/v1/app/org/f352ae63-11fc-4dbe-bab1-72561aa25fca/config/5e0f71ff-987d-4240-85eb-df6adf568c31`,
-      config,
-      headers
+    const { data } = await this.apiCall(
+      "put",
+      `${this.baseUrl}/app/org/f352ae63-11fc-4dbe-bab1-72561aa25fca/config/5e0f71ff-987d-4240-85eb-df6adf568c31`,
+      config
     );
-    return response.data.config;
+    return data.config;
   }
 
   async getCredentials() {
     let data = { user: {} };
 
+    const handle = store.state.auth.handle; // TODO: Ensure this is set in Vuex
     const allCookies = document.cookie;
     const cookieArray = allCookies.split("; ");
     let accessToken = null;
@@ -124,8 +158,9 @@ export default class RestApiService extends StorageInterface {
     if (accessToken) {
       data.type = "cookie";
     } else {
-      const response = await axios.get(
-        "http://localhost:5000/v1/app/profile/token"
+      const response = await axios.apiCall(
+        "get",
+        `${this.baseUrl}/${handle}/accessTokens`
       );
       data = response.data;
       data.type = "bearer";
