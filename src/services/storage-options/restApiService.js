@@ -38,14 +38,28 @@ export default class RestApiService extends StorageInterface {
 
     const data = {
       name: state.case.title,
-      steps: state.session.items,
+      steps: state.session.items.map((item) => ({
+        stepID: item.stepID,
+        attachmentID: item.attachmentID,
+        fileName: item.fileName,
+        fileType: item.fileType,
+        timer_mark: item.timer_mark,
+        comment: item.comment,
+        tags: item.tags || [],
+        followUp: item.followUp || false,
+        createdAt: item.createdAt,
+        filePath: item.filePath,
+        fileSize: item.fileSize,
+      })),
       templateFields: {
-        charter: state.case.charter,
-        preconditions: state.case.preconditions,
-        mindmap: state.case.mindmap,
-        notes: state.session.notes,
+        charter: state.case.charter?.content || "",
+        preconditions: state.case.preconditions?.content || "",
+        mindmap: {
+          nodes: state.case.mindmap?.nodes || [],
+          connections: state.case.mindmap?.connections || [],
+        },
+        notes: state.session.notes?.content || "",
       },
-      // status: state.session.status,
       customFields: {
         timer: state.session.timer,
         started: state.session.started,
@@ -54,8 +68,6 @@ export default class RestApiService extends StorageInterface {
         isTargetForAll: state.session.isTargetForAll,
         remote: state.session.remote,
       },
-      tagUids: state.case.tagUids,
-      tagReplacements: state.case.tagReplacements,
     };
 
     let returnResponse = { link: "" };
@@ -63,51 +75,10 @@ export default class RestApiService extends StorageInterface {
     try {
       let response;
 
-      if (executionId) {
-        // Update an existing execution
-        const url = `${baseUrl}/${executionId}`;
-        response = await axios.patch(url, data, { withCredentials: true });
-      } else {
-        // Create a new execution
-        response = await axios.post(baseUrl, data, { withCredentials: true });
-      }
-
+      // Update an existing execution
+      const url = `${baseUrl}/${executionId}`;
+      response = await axios.patch(url, data, { withCredentials: true });
       returnResponse = response.data;
-
-      // If a new execution was created, set the executionId in the state - is this needed?
-      if (!executionId && returnResponse?.uid) {
-        state.session.sessionID = returnResponse.uid; // Update the state with the new executionId
-      }
-
-      // Handle steps with upload URLs - verify if functioniong as expected
-      if (returnResponse?.steps) {
-        for (const step of returnResponse.steps) {
-          if (step.uploadURL) {
-            const match = state.session.items.find(
-              (item) => item.stepID === step.external_id
-            );
-            if (match?.filePath) {
-              const fetchResponse = await fetch(match.filePath);
-              const fileBlob = await fetchResponse.blob();
-              const file = new File([fileBlob], step?.uid, {
-                type: match.fileType,
-              });
-              try {
-                await axios.put(step.uploadURL, file, {
-                  headers: {
-                    "Content-Type": match.fileType,
-                    "X-Upload-Content-Length": match.fileSize,
-                  },
-                });
-              } catch (uploadError) {
-                console.error("File upload error:", uploadError);
-                returnResponse.error = returnResponse.error || [];
-                returnResponse.error.push(uploadError.response?.data?.errors);
-              }
-            }
-          }
-        }
-      }
     } catch (error) {
       console.error("Error updating state:", error.response?.data?.errors);
       returnResponse.error = error.response?.data?.errors;
@@ -122,11 +93,9 @@ export default class RestApiService extends StorageInterface {
         "Organization handle is not defined. Ensure the user is logged in."
       );
     }
-
     const endpoint = configUid
       ? `${this.baseURL}/${handle}/configs/${configUid}`
       : `${this.baseURL}/${handle}/configs`;
-
     try {
       const { data } = await axios.get(endpoint, { withCredentials: true });
       return data;
@@ -284,15 +253,91 @@ export default class RestApiService extends StorageInterface {
   }
 
   async createNewSession(data) {
-    console.log(data);
+    const handle = "idonn01";
+    const projectKey = "PROJECTKEY";
+    const baseUrl = `${this.baseURL}/${handle}/projects/${projectKey}/executions`;
+
+    let returnResponse = { link: "" };
+
+    try {
+      const response = await axios.post(baseUrl, data, {
+        withCredentials: true,
+      });
+      returnResponse = response.data;
+
+      // Set sessionID from backend response if provided
+      if (returnResponse?.uid) {
+        store.commit("setSessionIDFromBackend", returnResponse.uid);
+      } else {
+        console.warn("No uid returned from backend for new session");
+      }
+
+      // Handle steps with upload URLs
+      if (returnResponse?.steps) {
+        for (const step of returnResponse.steps) {
+          if (step.uploadURL) {
+            const match = data.steps.find(
+              (item) => item.stepID === step.external_id
+            );
+            if (match?.filePath) {
+              const fetchResponse = await fetch(match.filePath);
+              const fileBlob = await fetchResponse.blob();
+              const file = new File([fileBlob], step?.uid, {
+                type: match.fileType,
+              });
+              try {
+                await axios.put(step.uploadURL, file, {
+                  headers: {
+                    "Content-Type": match.fileType,
+                    "X-Upload-Content-Length": match.fileSize,
+                  },
+                });
+              } catch (uploadError) {
+                console.error("File upload error:", uploadError);
+                returnResponse.error = returnResponse.error || [];
+                returnResponse.error.push(uploadError.response?.data?.errors);
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(
+        "Error creating new session:",
+        error.response?.data?.errors
+      );
+      returnResponse.error = error.response?.data?.errors;
+    }
+
+    return returnResponse;
   }
 
   async saveSession(data) {
     console.log(data);
   }
+  // TODO: cleanup resetData calls
+  async resetData(state) {
+    const handle = "idonn01";
+    const projectKey = "PROJECTKEY";
+    const executionId = state.sessionID;
+    console.log("Execution ID:", executionId);
 
-  async resetData() {
-    console.log("Reset data request goes here");
+    const url = `${this.baseURL}/${handle}/projects/${projectKey}/executions/${executionId}`;
+
+    // Check if sessionID is defined and not empty
+    if (state.sessionID !== "" && state.sessionID !== undefined) {
+      try {
+        const response = await axios.delete(url, { withCredentials: true });
+        console.log("Execution deleted successfully:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error(
+          "Error deleting execution:",
+          error.response?.data?.errors || error.message
+        );
+        throw error;
+      }
+    }
   }
 
   async saveNote() {
