@@ -86,14 +86,13 @@ export default {
       durationConfirmDialog: false,
       status: this.$store.state.session.status,
       viewMode: "normal",
-      // sidebarActive: false,
     };
   },
   mounted() {
     this.activeTab = this.$route.path;
     this.setInitialPreSession();
     this.setInitialPostSession();
-    this.$root.$on("start-quick-test", this.showSourcePickerDialog);
+    // this.$root.$on("start-quick-test", this.showSourcePickerDialog);
     // this.$root.$on("toggle-sidebar", this.toggleSidebar);
     this.$root.$on("update-selected", this.updateSelected);
     this.$root.$on("sources-loaded", this.setSources);
@@ -102,9 +101,10 @@ export default {
       this.setInitialPreSession();
       this.setInitialPostSession();
     });
-    if (!this.$isElectron) {
-      this.getCurrentExecution();
-    }
+    // if (!this.$isElectron) {
+    // TODO get working with webapp
+    // this.getCurrentExecution();
+    // }
   },
   watch: {
     "$route.path"(newPath) {
@@ -158,29 +158,6 @@ export default {
     onStartSession(id) {
       this.sourceId = id;
     },
-    async showSourcePickerDialog() {
-      if (this.$isElectron) {
-        try {
-          let data = await this.fetchSources();
-          this.loaded = true;
-          this.sources = data;
-
-          this.sourcePickerDialog = true;
-        } catch (err) {
-          console.log(err);
-        }
-      } else {
-        this.mediaStream = await navigator.mediaDevices.getDisplayMedia({
-          video: {
-            displaySurface: "window",
-            cursor: "always",
-          },
-          audio: true,
-        });
-
-        await this.startSession();
-      }
-    },
     hideSourcePickerDialog() {
       this.sourcePickerDialog = false;
     },
@@ -203,9 +180,6 @@ export default {
         isForce,
       });
     },
-    // toggleSidebar(value) {
-    // this.sidebarActive = !value;
-    // },
     startInterval() {
       if (!this.interval) {
         this.interval = setInterval(() => {
@@ -245,6 +219,7 @@ export default {
         })
       );
     },
+    // TODO get working with webapp
     async getCurrentExecution() {
       let currentPath = this.$route.path;
       const executionId = currentPath.split("/").pop();

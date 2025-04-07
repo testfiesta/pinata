@@ -12,12 +12,7 @@ export default class RestApiService extends StorageInterface {
   }
 
   async getState(executionId) {
-    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
-    // const key = store.state.auth.key; // TODO: Ensure this is set in Vuex
-    // const credential = null;
-    // const headers = credential
-    //   ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-    //   : {};
+    const handle = "idonn01";
     const url = `${this.baseURL}/${handle}/projects/project1/executions/${executionId}`;
 
     try {
@@ -107,11 +102,7 @@ export default class RestApiService extends StorageInterface {
     }
   }
   async getAttachment(type, attachmentId) {
-    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
-    // const credential = null; // Or fetch from store.state.auth.credentials
-    // const headers = credential
-    //   ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-    //   : {};
+    const handle = "idonn01";
     const url = `${this.baseURL}/${handle}/${type}/attachments/${attachmentId}/object`;
 
     try {
@@ -125,6 +116,7 @@ export default class RestApiService extends StorageInterface {
     }
   }
 
+  // TODO create pinata config on the backend
   async updateConfig(config) {
     const credential = null; // Or fetch from store.state.auth.credentials
     const headers = credential
@@ -200,6 +192,7 @@ export default class RestApiService extends StorageInterface {
     // saving credentials endpoint here
   }
 
+  // Todo needed? unlikely
   async getItems() {
     // const response = await axios.get(`http://localhost:8082/items`);
     // return response.data;
@@ -252,15 +245,94 @@ export default class RestApiService extends StorageInterface {
     // saving connections endpoint here
   }
 
-  async createNewSession(data) {
+  async createTestCase(state) {
+    const handle = "idonn01";
+    const projectKey = "PROJECTKEY";
+    const url = `${this.baseURL}/${handle}/projects/${projectKey}/cases`;
+
+    const testCasePayload = {
+      name: state.case.title || "Untitled Test Case",
+      source: "pinata",
+      parentId: state.case.parentId || 0,
+      templateId: state.case.templateId || null,
+      priority: state.case.priority || 1,
+      steps: [],
+      templateFields: {
+        charter: state.case.charter?.content || "",
+        preconditions: state.case.preconditions?.content || "",
+        mindmap: {
+          nodes: state.case.mindmap?.nodes || [],
+          connections: state.case.mindmap?.connections || [],
+        },
+        notes: state.session.notes?.content || "",
+      },
+      customFields: {
+        timer: state.session.timer,
+        started: state.session.started,
+        ended: state.session.ended,
+        savedTimer: state.savedTimer,
+        isTargetForAll: state.session.isTargetForAll,
+        remote: state.session.remote,
+      },
+    };
+
+    try {
+      const testCaseResponse = await axios.post(url, testCasePayload, {
+        withCredentials: true,
+      });
+
+      if (testCaseResponse.status !== 200) {
+        console.error("Failed to create test case:", testCaseResponse.data);
+        return null;
+      }
+
+      console.log("Test case created successfully:", testCaseResponse.data);
+      store.commit("setCaseIDFromBackend", testCaseResponse.data.uid);
+
+      return testCaseResponse.data; // Returns the created test case with uid
+    } catch (error) {
+      console.error(
+        "Error creating test case:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
+
+  async createExecutionWithCase(state) {
     const handle = "idonn01";
     const projectKey = "PROJECTKEY";
     const baseUrl = `${this.baseURL}/${handle}/projects/${projectKey}/executions`;
 
+    const executionPayload = {
+      name: state.case.title, // Required
+      version: 1, // Example value, should be dynamically set
+      testCaseRef: state.case.caseID, // Required
+      projectUid: state.project?.uid,
+      steps: [],
+      templateFields: {
+        charter: state.case.charter?.content || "",
+        preconditions: state.case.preconditions?.content || "",
+        mindmap: {
+          nodes: state.case.mindmap?.nodes || [],
+          connections: state.case.mindmap?.connections || [],
+        },
+        notes: state.session.notes?.content || "",
+      },
+      customFields: {
+        timer: state.session.timer,
+        started: state.session.started,
+        ended: state.session.ended,
+        savedTimer: state.savedTimer,
+        isTargetForAll: state.session.isTargetForAll,
+        remote: state.session.remote,
+      },
+    };
+
     let returnResponse = { link: "" };
 
     try {
-      const response = await axios.post(baseUrl, data, {
+      const response = await axios.post(baseUrl, executionPayload, {
         withCredentials: true,
       });
       returnResponse = response.data;
@@ -276,7 +348,7 @@ export default class RestApiService extends StorageInterface {
       if (returnResponse?.steps) {
         for (const step of returnResponse.steps) {
           if (step.uploadURL) {
-            const match = data.steps.find(
+            const match = state.session.items.find(
               (item) => item.stepID === step.external_id
             );
             if (match?.filePath) {
@@ -291,6 +363,7 @@ export default class RestApiService extends StorageInterface {
                     "Content-Type": match.fileType,
                     "X-Upload-Content-Length": match.fileSize,
                   },
+                  withCredentials: true,
                 });
               } catch (uploadError) {
                 console.error("File upload error:", uploadError);
@@ -302,34 +375,52 @@ export default class RestApiService extends StorageInterface {
         }
       }
     } catch (error) {
-      console.error(
-        "Error creating new session:",
-        error.response?.data?.errors
-      );
+      console.error("Error creating execution:", error.response?.data?.errors);
       returnResponse.error = error.response?.data?.errors;
     }
 
     return returnResponse;
   }
 
+  async createNewSession(state) {
+    try {
+      // Step 1: Create the test case
+      const testCaseResponse = await this.createTestCase(state);
+      if (!testCaseResponse?.uid) {
+        throw new Error("Failed to get test case UID");
+      }
+
+      // Step 2: Create the execution linked to the test case
+      const executionResponse = await this.createExecutionWithCase(state);
+
+      return executionResponse;
+    } catch (error) {
+      console.error("Error in createNewSession:", error);
+      return {
+        link: "",
+        error: error.response?.data?.errors || error.message,
+      };
+    }
+  }
+
   async saveSession(data) {
     console.log(data);
   }
-  // TODO: cleanup resetData calls
   async resetData(state) {
     const handle = "idonn01";
     const projectKey = "PROJECTKEY";
-    const executionId = state.sessionID;
-    console.log("Execution ID:", executionId);
+    const executionId = state.session.sessionID;
+    const caseId = state.case.caseID;
 
     const url = `${this.baseURL}/${handle}/projects/${projectKey}/executions/${executionId}`;
+    const caseUrl = `${this.baseURL}/${handle}/projects/${projectKey}/cases/${caseId}`;
 
-    // Check if sessionID is defined and not empty
-    if (state.sessionID !== "" && state.sessionID !== undefined) {
+    if (executionId && caseId) {
       try {
-        const response = await axios.delete(url, { withCredentials: true });
-        console.log("Execution deleted successfully:", response.data);
-        return response.data;
+        await axios.delete(url, { withCredentials: true });
+        await axios.delete(caseUrl, {
+          withCredentials: true,
+        });
       } catch (error) {
         console.error(
           "Error deleting execution:",

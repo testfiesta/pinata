@@ -898,6 +898,7 @@ export default {
         screenshot: this.handleScreenshot,
         video: this.startRecordVideo,
       },
+      activeMediaStreams: [], // Track active media streams
     };
   },
   mounted() {
@@ -938,11 +939,19 @@ export default {
   beforeDestroy() {
     this.updateStoreSession(true);
     this.$root.$off("close-sourcepickerdialog", this.hideSourcePickerDialog);
+    this.$root.$off("start-new-exploratory-session", this.startNewSession);
     this.$root.$off(
       "close-changesourcetargetdialog",
       this.hideChangeSourceTargetDialog
     );
-    this.$root.$on("close-notedialog", this.hideNoteDialog);
+    this.$root.$off("close-notedialog", this.hideNoteDialog);
+    this.$root.$off("update-selected-nodes", this.updateSelectedNodes);
+    this.$root.$off("close-sharesessiondialog", this.hideShareSessionDialog);
+    this.$root.$off("start-quick-test", this.showSourcePickerDialog);
+    this.$root.$off("close-summarydialog", () => {
+      this.summaryDialog = false;
+    });
+
     // clear timer
     clearInterval(this.interval);
     this.timer = 0;
@@ -974,11 +983,15 @@ export default {
       }, 100);
     },
     startNewSession() {
+      if (this.status === SESSION_STATUSES.START) {
+        console.log("Session already started, skipping startNewSession.");
+        return;
+      }
       this.$root.$emit("start-new-session");
       if (!this.preSessionRequirementsMet) {
         return;
       }
-      this.newSessionFromButton();
+      // this.newSessionFromButton();
       this.$store.commit("setSessionQuickTest", false);
       this.showSourcePickerDialog();
     },
@@ -1020,7 +1033,7 @@ export default {
           },
           audio: true,
         });
-
+        this.activeMediaStreams.push(this.mediaStream); // Track the media stream
         await this.startSession();
       }
     },
@@ -1148,8 +1161,12 @@ export default {
             path: this.$route.path,
           },
         };
+        // If the test session is not quick test session, create a new one
+        if (!this.$store.state.session.quickTest) {
+          console.log("Creating new session");
+          await this.$storageService.createNewSession(data);
+        }
 
-        await this.$storageService.createNewSession(data);
         if (this.$isElectron) {
           const caseID = await this.$storageService.getCaseId();
           const sessionID = await this.$storageService.getSessionId();
@@ -1217,6 +1234,7 @@ export default {
       }
     },
     async endSessionProcess() {
+      this.stopAllMediaStreams(); // Stop sharing screens
       this.sourceId = "";
       this.ended = this.getCurrentDateTime();
       this.$store.commit("setSessionEnded", this.ended);
@@ -1278,6 +1296,7 @@ export default {
         },
         audio: true,
       });
+      this.activeMediaStreams.push(this.mediaStream); // Track the media stream
     },
     async onSelectScreenshot() {
       this.selectedControlPanel = "screenshot";
@@ -1818,60 +1837,58 @@ export default {
         await this.$router.push({ path: "/main" });
       }
     },
-    async newSessionFromButton() {
-      // Update status and reset timers
-      this.status = SESSION_STATUSES.PENDING;
-      this.changeSessionStatus(SESSION_STATUSES.PENDING);
-      this.timer = 0;
-      this.isDuration = false;
-      this.duration = this.$store.state.case.duration;
+    // async newSessionFromButton() {
+    //   // Update status and reset timers
+    //   this.status = SESSION_STATUSES.PENDING;
+    //   this.changeSessionStatus(SESSION_STATUSES.PENDING);
+    //   this.timer = 0;
+    //   this.isDuration = false;
+    //   this.duration = this.$store.state.case.duration;
 
-      // Clear dialogs
-      this.sourcePickerDialog = false;
-      this.noteDialog = false;
-      this.summaryDialog = false;
-      this.deleteConfirmDialog = false;
-      this.resetConfirmDialog = false;
-      this.saveConfirmDialog = false;
-      this.newSessionDialog = false;
-      this.durationConfirmDialog = false;
-      this.audioErrorDialog = false;
-      this.endSessionDialog = false;
+    //   // Clear dialogs
+    //   this.sourcePickerDialog = false;
+    //   this.noteDialog = false;
+    //   this.summaryDialog = false;
+    //   this.deleteConfirmDialog = false;
+    //   this.resetConfirmDialog = false;
+    //   this.saveConfirmDialog = false;
+    //   this.newSessionDialog = false;
+    //   this.durationConfirmDialog = false;
+    //   this.audioErrorDialog = false;
+    //   this.endSessionDialog = false;
 
-      const data = {
-        case: {
-          title: this.$store.state.case.title,
-          charter: this.$store.state.case.charter,
-          preconditions: this.$store.state.case.preconditions,
-          duration: this.$store.state.case.duration,
-        },
-        session: {
-          status: this.$store.state.session.status,
-          timer: this.$store.state.session.timer,
-          started: this.$store.state.session.started,
-          ended: this.$store.state.session.ended,
-          quickTest: this.$store.state.session.quickTest,
-          path: this.$route.path,
-        },
-      };
+    //   // const data = {
+    //   //   case: {
+    //   //     title: this.$store.state.case.title,
+    //   //     charter: this.$store.state.case.charter,
+    //   //     preconditions: this.$store.state.case.preconditions,
+    //   //     duration: this.$store.state.case.duration,
+    //   //   },
+    //   //   session: {
+    //   //     status: this.$store.state.session.status,
+    //   //     timer: this.$store.state.session.timer,
+    //   //     started: this.$store.state.session.started,
+    //   //     ended: this.$store.state.session.ended,
+    //   //     quickTest: this.$store.state.session.quickTest,
+    //   //     path: this.$route.path,
+    //   //   },
+    //   // };
 
-      await this.$storageService.createNewSession(data);
-      await this.$storageService.resetData();
+    //   // await this.$storageService.createNewSession(data);
 
-      if (this.$isElectron) {
-        const caseID = await this.$storageService.getCaseId();
-        const sessionID = await this.$storageService.getSessionId();
-        this.$store.commit("setCaseID", caseID);
-        this.$store.commit("setSessionID", sessionID);
-      }
+    //   if (this.$isElectron) {
+    //     const caseID = await this.$storageService.getCaseId();
+    //     const sessionID = await this.$storageService.getSessionId();
+    //     this.$store.commit("setCaseID", caseID);
+    //     this.$store.commit("setSessionID", sessionID);
+    //   }
 
-      // Stop any ongoing intervals
-      this.stopInterval();
-    },
+    //   // Stop any ongoing intervals
+    //   this.stopInterval();
+    // },
 
     async finishSession() {
       this.$store.commit("clearState");
-      await this.$storageService.resetData();
       await this.$router.push("/");
     },
     async resetSession() {
@@ -1887,7 +1904,6 @@ export default {
 
       this.$store.commit("resetState");
 
-      await this.$storageService.resetData();
       if (this.$isElectron) {
         await this.$electronService.setWindowSize({ width: 800, height: 600 });
       }
@@ -1916,6 +1932,12 @@ export default {
       if (this.$isElectron) {
         await this.$electronService.openLowProfileWindow();
       }
+    },
+    stopAllMediaStreams() {
+      this.activeMediaStreams.forEach((stream) => {
+        stream.getTracks().forEach((track) => track.stop()); // Stop all tracks
+      });
+      this.activeMediaStreams = []; // Clear the list
     },
   },
 };

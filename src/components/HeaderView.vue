@@ -11,8 +11,8 @@
       <div
         class="col"
         :class="{
-          'col-4': quickTest || sidebarActive,
-          'col-3': !quickTest && !sidebarActive,
+          'col-3': quickTest || sidebarActive,
+          'col-4': !quickTest && !sidebarActive,
         }"
       >
         <div class="d-flex align-center justify-start">
@@ -46,15 +46,16 @@
       <div
         class="col px-0"
         :class="{
-          'col-4': quickTest || sidebarActive,
-          'col-6': !quickTest && !sidebarActive,
+          'col-6': quickTest || sidebarActive,
+          'col-4': !quickTest && !sidebarActive,
         }"
       >
         <div
           class="d-flex align-center w-full"
+          v-if="showControlPanel"
           :class="{
-            'justify-end': quickTest || sidebarActive,
-            'justify-space-between': !quickTest && sidebarActive,
+            'justify-space-between': quickTest || sidebarActive,
+            'justify-end': !quickTest && !sidebarActive,
           }"
         >
           <div
@@ -81,8 +82,8 @@
       <div
         class="col"
         :class="{
-          'col-4': quickTest || sidebarActive,
-          'col-3': !quickTest && !sidebarActive,
+          'col-3': quickTest || sidebarActive,
+          'col-4': !quickTest && !sidebarActive,
         }"
       >
         <div class="d-flex justify-end align-center">
@@ -108,9 +109,6 @@
                   height="20"
                 />
               </v-btn>
-              <!-- <v-btn id="btn__bell" class="mx-1" fab outlined small color="default">
-        <img :src="require('../assets/icon/bell.svg')" width="24" height="24" />
-      </v-btn> -->
               <v-menu
                 :nudge-width="100"
                 bottom
@@ -141,9 +139,6 @@
                       $tc("caption.login", 1)
                     }}</v-list-item-title>
                   </v-list-item>
-                  <!--<v-list-item link to="/authentication/signupMain">
-                <v-list-item-title>Register</v-list-item-title>
-              </v-list-item>-->
                 </v-list>
               </v-menu>
             </div>
@@ -221,6 +216,12 @@ export default {
         ? this.$vuetify.theme.themes.dark
         : this.$vuetify.theme.themes.light;
     },
+    showControlPanel() {
+      return (
+        this.$store.state.session.status !== "over" &&
+        this.isWorkspace(this.$route.path)
+      );
+    },
   },
   methods: {
     isWorkspace(path) {
@@ -235,7 +236,7 @@ export default {
       }
     },
     toggleSidebar(value) {
-      this.sidebarActive = !value;
+      this.sidebarActive = value;
     },
   },
 };
