@@ -82,109 +82,6 @@ export default class RestApiService extends StorageInterface {
 
     return returnResponse;
   }
-  async getConfig(configUid = null) {
-    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
-    if (!handle) {
-      throw new Error(
-        "Organization handle is not defined. Ensure the user is logged in."
-      );
-    }
-    const endpoint = configUid
-      ? `${this.baseURL}/${handle}/configs/${configUid}`
-      : `${this.baseURL}/${handle}/configs`;
-    try {
-      const { data } = await axios.get(endpoint, { withCredentials: true });
-      return data;
-    } catch (error) {
-      if (error.response?.status === 401) {
-        console.error("Session expired.");
-      }
-      throw error;
-    }
-  }
-
-  async getAttachment(type, attachmentId) {
-    const handle = "idonn01";
-    const url = `${this.baseURL}/${handle}/${type}/attachments/${attachmentId}/object`;
-
-    try {
-      const { data } = await axios.get(url, { withCredentials: true });
-      return data;
-    } catch (error) {
-      if (error.response?.status === 401) {
-        console.error("Session expired.");
-      }
-      throw error;
-    }
-  }
-
-  // TODO create pinata config on the backend
-  async updateConfig(config) {
-    const credential = null; // Or fetch from store.state.auth.credentials
-    const headers = credential
-      ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-      : {};
-    const url = `${this.baseURL}/app/org/f352ae63-11fc-4dbe-bab1-72561aa25fca/config/5e0f71ff-987d-4240-85eb-df6adf568c31`;
-
-    try {
-      const { data } = await axios.put(url, config, { headers });
-      return data.config;
-    } catch (error) {
-      if (error.response?.status === 401) {
-        console.error("Session expired.");
-      }
-      throw error;
-    }
-  }
-
-  async getCredentials() {
-    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
-    // const credential = null; // Or fetch from store.state.auth.credentials
-    // const headers = credential
-    //   ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-    //   : {};
-    let data = { user: {} };
-
-    const allCookies = document.cookie;
-    const cookieArray = allCookies.split("; ");
-    let accessToken = null;
-    for (const cookie of cookieArray) {
-      const [name, value] = cookie.split("=");
-      if (name.trim() === "access_token") {
-        accessToken = value;
-        break;
-      }
-    }
-    data = store.state.auth.credentials?.testfiesta[0] || {};
-    if (accessToken) {
-      data.type = "cookie";
-    } else {
-      const url = `${this.baseURL}/${handle}/accessTokens`;
-      const response = await axios.get(url, { withCredentials: true });
-      data = response.data;
-      data.type = "bearer";
-    }
-    return {
-      testfiesta: [
-        {
-          accessToken: data.accessToken,
-          expiresAt: data.expiresAt,
-          type: data.type || "bearer",
-          loggedInAt: data.loggedInAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          oauthTokenIds: data.oauthTokenIds,
-          user: {
-            id: data.user?.uid,
-            email: data.user?.email,
-            name: data.user?.first_name + " " + data.user?.last_name,
-            avatar: data.user?.avatar_url,
-            locale: data.user?.preferences?.locale,
-            verified: data.user?.preferences?.verified,
-          },
-          orgs: data.orgs,
-        },
-      ],
-    };
-  }
 
   async createTestCase(state) {
     const handle = "idonn01";
@@ -370,9 +267,114 @@ export default class RestApiService extends StorageInterface {
   // TODO: Implement this method to fetch metadata from the backend
   async getMetaData() {}
 
+  async getConfig(configUid = null) {
+    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
+    if (!handle) {
+      throw new Error(
+        "Organization handle is not defined. Ensure the user is logged in."
+      );
+    }
+    const endpoint = configUid
+      ? `${this.baseURL}/${handle}/configs/${configUid}`
+      : `${this.baseURL}/${handle}/configs`;
+    try {
+      const { data } = await axios.get(endpoint, { withCredentials: true });
+      return data;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        console.error("Session expired.");
+      }
+      throw error;
+    }
+  }
+
+  // TODO create pinata config on the backend
+  async updateConfig(config) {
+    const credential = null; // Or fetch from store.state.auth.credentials
+    const headers = credential
+      ? await TestfiestaIntegrationHelpers.getHeaders(credential)
+      : {};
+    const url = `${this.baseURL}/app/org/f352ae63-11fc-4dbe-bab1-72561aa25fca/config/5e0f71ff-987d-4240-85eb-df6adf568c31`;
+
+    try {
+      const { data } = await axios.put(url, config, { headers });
+      return data.config;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        console.error("Session expired.");
+      }
+      throw error;
+    }
+  }
+
+  // TODO: Needed? Never called.
+  async getAttachment(type, attachmentId) {
+    const handle = "idonn01";
+    const url = `${this.baseURL}/${handle}/${type}/attachments/${attachmentId}/object`;
+
+    try {
+      const { data } = await axios.get(url, { withCredentials: true });
+      return data;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        console.error("Session expired.");
+      }
+      throw error;
+    }
+  }
+
   // TODO: Implement this method to fetch credentials from the backend?
   async updateCredentials(credentials) {
     console.log(credentials);
     // saving credentials endpoint here
+  }
+
+  async getCredentials() {
+    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
+    // const credential = null; // Or fetch from store.state.auth.credentials
+    // const headers = credential
+    //   ? await TestfiestaIntegrationHelpers.getHeaders(credential)
+    //   : {};
+    let data = { user: {} };
+
+    const allCookies = document.cookie;
+    const cookieArray = allCookies.split("; ");
+    let accessToken = null;
+    for (const cookie of cookieArray) {
+      const [name, value] = cookie.split("=");
+      if (name.trim() === "access_token") {
+        accessToken = value;
+        break;
+      }
+    }
+    data = store.state.auth.credentials?.testfiesta[0] || {};
+    if (accessToken) {
+      data.type = "cookie";
+    } else {
+      const url = `${this.baseURL}/${handle}/accessTokens`;
+      const response = await axios.get(url, { withCredentials: true });
+      data = response.data;
+      data.type = "bearer";
+    }
+    return {
+      testfiesta: [
+        {
+          accessToken: data.accessToken,
+          expiresAt: data.expiresAt,
+          type: data.type || "bearer",
+          loggedInAt: data.loggedInAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
+          oauthTokenIds: data.oauthTokenIds,
+          user: {
+            id: data.user?.uid,
+            email: data.user?.email,
+            name: data.user?.first_name + " " + data.user?.last_name,
+            avatar: data.user?.avatar_url,
+            locale: data.user?.preferences?.locale,
+            verified: data.user?.preferences?.verified,
+          },
+          orgs: data.orgs,
+        },
+      ],
+    };
   }
 }
