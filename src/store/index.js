@@ -130,26 +130,20 @@ const store = new Vuex.Store({
 
       if (Vue.prototype.$isElectron) {
         this._vm.$storageService.updateItems(payload);
-      } else {
-        if (!state.session.quickTest) {
-          this._vm.$storageService.updateState(state);
-        }
+      } else if (!state.session.quickTest) {
+        this._vm.$storageService.updateState(state);
       }
     },
     setSessionNodes(state, payload) {
       state.session.nodes = payload;
       if (Vue.prototype.$isElectron) {
         this._vm.$storageService.updateNodes(payload);
-      } else {
-        // this._vm.$storageService.updateState(state);
       }
     },
     setSessionConnections(state, payload) {
       state.session.connections = payload;
       if (Vue.prototype.$isElectron) {
         this._vm.$storageService.updateConnections(payload);
-      } else {
-        // this._vm.$storageService.updateState(state);
       }
     },
     setSessionItemsFromExternalWindow(state, payload) {
@@ -159,8 +153,6 @@ const store = new Vuex.Store({
       state.session.items.push(payload);
       if (Vue.prototype.$isElectron) {
         this._vm.$storageService.addItem(payload);
-      } else {
-        // this._vm.$storageService.updateState(state);
       }
     },
     updateSessionItem(state, payload) {
@@ -170,9 +162,6 @@ const store = new Vuex.Store({
       if (currentItemIndex !== -1) {
         state.session.items[currentItemIndex] = payload;
       }
-      if (Vue.prototype.$isElectron) {
-        // this._vm.$storageService.updateItems(payload);
-      }
     },
 
     deleteSessionItems(state, ids) {
@@ -180,13 +169,16 @@ const store = new Vuex.Store({
         return acc.filter((item) => item.stepID !== currentId);
       }, state.session.items);
       this._vm.$storageService.deleteItems(ids);
+      if (!this.$isElectron && !state.session.quickTest) {
+        this._vm.$storageService.updateState(state);
+      }
     },
 
     setSessionNotes(state, payload) {
       state.session.notes.content = payload.content;
       state.session.notes.text = payload.text;
       if (!this.$isElectron) {
-        // this._vm.$storageService.updateState(state);
+        this._vm.$storageService.updateState(state);
       }
     },
 

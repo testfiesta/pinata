@@ -25,6 +25,7 @@ export default class RestApiService extends StorageInterface {
       throw error;
     }
   }
+
   async updateState(state) {
     const handle = "idonn01";
     const projectKey = "PROJECTKEY";
@@ -101,6 +102,7 @@ export default class RestApiService extends StorageInterface {
       throw error;
     }
   }
+
   async getAttachment(type, attachmentId) {
     const handle = "idonn01";
     const url = `${this.baseURL}/${handle}/${type}/attachments/${attachmentId}/object`;
@@ -135,7 +137,6 @@ export default class RestApiService extends StorageInterface {
     }
   }
 
-  // Example for getCredentials (partial implementation)
   async getCredentials() {
     const handle = "idonn01"; // TODO: Ensure this is set in Vuex
     // const credential = null; // Or fetch from store.state.auth.credentials
@@ -185,95 +186,31 @@ export default class RestApiService extends StorageInterface {
     };
   }
 
-  async getMetaData() {}
-
-  async updateCredentials(credentials) {
-    console.log(credentials);
-    // saving credentials endpoint here
-  }
-
-  // Todo needed? unlikely
-  async getItems() {
-    // const response = await axios.get(`http://localhost:8082/items`);
-    // return response.data;
-    return [];
-  }
-
-  async getItemById(id) {
-    const itemInStore = store.state.session.items.find(
-      (item) => item.stepID === id
-    );
-    return itemInStore;
-  }
-
-  async updateItems(items) {
-    console.log(items);
-    // saving state endpoint here
-  }
-
-  async deleteItems(items) {
-    console.log(items);
-  }
-
-  async getNotes() {
-    const response = await axios.get(`http://localhost:8082/notes`);
-    return response.data;
-  }
-
-  async updateNotes(notes) {
-    console.log(notes);
-    // saving notes endpoint here
-  }
-
-  async getNodes() {
-    const response = await axios.get(`http://localhost:8082/nodes`);
-    return response.data;
-  }
-
-  async updateNodes(nodes) {
-    console.log(nodes);
-    // saving nodes endpoint here
-  }
-
-  async getConnections() {
-    const response = await axios.get(`http://localhost:8082/connections`);
-    return response.data;
-  }
-
-  async updateConnections(connections) {
-    console.log(connections);
-    // saving connections endpoint here
-  }
-
   async createTestCase(state) {
     const handle = "idonn01";
     const projectKey = "PROJECTKEY";
     const url = `${this.baseURL}/${handle}/projects/${projectKey}/cases`;
 
     const testCasePayload = {
-      name: state.case.title || "Untitled Test Case",
+      name: state.case.title,
       source: "pinata",
+      projectKey: state.case.key || null,
       parentId: state.case.parentId || 0,
       templateId: state.case.templateId || null,
-      priority: state.case.priority || 1,
+      priority: state.case.priority,
       steps: [],
-      templateFields: {
-        charter: state.case.charter?.content || "",
-        preconditions: state.case.preconditions?.content || "",
-        mindmap: {
-          nodes: state.case.mindmap?.nodes || [],
-          connections: state.case.mindmap?.connections || [],
-        },
-        notes: state.session.notes?.content || "",
-      },
       customFields: {
-        timer: state.session.timer,
-        started: state.session.started,
-        ended: state.session.ended,
-        savedTimer: state.savedTimer,
-        isTargetForAll: state.session.isTargetForAll,
-        remote: state.session.remote,
+        templateFields: {
+          charter: state.case.charter?.content || "",
+          preconditions: state.case.preconditions?.content || "",
+          mindmap: {
+            nodes: state.case.mindmap?.nodes || [],
+            connections: state.case.mindmap?.connections || [],
+          },
+          notes: state.session.notes?.content || "",
+        },
       },
+      tags: state.case.tags || [],
     };
 
     try {
@@ -289,7 +226,7 @@ export default class RestApiService extends StorageInterface {
       console.log("Test case created successfully:", testCaseResponse.data);
       store.commit("setCaseIDFromBackend", testCaseResponse.data.uid);
 
-      return testCaseResponse.data; // Returns the created test case with uid
+      return testCaseResponse.data;
     } catch (error) {
       console.error(
         "Error creating test case:",
@@ -430,8 +367,12 @@ export default class RestApiService extends StorageInterface {
       }
     }
   }
+  // TODO: Implement this method to fetch metadata from the backend
+  async getMetaData() {}
 
-  async saveNote() {
-    console.log("Save Note");
+  // TODO: Implement this method to fetch credentials from the backend?
+  async updateCredentials(credentials) {
+    console.log(credentials);
+    // saving credentials endpoint here
   }
 }

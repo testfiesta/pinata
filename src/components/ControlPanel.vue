@@ -991,7 +991,6 @@ export default {
       if (!this.preSessionRequirementsMet) {
         return;
       }
-      // this.newSessionFromButton();
       this.$store.commit("setSessionQuickTest", false);
       this.showSourcePickerDialog();
     },
@@ -1837,56 +1836,6 @@ export default {
         await this.$router.push({ path: "/main" });
       }
     },
-    // async newSessionFromButton() {
-    //   // Update status and reset timers
-    //   this.status = SESSION_STATUSES.PENDING;
-    //   this.changeSessionStatus(SESSION_STATUSES.PENDING);
-    //   this.timer = 0;
-    //   this.isDuration = false;
-    //   this.duration = this.$store.state.case.duration;
-
-    //   // Clear dialogs
-    //   this.sourcePickerDialog = false;
-    //   this.noteDialog = false;
-    //   this.summaryDialog = false;
-    //   this.deleteConfirmDialog = false;
-    //   this.resetConfirmDialog = false;
-    //   this.saveConfirmDialog = false;
-    //   this.newSessionDialog = false;
-    //   this.durationConfirmDialog = false;
-    //   this.audioErrorDialog = false;
-    //   this.endSessionDialog = false;
-
-    //   // const data = {
-    //   //   case: {
-    //   //     title: this.$store.state.case.title,
-    //   //     charter: this.$store.state.case.charter,
-    //   //     preconditions: this.$store.state.case.preconditions,
-    //   //     duration: this.$store.state.case.duration,
-    //   //   },
-    //   //   session: {
-    //   //     status: this.$store.state.session.status,
-    //   //     timer: this.$store.state.session.timer,
-    //   //     started: this.$store.state.session.started,
-    //   //     ended: this.$store.state.session.ended,
-    //   //     quickTest: this.$store.state.session.quickTest,
-    //   //     path: this.$route.path,
-    //   //   },
-    //   // };
-
-    //   // await this.$storageService.createNewSession(data);
-
-    //   if (this.$isElectron) {
-    //     const caseID = await this.$storageService.getCaseId();
-    //     const sessionID = await this.$storageService.getSessionId();
-    //     this.$store.commit("setCaseID", caseID);
-    //     this.$store.commit("setSessionID", sessionID);
-    //   }
-
-    //   // Stop any ongoing intervals
-    //   this.stopInterval();
-    // },
-
     async finishSession() {
       this.$store.commit("clearState");
       await this.$router.push("/");
