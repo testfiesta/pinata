@@ -162,6 +162,9 @@ const store = new Vuex.Store({
       if (currentItemIndex !== -1) {
         state.session.items[currentItemIndex] = payload;
       }
+      if (Vue.prototype.$isElectron) {
+        this._vm.$storageService.updateItems(payload);
+      }
     },
 
     deleteSessionItems(state, ids) {

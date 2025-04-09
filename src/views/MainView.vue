@@ -92,8 +92,6 @@ export default {
     this.activeTab = this.$route.path;
     this.setInitialPreSession();
     this.setInitialPostSession();
-    // this.$root.$on("start-quick-test", this.showSourcePickerDialog);
-    // this.$root.$on("toggle-sidebar", this.toggleSidebar);
     this.$root.$on("update-selected", this.updateSelected);
     this.$root.$on("sources-loaded", this.setSources);
     this.$root.$on("close-sourcepickerdialog", this.hideSourcePickerDialog);

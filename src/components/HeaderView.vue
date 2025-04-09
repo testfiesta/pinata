@@ -11,8 +11,8 @@
       <div
         class="col"
         :class="{
-          'col-3': quickTest || sidebarActive,
-          'col-4': !quickTest && !sidebarActive,
+          'col-4': quickTest || sidebarActive,
+          'col-3': !quickTest && !sidebarActive,
         }"
       >
         <div class="d-flex align-center justify-start">
@@ -46,16 +46,16 @@
       <div
         class="col px-0"
         :class="{
-          'col-6': quickTest || sidebarActive,
-          'col-4': !quickTest && !sidebarActive,
+          'col-4': quickTest || sidebarActive,
+          'col-6': !quickTest && !sidebarActive,
         }"
       >
         <div
           class="d-flex align-center w-full"
           v-if="showControlPanel"
           :class="{
-            'justify-space-between': quickTest || sidebarActive,
-            'justify-end': !quickTest && !sidebarActive,
+            'justify-end': quickTest || sidebarActive,
+            'justify-space-between': !quickTest && !sidebarActive,
           }"
         >
           <div
@@ -82,8 +82,8 @@
       <div
         class="col"
         :class="{
-          'col-3': quickTest || sidebarActive,
-          'col-4': !quickTest && !sidebarActive,
+          'col-4': quickTest || sidebarActive,
+          'col-3': !quickTest && !sidebarActive,
         }"
       >
         <div class="d-flex justify-end align-center">
@@ -186,6 +186,11 @@ export default {
   },
   mounted() {
     this.$root.$on("toggle-sidebar", this.toggleSidebar);
+    this.$root.$on("set-sidebar", this.setSidebarActive);
+  },
+  beforeDestroy() {
+    this.$root.$off("toggle-sidebar", this.toggleSidebar);
+    this.$root.$off("set-sidebar", this.setSidebarActive);
   },
   watch: {
     "$route.path"(newPath) {
@@ -235,8 +240,13 @@ export default {
         await this.$router.push({ path: "/settings" });
       }
     },
-    toggleSidebar(value) {
-      this.sidebarActive = value;
+    toggleSidebar() {
+      console.log("toggleSidebar " + this.sidebarActive);
+      this.sidebarActive = !this.sidebarActive;
+    },
+    setSidebarActive(value) {
+      console.log("setSidebarActive ", !value);
+      this.sidebarActive = !value;
     },
   },
 };
