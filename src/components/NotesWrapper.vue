@@ -907,10 +907,10 @@ export default {
     selectEmoji(emoji) {
       this.emojiMenu[`menu-${this.selectedId}`] = false;
       this.itemLists = this.itemLists.map((item) => {
-        let temp = Object.assign({}, item);
+        let temp = structuredClone(item);
         if (temp.stepID === this.selectedId) {
-          if (temp.emoji.filter((item) => item.data === emoji.data).length) {
-            temp.emoji = temp.emoji.filter((item) => item.data !== emoji.data);
+          if (temp.emoji?.filter((item) => item.data === emoji.data).length) {
+            temp.emoji = temp.emoji?.filter((item) => item.data !== emoji.data);
           } else {
             temp.emoji.push(emoji);
           }
@@ -921,9 +921,9 @@ export default {
     },
     removeEmoji(id, emoji) {
       this.itemLists = this.itemLists.map((item) => {
-        let temp = Object.assign({}, item);
+        let temp = structuredClone(item);
         if (temp.stepID === id) {
-          temp.emoji = temp.emoji.filter((item) => item.data !== emoji.data);
+          temp.emoji = temp.emoji?.filter((item) => item.data !== emoji.data);
         }
         return temp;
       });
@@ -931,7 +931,7 @@ export default {
     },
     handleFollowUp($event, id) {
       this.itemLists = this.itemLists.map((item) => {
-        let temp = Object.assign({}, item);
+        let temp = structuredClone(item);
         if (temp.stepID === id) {
           temp.followUp = $event;
         }

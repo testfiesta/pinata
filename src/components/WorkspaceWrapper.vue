@@ -395,6 +395,14 @@ export default {
     this.$root.$on("set-selected-evidence", (selected) => {
       this.editEvidence(selected);
     });
+    this.$root.$emit(
+      "set-sidebar",
+      !this.quickTest && this.sidebarActive ? true : false
+    );
+  },
+  beforeDestroy() {
+    this.$root.$off("edit-evidence", this.editEvidence);
+    this.$root.$off("set-selected-evidence");
   },
   watch: {
     selectedItems: function (newValue) {

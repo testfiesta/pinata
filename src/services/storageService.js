@@ -104,8 +104,8 @@ export default class StorageService {
     return await this.storage.saveSession(data);
   }
 
-  async resetData() {
-    return this.storage.resetData();
+  async resetData(state) {
+    return this.storage.resetData(state);
   }
 
   async saveNote(note) {

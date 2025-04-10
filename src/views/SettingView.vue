@@ -1,60 +1,57 @@
 <template>
-  <v-container
-    fluid
-    :style="{
-      'min-height': $isElectron ? '100vh' : '800px',
-    }"
-    class="settings-wrapper"
-  >
-    <v-row style="height: 100vh">
-      <v-col cols="auto" style="height: 100%">
-        <v-tabs
-          class="settings-menu"
-          color="primary"
-          background-color="transparent"
-          v-model="activeTab"
-          vertical
-        >
-          <v-tab
-            v-for="tab of tabs"
-            :key="tab.id"
-            v-bind="$isElectron ? { to: tab.route } : {}"
-            :style="{ color: currentTheme.secondary }"
-            exact
+  <v-container class="wrapper" fluid>
+    <HeaderView />
+    <div fluid class="settings-wrapper mt-3">
+      <v-row>
+        <v-col cols="auto">
+          <v-tabs
+            class="settings-menu"
+            color="primary"
+            background-color="transparent"
+            v-model="activeTab"
+            vertical
           >
-            {{ tab.name }}
-          </v-tab>
-        </v-tabs>
-      </v-col>
-      <v-col cols class="content">
-        <v-tabs-items v-model="activeTab" class="active-tab">
-          <v-tab-item
-            v-for="tab of tabs"
-            :key="tab.id"
-            class="settings-component"
-            v-bind="$isElectron ? { value: tab.route } : {}"
-            :transition="false"
-          >
-            <router-view
-              v-if="$isElectron"
-              :metadata="metadata"
-              :configItem="config"
-              :credentialItems="credentials"
-              @submit-config="updateConfig"
-            />
-            <component
-              v-else
-              :is="tab.component"
-              :metadata="metadata"
-              :configItem="config"
-              :credentialItems="credentials"
-              @submit-config="updateConfig"
+            <v-tab
+              v-for="tab of tabs"
+              :key="tab.id"
+              v-bind="$isElectron ? { to: tab.route } : {}"
+              :style="{ color: currentTheme.secondary }"
+              exact
             >
-            </component>
-          </v-tab-item>
-        </v-tabs-items>
-      </v-col>
-    </v-row>
+              {{ tab.name }}
+            </v-tab>
+          </v-tabs>
+        </v-col>
+        <v-col cols class="content">
+          <v-tabs-items v-model="activeTab" class="active-tab">
+            <v-tab-item
+              v-for="tab of tabs"
+              :key="tab.id"
+              class="settings-component"
+              v-bind="$isElectron ? { value: tab.route } : {}"
+              :transition="false"
+            >
+              <router-view
+                v-if="$isElectron"
+                :metadata="metadata"
+                :configItem="config"
+                :credentialItems="credentials"
+                @submit-config="updateConfig"
+              />
+              <component
+                v-else
+                :is="tab.component"
+                :metadata="metadata"
+                :configItem="config"
+                :credentialItems="credentials"
+                @submit-config="updateConfig"
+              >
+              </component>
+            </v-tab-item>
+          </v-tabs-items>
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
@@ -70,6 +67,7 @@ import TagsTab from "@/components/settings/TagsTab.vue";
 import LogoWrapper from "@/components/LogoWrapper.vue";
 import { VContainer, VBtn } from "vuetify/lib/components";
 import { mapGetters } from "vuex";
+
 export default {
   name: "SettingView",
   components: {
@@ -84,12 +82,11 @@ export default {
     AddonsTab,
     HotkeysTab,
     TagsTab,
-    MenuPopover: () => import("@/components/MenuPopover.vue"),
+    HeaderView: () => import("@/components/HeaderView.vue"),
   },
   computed: {
     ...mapGetters({
       isAuthenticated: "auth/isAuthenticated",
-      config: "config/fullConfig",
     }),
     currentTheme() {
       if (this.$vuetify.theme.dark) {
@@ -162,13 +159,14 @@ export default {
     if (this.$isElectron) {
       this.getMetadata();
     }
+    this.getConfig();
     this.getCredentials();
   },
   mounted() {
     if (this.$isElectron) {
       this.$root.$on("change-meta", () => {
         this.getMetadata();
-        this.updateConfig(this.config);
+        this.getConfig().then(() => this.updateConfig(this.config));
         this.getCredentials().then(() =>
           this.updateCredentials(this.credentials)
         );
@@ -178,6 +176,10 @@ export default {
   methods: {
     async getMetadata() {
       this.metadata = await this.$storageService.getMetaData();
+    },
+    async getConfig() {
+      this.config = await this.$storageService.getConfig();
+      this.$store.commit("config/setFullConfig", this.config);
     },
     updateConfig(value) {
       this.config = value;
@@ -207,20 +209,17 @@ export default {
 <style scoped>
 .settings-menu {
   background-color: #ffffff;
-  box-shadow: 0px 4px 34px 0px rgba(0, 0, 0, 0.16);
   border-radius: 15px;
-  height: 80%;
+  height: 100%;
 }
 .active-tab {
   background-color: #ffffff;
-  box-shadow: 0px 4px 34px 0px rgba(0, 0, 0, 0.16);
   border-radius: 15px;
   width: 70%;
   height: 100%;
 }
 .settings-component {
   background-color: #ffffff;
-  box-shadow: 0px 4px 34px 0px rgba(0, 0, 0, 0.16);
   border-radius: 15px;
   height: 100%;
 }
@@ -229,23 +228,10 @@ export default {
   flex-direction: row;
   justify-content: center;
   width: 100%;
-  height: 100%;
   overflow-y: auto;
 }
 .settings-wrapper {
   background-color: #f2f4f7;
-}
-.header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  column-gap: 15px;
-  padding: 15px;
-  background-color: #ffffff;
-  box-shadow: 0px 4px 34px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 15px;
-  margin-bottom: 15px;
 }
 .v-tab {
   font-size: 14px;
@@ -259,5 +245,13 @@ export default {
 .v-tab--active {
   background-color: aliceblue;
   color: #0c2ff3;
+}
+.wrapper {
+  min-height: 100vh;
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 </style>

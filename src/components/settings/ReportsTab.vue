@@ -139,6 +139,7 @@ export default {
 .content-wrapper {
   width: 100%;
   overflow-y: auto;
+  height: 90vh;
 }
 .body-1 {
   font-style: normal !important;

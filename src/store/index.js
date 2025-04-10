@@ -76,58 +76,48 @@ const store = new Vuex.Store({
     },
     setCaseID(state, payload) {
       state.case.caseID = payload;
-      this._vm.$storageService.updateState(state);
     },
     setCaseTitle(state, payload) {
       state.case.title = payload;
-      this._vm.$storageService.updateState(state);
     },
     setCaseCharter(state, payload) {
       state.case.charter.content = payload.content;
       state.case.charter.text = payload.text;
-      this._vm.$storageService.updateState(state);
     },
     setCasePrecondition(state, payload) {
       state.case.preconditions.content = payload.content;
       state.case.preconditions.text = payload.text;
-      this._vm.$storageService.updateState(state);
     },
     setCaseDuration(state, payload) {
       state.case.duration = payload;
-      this._vm.$storageService.updateState(state);
     },
     setCaseMindmap(state, payload) {
       state.case.mindmap.nodes = payload.nodes;
       state.case.mindmap.connections = payload.connections;
-      this._vm.$storageService.updateState(state);
     },
     setSessionID(state, payload) {
       state.session.sessionID = payload;
-      this._vm.$storageService.updateState(state);
     },
     setSessionStarted(state, payload) {
       state.session.started = payload;
-      this._vm.$storageService.updateState(state);
     },
     setSessionEnded(state, payload) {
       state.session.ended = payload;
-      this._vm.$storageService.updateState(state);
+      if (!state.session.quickTest) {
+        this._vm.$storageService.updateState(state);
+      }
     },
     setSessionQuickTest(state, payload) {
       state.session.quickTest = payload;
-      this._vm.$storageService.updateState(state);
     },
     setSessionPath(state, payload) {
       state.session.path = payload;
-      this._vm.$storageService.updateState(state);
     },
     setSessionRemote(state, payload) {
       state.session.remote = payload;
-      this._vm.$storageService.updateState(state);
     },
     setTargetForAll(state, payload) {
       state.session.isTargetForAll = payload;
-      this._vm.$storageService.updateState(state);
     },
     setPreSessionTasks(state, payload) {
       state.session.preSessionTasks = payload;
@@ -140,7 +130,7 @@ const store = new Vuex.Store({
 
       if (Vue.prototype.$isElectron) {
         this._vm.$storageService.updateItems(payload);
-      } else {
+      } else if (!state.session.quickTest) {
         this._vm.$storageService.updateState(state);
       }
     },
@@ -148,16 +138,12 @@ const store = new Vuex.Store({
       state.session.nodes = payload;
       if (Vue.prototype.$isElectron) {
         this._vm.$storageService.updateNodes(payload);
-      } else {
-        this._vm.$storageService.updateState(state);
       }
     },
     setSessionConnections(state, payload) {
       state.session.connections = payload;
       if (Vue.prototype.$isElectron) {
         this._vm.$storageService.updateConnections(payload);
-      } else {
-        this._vm.$storageService.updateState(state);
       }
     },
     setSessionItemsFromExternalWindow(state, payload) {
@@ -167,8 +153,6 @@ const store = new Vuex.Store({
       state.session.items.push(payload);
       if (Vue.prototype.$isElectron) {
         this._vm.$storageService.addItem(payload);
-      } else {
-        this._vm.$storageService.updateState(state);
       }
     },
     updateSessionItem(state, payload) {
@@ -178,7 +162,9 @@ const store = new Vuex.Store({
       if (currentItemIndex !== -1) {
         state.session.items[currentItemIndex] = payload;
       }
-      this._vm.$storageService.updateItem(payload);
+      if (Vue.prototype.$isElectron) {
+        this._vm.$storageService.updateItems(payload);
+      }
     },
 
     deleteSessionItems(state, ids) {
@@ -186,6 +172,9 @@ const store = new Vuex.Store({
         return acc.filter((item) => item.stepID !== currentId);
       }, state.session.items);
       this._vm.$storageService.deleteItems(ids);
+      if (!this.$isElectron && !state.session.quickTest) {
+        this._vm.$storageService.updateState(state);
+      }
     },
 
     setSessionNotes(state, payload) {
@@ -225,7 +214,6 @@ const store = new Vuex.Store({
         payload.timer - state.savedTimer >= 10
       ) {
         state.savedTimer = payload.timer;
-        this._vm.$storageService.updateState(state);
       }
     },
 
@@ -261,7 +249,6 @@ const store = new Vuex.Store({
       };
       state.session.nodes = [];
       state.session.connections = [];
-      this._vm.$storageService.updateState(state);
     },
 
     startQuickTest(state) {
@@ -296,7 +283,6 @@ const store = new Vuex.Store({
       };
       state.session.nodes = [];
       state.session.connections = [];
-      this._vm.$storageService.updateState(state);
     },
 
     resetState(state) {
@@ -305,7 +291,6 @@ const store = new Vuex.Store({
 
       state.session.started = "";
       state.session.ended = "";
-      this._vm.$storageService.updateState(state);
     },
 
     restoreState(state, payload) {
@@ -337,8 +322,6 @@ const store = new Vuex.Store({
           text: payload?.session?.notes?.text || "",
         },
       };
-
-      this._vm.$storageService.updateState(state);
     },
 
     togglePreSessionTask(state, { taskId, checked }) {

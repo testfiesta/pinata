@@ -194,7 +194,6 @@ export default {
     },
     async back() {
       await this.$router.push("/");
-      await this.$storageService.resetData();
       this.$store.commit("clearState");
     },
     handleResetConfirmDialog() {
@@ -224,7 +223,7 @@ export default {
 </style>
 <style scoped>
 .quick_test_wrapper {
-  /* width: 400px; */
+  width: 480px;
 }
 .timer-box-wrapper {
   display: flex;

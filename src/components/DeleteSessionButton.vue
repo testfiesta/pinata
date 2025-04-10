@@ -60,8 +60,9 @@ export default {
       this.finishSession();
     },
     async finishSession() {
+      const latestState = this.$store.state;
+      await this.$storageService.resetData(latestState);
       this.$store.commit("clearState");
-      await this.$storageService.resetData();
       await this.$router.push("/");
     },
     updateStoreSession(isForce = false) {

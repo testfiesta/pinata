@@ -82,7 +82,6 @@ export default {
     },
     async clearSession() {
       this.$store.commit("clearState");
-      await this.$storageService.resetData();
       if (this.$router.history.current.path !== "/") {
         await this.$router.push("/");
       }

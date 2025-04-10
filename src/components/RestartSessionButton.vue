@@ -54,8 +54,11 @@ export default {
         this.deleteConfirmDialog = false;
       }
       this.changeSessionStatus(SESSION_STATUSES.PENDING);
-      this.$store.commit("resetState");
-      await this.$storageService.resetData();
+
+      const latestState = this.$store.state;
+      await this.$storageService.resetData(latestState);
+      this.$store.commit("clearState");
+
       if (this.$isElectron) {
         await this.$electronService.setWindowSize({ width: 800, height: 600 });
       }

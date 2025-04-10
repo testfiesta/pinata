@@ -160,9 +160,10 @@ export default class LocalJsonDbService extends StorageInterface {
     });
   }
 
-  async resetData() {
+  async resetData(state) {
     return await window.ipc.invoke(IPC_HANDLERS.PERSISTENCE, {
       func: IPC_FUNCTIONS.RESET_DATA,
+      data: state,
     });
   }
 }

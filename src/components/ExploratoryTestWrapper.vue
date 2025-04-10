@@ -135,7 +135,6 @@ export default {
 
     async back() {
       this.$store.commit("clearState");
-      await this.$storageService.resetData();
       await this.$router.push("/");
     },
     handleResetConfirmDialog() {

@@ -233,6 +233,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
+  height: 90vh;
   padding: 25px;
 }
 .tab-bar {

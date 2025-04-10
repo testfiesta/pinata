@@ -1,138 +1,6 @@
 <template>
-  <v-container class="wrapper" fluid>
-    <v-app-bar
-      :color="mainBg"
-      class="app-navbar px-2"
-      max-height="80px"
-      height="80px"
-      elevation="0"
-      rounded="lg"
-    >
-      <div class="row w-full align-center">
-        <div
-          class="col"
-          :class="{
-            'col-4': quickTest || sidebarActive,
-            'col-3': !quickTest && !sidebarActive,
-          }"
-        >
-          <div class="d-flex align-center justify-start">
-            <router-link to="/">
-              <img :src="pinataLogo" alt="logo" />
-            </router-link>
-            <div class="tabs" style="display: none">
-              <v-tabs
-                class="tabs"
-                centered
-                v-model="activeTab"
-                color="primary"
-                background-color="transparent"
-                :height="26"
-                hide-slider
-              >
-                <v-tab class="test-tab" to="/main" exact>
-                  {{ $tc("caption.test", 1) }}
-                </v-tab>
-                <v-tab
-                  class="workspace-tab"
-                  :disabled="this.status === 'pending'"
-                  to="/main/workspace"
-                >
-                  {{ $tc("caption.workspace", 1) }}
-                </v-tab>
-              </v-tabs>
-            </div>
-          </div>
-        </div>
-        <div
-          class="col px-0"
-          :class="{
-            'col-4': quickTest || sidebarActive,
-            'col-6': !quickTest && !sidebarActive,
-          }"
-        >
-          <div
-            class="d-flex align-center w-full"
-            :class="{
-              'justify-end': quickTest || sidebarActive,
-              'justify-space-between': !quickTest && !sidebarActive,
-            }"
-          >
-            <div
-              class="d-flex justify-start align-center mr-2"
-              v-if="$store.state.session.status !== 'pending'"
-            >
-              <RestartSessionButton />
-              <ExportSessionButton class="mx-2" />
-              <DeleteSessionButton />
-            </div>
-            <v-btn
-              class="rounded-lg font-weight-semibold text-capitalize"
-              color="primary"
-              height="40"
-              depressed
-              offset-y
-              @click="endSession"
-              v-if="$store.state.session.status !== 'pending'"
-            >
-              {{ $tc("caption.end_session", 1) }} {{ elapsedTime }}
-            </v-btn>
-          </div>
-        </div>
-        <div
-          class="col"
-          :class="{
-            'col-4': quickTest || sidebarActive,
-            'col-3': !quickTest && !sidebarActive,
-          }"
-        >
-          <div class="d-flex justify-end align-center">
-            <div class="avatar">
-              <div v-if="isAuthenticated">
-                <MenuPopover />
-              </div>
-              <div v-else>
-                <v-menu
-                  :nudge-width="100"
-                  bottom
-                  z-index="99999"
-                  offset-y
-                  min-width="280px"
-                  class="rounded-lg"
-                  content-class="shadow-theme"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      fab
-                      small
-                      color="primary"
-                      height="40"
-                      width="40"
-                      depressed
-                      offset-y
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      <v-icon dark> mdi-account </v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item link to="/authentication/signin">
-                      <v-list-item-title class="fs-16 font-weight-medium">{{
-                        $tc("caption.login", 1)
-                      }}</v-list-item-title>
-                    </v-list-item>
-                    <!--<v-list-item link to="/authentication/signupMain">
-                <v-list-item-title>Register</v-list-item-title>
-              </v-list-item>-->
-                  </v-list>
-                </v-menu>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </v-app-bar>
+  <v-container class="" fluid>
+    <HeaderView @end-session="endSession" @update-tab="activeTab = $event" />
     <div class="mt-3">
       <div class="position-relative">
         <v-tabs-items
@@ -182,44 +50,23 @@
 </template>
 
 <script>
-import {
-  VContainer,
-  VTabs,
-  VTab,
-  VTabsItems,
-  VTabItem,
-  VBtn,
-} from "vuetify/lib/components";
 import ExploratoryTestWrapper from "../components/ExploratoryTestWrapper.vue";
 import QuickTestWrapper from "@/components/QuickTestWrapper.vue";
 import WorkspaceWrapper from "../components/WorkspaceWrapper.vue";
 import ControlPanel from "../components/ControlPanel.vue";
 import CheckTaskWrapper from "@/components/CheckTaskWrapper.vue";
-import MenuPopover from "@/components/MenuPopover.vue";
-import ExportSessionButton from "../components/ExportSessionButton.vue";
 import { SESSION_STATUSES } from "../modules/constants";
 import { mapGetters } from "vuex";
-import RestartSessionButton from "../components/RestartSessionButton.vue";
-import DeleteSessionButton from "../components/DeleteSessionButton.vue";
 
 export default {
   name: "MainView",
   components: {
-    VContainer,
-    VBtn,
-    VTabs,
-    VTab,
-    VTabsItems,
-    VTabItem,
     QuickTestWrapper,
     ExploratoryTestWrapper,
     WorkspaceWrapper,
     ControlPanel,
     CheckTaskWrapper,
-    MenuPopover,
-    ExportSessionButton,
-    RestartSessionButton,
-    DeleteSessionButton,
+    HeaderView: () => import("@/components/HeaderView.vue"),
   },
   data() {
     return {
@@ -239,17 +86,12 @@ export default {
       durationConfirmDialog: false,
       status: this.$store.state.session.status,
       viewMode: "normal",
-      sidebarActive: false,
     };
   },
-  created() {
-    this.fetchItems();
-  },
   mounted() {
+    this.activeTab = this.$route.path;
     this.setInitialPreSession();
     this.setInitialPostSession();
-    this.$root.$on("start-quick-test", this.showSourcePickerDialog);
-    this.$root.$on("toggle-sidebar", this.toggleSidebar);
     this.$root.$on("update-selected", this.updateSelected);
     this.$root.$on("sources-loaded", this.setSources);
     this.$root.$on("close-sourcepickerdialog", this.hideSourcePickerDialog);
@@ -257,12 +99,16 @@ export default {
       this.setInitialPreSession();
       this.setInitialPostSession();
     });
-    if (this.$isElectron) {
-      this.$electronService.onDataChange(this.fetchItems);
-      this.$electronService.onMetaChange(this.fetchItems);
-    } else this.getCurrentExecution();
+    // if (!this.$isElectron) {
+    // TODO get working with webapp
+    // this.getCurrentExecution();
+    // }
   },
-
+  watch: {
+    "$route.path"(newPath) {
+      this.activeTab = newPath;
+    },
+  },
   computed: {
     ...mapGetters({
       items: "sessionItems",
@@ -300,24 +146,6 @@ export default {
         ""
       );
     },
-    pinataLogo() {
-      return this.$vuetify.theme.dark
-        ? "/pinata-logo-white.svg"
-        : "/pinata-logo.svg";
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
-    btnBg() {
-      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
-    },
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
   },
   methods: {
     fetchSources() {
@@ -327,29 +155,6 @@ export default {
     },
     onStartSession(id) {
       this.sourceId = id;
-    },
-    async showSourcePickerDialog() {
-      if (this.$isElectron) {
-        try {
-          let data = await this.fetchSources();
-          this.loaded = true;
-          this.sources = data;
-
-          this.sourcePickerDialog = true;
-        } catch (err) {
-          console.log(err);
-        }
-      } else {
-        this.mediaStream = await navigator.mediaDevices.getDisplayMedia({
-          video: {
-            displaySurface: "window",
-            cursor: "always",
-          },
-          audio: true,
-        });
-
-        await this.startSession();
-      }
     },
     hideSourcePickerDialog() {
       this.sourcePickerDialog = false;
@@ -372,9 +177,6 @@ export default {
         duration: this.duration,
         isForce,
       });
-    },
-    toggleSidebar(value) {
-      this.sidebarActive = !value;
     },
     startInterval() {
       if (!this.interval) {
@@ -415,12 +217,7 @@ export default {
         })
       );
     },
-    async fetchItems() {
-      if (this.$isElectron) {
-        const sessionItems = await this.$storageService.getItems();
-        this.$store.commit("setSessionItemsFromExternalWindow", sessionItems);
-      }
-    },
+    // TODO get working with webapp
     async getCurrentExecution() {
       let currentPath = this.$route.path;
       const executionId = currentPath.split("/").pop();
