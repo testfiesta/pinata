@@ -1,15 +1,14 @@
 <template>
   <v-container class="wrapper" fluid>
     <HeaderView />
-    <div fluid class="settings-wrapper mt-3">
+    <div fluid class="mt-3">
       <v-row>
         <v-col cols="auto">
           <v-tabs
             class="settings-menu"
-            color="primary"
-            background-color="transparent"
             v-model="activeTab"
             vertical
+            :background-color="mainBg"
           >
             <v-tab
               v-for="tab of tabs"
@@ -23,7 +22,11 @@
           </v-tabs>
         </v-col>
         <v-col cols class="content">
-          <v-tabs-items v-model="activeTab" class="active-tab">
+          <v-tabs-items
+            v-model="activeTab"
+            class="active-tab"
+            :style="{ backgroundColor: mainBg }"
+          >
             <v-tab-item
               v-for="tab of tabs"
               :key="tab.id"
@@ -88,12 +91,13 @@ export default {
     ...mapGetters({
       isAuthenticated: "auth/isAuthenticated",
     }),
+    mainBg() {
+      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
+    },
     currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
+      return this.$vuetify.theme.dark
+        ? this.$vuetify.theme.themes.dark
+        : this.$vuetify.theme.themes.light;
     },
   },
   data() {
@@ -159,14 +163,12 @@ export default {
     if (this.$isElectron) {
       this.getMetadata();
     }
-    this.getConfig();
     this.getCredentials();
   },
   mounted() {
     if (this.$isElectron) {
       this.$root.$on("change-meta", () => {
         this.getMetadata();
-        this.getConfig().then(() => this.updateConfig(this.config));
         this.getCredentials().then(() =>
           this.updateCredentials(this.credentials)
         );
@@ -176,10 +178,6 @@ export default {
   methods: {
     async getMetadata() {
       this.metadata = await this.$storageService.getMetaData();
-    },
-    async getConfig() {
-      this.config = await this.$storageService.getConfig();
-      this.$store.commit("config/setFullConfig", this.config);
     },
     updateConfig(value) {
       this.config = value;
@@ -208,18 +206,41 @@ export default {
 
 <style scoped>
 .settings-menu {
-  background-color: #ffffff;
   border-radius: 15px;
   height: 100%;
+  width: 12vw;
+}
+.v-tab {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  text-transform: capitalize;
+  justify-content: flex-start;
+  text-align: left !important;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
+  margin: 5px 0;
+  width: calc(100% - 20px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.v-tab:hover {
+  border-radius: 8px;
+}
+
+.v-tab--active {
+  background-color: #f0f3fe;
+  color: #0c2ff3 !important;
+  border-radius: 8px;
 }
 .active-tab {
-  background-color: #ffffff;
   border-radius: 15px;
   width: 70%;
   height: 100%;
 }
 .settings-component {
-  background-color: #ffffff;
   border-radius: 15px;
   height: 100%;
 }
@@ -228,23 +249,8 @@ export default {
   flex-direction: row;
   justify-content: center;
   width: 100%;
+  height: 100%;
   overflow-y: auto;
-}
-.settings-wrapper {
-  background-color: #f2f4f7;
-}
-.v-tab {
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 20px;
-  text-transform: capitalize;
-  padding: 10px 35px;
-  justify-content: flex-start;
-}
-.v-tab--active {
-  background-color: aliceblue;
-  color: #0c2ff3;
 }
 .wrapper {
   min-height: 100vh;

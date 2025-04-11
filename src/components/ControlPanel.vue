@@ -170,14 +170,14 @@
                   v-if="$vuetify.theme.dark === false"
                   :src="require('../assets/icon/play.svg')"
                   width="24"
-                                    height="24"
+                  height="24"
                   draggable="false"
                 />
                 <img
                   v-else
                   :src="require('../assets/icon/play-gray.svg')"
                   width="24"
-                                    height="24"
+                  height="24"
                   draggable="false"
                 />
               </v-btn>
@@ -791,6 +791,9 @@ export default {
       credentials: "auth/credentials",
       quickTest: "sessionQuickTest",
     }),
+    mainBgReverse() {
+      return this.$vuetify.theme.dark ? "#F2F4F7" : "#161B26";
+    },
     isShareSessionAllowed() {
       return !this.config.localOnly;
     },

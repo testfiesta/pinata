@@ -81,7 +81,7 @@
           {{ $tc("caption.theme", 1) }}
         </p>
         <v-radio-group
-          v-model="config.theme"
+          v-model="localConfig.theme"
           row
           class="ma-0 pa-0 radio-control"
           dense
@@ -256,7 +256,7 @@ export default {
     color: function (newValue, oldValue) {
       if (newValue === oldValue) return;
 
-      this.config.defaultColor = newValue.hexa;
+      this.localConfig.defaultColor = newValue.hexa;
       this.handleConfig();
     },
   },
@@ -288,11 +288,9 @@ export default {
       };
     },
     currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
+      return this.$vuetify.theme.dark
+        ? this.$vuetify.theme.themes.dark
+        : this.$vuetify.theme.themes.light;
     },
   },
   data() {
@@ -310,11 +308,15 @@ export default {
       commentTypes: Object.keys(TEXT_TYPES).filter(
         (item) => item !== "Summary"
       ),
+      localConfig: {},
     };
+  },
+  created() {
+    this.localConfig = structuredClone(this.config);
   },
   methods: {
     handleConfig() {
-      this.$emit("submit-config", this.config);
+      this.$emit("submit-config", this.localConfig);
     },
     updateRetentionPeriod(value) {
       let configToChange = structuredClone(this.config);
@@ -360,7 +362,6 @@ export default {
 .content-wrapper {
   width: 100%;
   overflow-y: auto;
-  height: 90vh;
 }
 .body-1 {
   font-style: normal !important;

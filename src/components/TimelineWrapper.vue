@@ -1852,6 +1852,9 @@ export default {
   font-weight: 500;
   font-size: 14px !important;
 }
+.theme--dark.v-timeline .v-timeline-item__dot {
+  background-color: #374151 !important;
+}
 .timeline-theme .v-timeline-item .v-timeline-item__divider {
   min-width: 48px;
 }

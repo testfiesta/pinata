@@ -3,7 +3,7 @@ export const config = {
   namespaced: true,
   state: () => ({
     localOnly: false,
-    apperance: "light",
+    appearance: "light",
     ai: {
       enabled: false,
     },
