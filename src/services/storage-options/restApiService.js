@@ -323,6 +323,13 @@ export default class RestApiService extends StorageInterface {
     }
   }
 
+  async getItemById(id) {
+    const itemInStore = store.state.session.items.find(
+      (item) => item.stepID === id
+    );
+    return itemInStore;
+  }
+
   // TODO: Implement this method to fetch credentials from the backend?
   async updateCredentials(credentials) {
     console.log(credentials);

@@ -456,6 +456,7 @@ export default {
         }
         this.processing = false;
       }
+      this.processing = false;
     },
     updateComment() {
       const regex = /(<([^>]+)>)/gi;

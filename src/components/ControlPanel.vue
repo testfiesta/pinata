@@ -683,6 +683,7 @@ import {
   createAudioForWeb,
   createImageForWeb,
   createVideoForWeb,
+  uploadEvidenceForWeb,
 } from "@/helpers/WebHelpers";
 
 let mediaRecorder;
@@ -1235,11 +1236,22 @@ export default {
       }
     },
     async uploadEvidence() {
-      // todo add relative handler for web app
       if (this.$isElectron) {
         const { status, message, item } =
           await this.$electronService.uploadEvidence();
 
+        if (status === STATUSES.ERROR) {
+          this.$root.$emit("set-snackbar", message);
+        } else {
+          const data = {
+            ...item,
+            timer_mark: this.$store.state.session.timer,
+          };
+          this.evidenceData = data;
+          this.addEvidenceDialog = true;
+        }
+      } else {
+        const { status, message, item } = await uploadEvidenceForWeb();
         if (status === STATUSES.ERROR) {
           this.$root.$emit("set-snackbar", message);
         } else {

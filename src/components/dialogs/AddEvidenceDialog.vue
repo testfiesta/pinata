@@ -730,8 +730,8 @@ export default {
           this.$root.$emit("set-snackbar", message);
           console.log(message);
         }
-        this.processing = false;
       }
+      this.processing = false;
     },
     updateComment() {
       const regex = /(<([^>]+)>)/gi;
