@@ -1,5 +1,5 @@
 import axios from "axios";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 import StorageInterface from "../storageInterface";
 import store from "@/store";
 import TestfiestaIntegrationHelpers from "@/integrations/TestfiestaIntegrationHelpers";
@@ -330,6 +330,10 @@ export default class RestApiService extends StorageInterface {
     return itemInStore;
   }
 
+  async deleteItems(items) {
+    console.log(items);
+  }
+
   // TODO: Implement this method to fetch credentials from the backend?
   async updateCredentials(credentials) {
     console.log(credentials);
@@ -337,51 +341,50 @@ export default class RestApiService extends StorageInterface {
   }
 
   async getCredentials() {
-    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
-    // const credential = null; // Or fetch from store.state.auth.credentials
-    // const headers = credential
-    //   ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-    //   : {};
-    let data = { user: {} };
-
-    const allCookies = document.cookie;
-    const cookieArray = allCookies.split("; ");
-    let accessToken = null;
-    for (const cookie of cookieArray) {
-      const [name, value] = cookie.split("=");
-      if (name.trim() === "access_token") {
-        accessToken = value;
-        break;
-      }
-    }
-    data = store.state.auth.credentials?.testfiesta[0] || {};
-    if (accessToken) {
-      data.type = "cookie";
-    } else {
-      const url = `${this.baseURL}/${handle}/accessTokens`;
-      const response = await axios.get(url, { withCredentials: true });
-      data = response.data;
-      data.type = "bearer";
-    }
-    return {
-      testfiesta: [
-        {
-          accessToken: data.accessToken,
-          expiresAt: data.expiresAt,
-          type: data.type || "bearer",
-          loggedInAt: data.loggedInAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          oauthTokenIds: data.oauthTokenIds,
-          user: {
-            id: data.user?.uid,
-            email: data.user?.email,
-            name: data.user?.first_name + " " + data.user?.last_name,
-            avatar: data.user?.avatar_url,
-            locale: data.user?.preferences?.locale,
-            verified: data.user?.preferences?.verified,
-          },
-          orgs: data.orgs,
-        },
-      ],
-    };
+    //   const handle = "idonn01"; // TODO: Ensure this is set in Vuex
+    //   // const credential = null; // Or fetch from store.state.auth.credentials
+    //   // const headers = credential
+    //   //   ? await TestfiestaIntegrationHelpers.getHeaders(credential)
+    //   //   : {};
+    //   let data = { user: {} };
+    //   const allCookies = document.cookie;
+    //   const cookieArray = allCookies.split("; ");
+    //   let accessToken = null;
+    //   for (const cookie of cookieArray) {
+    //     const [name, value] = cookie.split("=");
+    //     if (name.trim() === "access_token") {
+    //       accessToken = value;
+    //       break;
+    //     }
+    //   }
+    //   data = store.state.auth.credentials?.testfiesta[0] || {};
+    //   if (accessToken) {
+    //     data.type = "cookie";
+    //   } else {
+    //     const url = `${this.baseURL}/${handle}/accessTokens`;
+    //     const response = await axios.get(url, { withCredentials: true });
+    //     data = response.data;
+    //     data.type = "bearer";
+    //   }
+    //   return {
+    //     testfiesta: [
+    //       {
+    //         accessToken: data.accessToken,
+    //         expiresAt: data.expiresAt,
+    //         type: data.type || "bearer",
+    //         loggedInAt: data.loggedInAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
+    //         oauthTokenIds: data.oauthTokenIds,
+    //         user: {
+    //           id: data.user?.uid,
+    //           email: data.user?.email,
+    //           name: data.user?.first_name + " " + data.user?.last_name,
+    //           avatar: data.user?.avatar_url,
+    //           locale: data.user?.preferences?.locale,
+    //           verified: data.user?.preferences?.verified,
+    //         },
+    //         orgs: data.orgs,
+    //       },
+    //     ],
+    //   };
   }
 }
