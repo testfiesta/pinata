@@ -115,7 +115,7 @@
           </div>
           <div class="flex-grow-0">
             <v-switch
-              v-model="config.audioCapture"
+              v-model="localConfig.audioCapture"
               inset
               hide-details
               dense
@@ -129,7 +129,7 @@
           {{ $tc("caption.video_capture_quality", 1) }}
         </p>
         <v-radio-group
-          v-model="config.videoQuality"
+          v-model="localConfig.videoQuality"
           class="ma-0 pa-0 radio-control"
           dense
           hide-details
@@ -217,7 +217,7 @@
         <v-select
           :items="commentTypes"
           color="secondary"
-          v-model="config.commentType"
+          v-model="localConfig.commentType"
           :placeholder="$tc('caption.comment_type')"
           solo
           dense
