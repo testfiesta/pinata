@@ -1372,9 +1372,8 @@ export default {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           video.remove();
           const imgURI = canvas.toDataURL("image/png");
-          stream.getTracks().forEach((track) => track.stop());
+
           if (this.$isElectron) {
-            // todo add web implementation
             const { status, message, item } =
               await this.$electronService.createImage(imgURI);
             if (status === STATUSES.ERROR) {
@@ -1419,7 +1418,8 @@ export default {
             },
           });
         } else {
-          stream = this.mediaStream;
+          // Clone the mediaStream to avoid stopping the original
+          stream = this.mediaStream.clone();
         }
 
         this.handleStream(stream);
