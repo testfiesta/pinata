@@ -63,7 +63,7 @@
         @change="handleConfig"
       ></v-file-input>
       <v-card
-        v-if="chosenFile.path && reportLogo"
+        v-if="localConfig.logo.path && reportLogo"
         class="mx-2 my-2 px-2 py-2 d-flex flex-column align-center selected"
         max-width="250"
         max-height="350"
@@ -134,7 +134,7 @@ export default {
   methods: {
     handleConfig() {
       let configToChange = this.localConfig;
-      const { path, name, size } = this.chosenFile;
+      const { path, name, size } = this.chosenFile || {};
       if (this.chosenFile) this.logoPath = this.chosenFile.path;
       configToChange.logo.enabled = this.reportLogo;
       configToChange.logo.path = path;

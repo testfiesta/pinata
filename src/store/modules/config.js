@@ -15,7 +15,32 @@ export const config = {
     videoQuality: "high",
     debugMode: false,
     summary: false,
-    templates: [],
+    templates: {
+      image: {
+        content: "",
+        text: "",
+      },
+      video: {
+        content: "",
+        text: "",
+      },
+      audio: {
+        content: "",
+        text: "",
+      },
+      text: {
+        content: "",
+        text: "",
+      },
+      file: {
+        content: "",
+        text: "",
+      },
+      mindmap: {
+        content: "",
+        text: "",
+      },
+    },
     defaultTags: [],
     checklist: {
       presession: {

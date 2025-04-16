@@ -358,7 +358,7 @@ export default class RestApiService extends StorageInterface {
         break;
       }
     }
-    data = store.state.auth.credentials?.testfiesta[0] || {};
+    // data = store.state.auth.credentials?.testfiesta[0] || {};
     if (accessToken) {
       data.type = "cookie";
     } else {
