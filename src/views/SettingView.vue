@@ -182,10 +182,11 @@ export default {
     updateConfig(value) {
       this.config = value;
       this.$storageService.updateConfig(this.config);
-
       const isDarkMode = this.config.theme === "dark";
       this.$vuetify.theme.dark = isDarkMode;
       localStorage.setItem("isDarkMode", isDarkMode.toString());
+
+      this.$store.commit("config/setFullConfig", this.config);
 
       if (this.$isElectron) {
         this.$electronService.setAppearance(this.config.theme);

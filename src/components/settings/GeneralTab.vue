@@ -249,17 +249,6 @@ export default {
       default: () => {},
     },
   },
-  watch: {
-    metadata: function (newValue) {
-      this.meta = newValue;
-    },
-    color: function (newValue, oldValue) {
-      if (newValue === oldValue) return;
-
-      this.localConfig.defaultColor = newValue.hexa;
-      this.handleConfig();
-    },
-  },
   computed: {
     ...mapGetters({
       config: "config/fullConfig",
@@ -295,6 +284,7 @@ export default {
   },
   data() {
     return {
+      localConfig: {},
       deleteConfirmDialog: false,
       shareOauthDialog: false,
       meta: this.metadata,
@@ -308,8 +298,24 @@ export default {
       commentTypes: Object.keys(TEXT_TYPES).filter(
         (item) => item !== "Summary"
       ),
-      localConfig: {},
     };
+  },
+  watch: {
+    config: {
+      handler(newConfig) {
+        this.localConfig = structuredClone(newConfig);
+      },
+      deep: true,
+    },
+    metadata: function (newValue) {
+      this.meta = newValue;
+    },
+    color: function (newValue, oldValue) {
+      if (newValue === oldValue) return;
+
+      this.localConfig.defaultColor = newValue.hexa;
+      this.handleConfig();
+    },
   },
   created() {
     this.localConfig = structuredClone(this.config);
@@ -319,9 +325,8 @@ export default {
       this.$emit("submit-config", this.localConfig);
     },
     updateRetentionPeriod(value) {
-      let configToChange = structuredClone(this.config);
-      configToChange.cache.retentionPeriod = value ? parseInt(value) : value;
-      this.$emit("submit-config", configToChange);
+      this.localConfig.cache.retentionPeriod = value ? parseInt(value) : value;
+      this.handleConfig();
     },
     async openConfigFile() {
       if (this.$isElectron) {

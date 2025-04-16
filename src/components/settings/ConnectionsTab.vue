@@ -145,11 +145,12 @@
           </div>
           <div class="flex-grow-0">
             <v-switch
-              v-model="config.useLocal"
+              v-model="localConfig.useLocal"
               inset
               hide-details
               dense
               class="mt-0 pt-0 switch-control"
+              @change="handleConfig"
             ></v-switch>
           </div>
         </div>
@@ -247,11 +248,23 @@ export default {
   },
   data() {
     return {
+      localConfig: {},
       row: null,
       color: "#1976D2FF",
       mask: "!#XXXXXXXX",
       menu: false,
     };
+  },
+  watch: {
+    config: {
+      handler(newConfig) {
+        this.localConfig = structuredClone(newConfig);
+      },
+      deep: true,
+    },
+  },
+  created() {
+    this.localConfig = structuredClone(this.config);
   },
   computed: {
     swatchStyle() {
@@ -278,6 +291,9 @@ export default {
     },
   },
   methods: {
+    handleConfig() {
+      this.$emit("submit-config", this.localConfig);
+    },
     signinJira() {
       this.$router.push({ path: "/authentication/signinJira" });
     },
