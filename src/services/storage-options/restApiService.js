@@ -267,16 +267,30 @@ export default class RestApiService extends StorageInterface {
   // TODO: Implement this method to fetch metadata from the backend
   async getMetaData() {}
 
-  async getConfig(configUid = null) {
+  async createConfig(config) {
+    const handle = "idonn01";
+    const url = `${this.baseURL}/${handle}/pinataConfig`;
+
+    try {
+      const { data } = await axios.post(url, config, { withCredentials: true });
+      return data;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        console.error("Session expired.");
+      }
+      throw error;
+    }
+  }
+  async getConfig() {
+    await this.createPinataConfig();
+
     const handle = "idonn01"; // TODO: Ensure this is set in Vuex
     if (!handle) {
       throw new Error(
         "Organization handle is not defined. Ensure the user is logged in."
       );
     }
-    const endpoint = configUid
-      ? `${this.baseURL}/${handle}/configs/${configUid}`
-      : `${this.baseURL}/${handle}/configs`;
+    const endpoint = `${this.baseURL}/${handle}/pinataConfig`;
     try {
       const { data } = await axios.get(endpoint, { withCredentials: true });
       return data;
@@ -387,5 +401,61 @@ export default class RestApiService extends StorageInterface {
         },
       ],
     };
+  }
+
+  async createPinataConfig() {
+    // const url = `http://localhost:5050/core/test`;
+
+    // const handle = "idonn01"; // Replace with actual handle
+    const url = `http://localhost:5050/core/idonn01/pinataConfig`;
+
+    const payload = {
+      localOnly: false,
+      appearance: "light",
+      ai: {
+        enabled: false,
+      },
+      showIssue: false,
+      appLabel: false,
+      defaultLabel: "#1976D2FF",
+      commentType: "Comment",
+      audioCapture: false,
+      videoQuality: "high",
+      debugMode: false,
+      summary: false,
+      templates: {
+        image: { content: "", text: "" },
+        video: { content: "", text: "" },
+        audio: { content: "", text: "" },
+        text: { content: "", text: "" },
+        file: { content: "", text: "" },
+        mindmap: { content: "", text: "" },
+      },
+      defaultTags: [],
+      checklist: {
+        presession: { status: false, tasks: [] },
+        postsession: { status: false, tasks: [] },
+      },
+      hotkeys: {
+        evidence: {},
+        general: {},
+        home: {},
+        sessionPlanning: {},
+        workspace: {},
+      },
+    };
+
+    try {
+      const response = await axios.post(url, payload, {
+        withCredentials: true,
+      });
+      const returnResponse = response.data;
+
+      // console.log("Piñata Config created successfully:", data);
+      return returnResponse;
+    } catch (error) {
+      console.error("Failed to create Piñata Config:", error);
+      throw error;
+    }
   }
 }
