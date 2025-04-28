@@ -1,8 +1,8 @@
 import axios from "axios";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 import StorageInterface from "../storageInterface";
 import store from "@/store";
-import TestfiestaIntegrationHelpers from "@/integrations/TestfiestaIntegrationHelpers";
+// import TestfiestaIntegrationHelpers from "@/integrations/TestfiestaIntegrationHelpers";
 
 export default class RestApiService extends StorageInterface {
   constructor() {
@@ -269,7 +269,7 @@ export default class RestApiService extends StorageInterface {
 
   async createConfig(config) {
     const handle = "idonn01";
-    const url = `${this.baseURL}/${handle}/pinataConfig`;
+    const url = `${this.baseURL}/${handle}/pinata/configs`;
 
     try {
       const { data } = await axios.post(url, config, { withCredentials: true });
@@ -290,9 +290,13 @@ export default class RestApiService extends StorageInterface {
         "Organization handle is not defined. Ensure the user is logged in."
       );
     }
-    const endpoint = `${this.baseURL}/${handle}/pinataConfig`;
+    const endpoint = `${this.baseURL}/${handle}/pinata/configs/1`;
     try {
       const { data } = await axios.get(endpoint, { withCredentials: true });
+      console.log("Config data:", data);
+      if (!data) {
+        throw new Error("No data returned from the API.");
+      }
       return data;
     } catch (error) {
       if (error.response?.status === 401) {
@@ -302,20 +306,24 @@ export default class RestApiService extends StorageInterface {
     }
   }
 
-  // TODO create pinata config on the backend
   async updateConfig(config) {
-    const credential = null; // Or fetch from store.state.auth.credentials
-    const headers = credential
-      ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-      : {};
-    const url = `${this.baseURL}/app/org/f352ae63-11fc-4dbe-bab1-72561aa25fca/config/5e0f71ff-987d-4240-85eb-df6adf568c31`;
+    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
+    const url = `${this.baseURL}/${handle}/pinata/configs/1`;
 
     try {
-      const { data } = await axios.put(url, config, { headers });
-      return data.config;
+      const { data } = await axios.patch(url, config, {
+        withCredentials: true,
+      });
+      console.log("Config updated successfully:", data);
+      return data;
     } catch (error) {
       if (error.response?.status === 401) {
         console.error("Session expired.");
+      } else {
+        console.error(
+          "Error updating config:",
+          error.response?.data || error.message
+        );
       }
       throw error;
     }
@@ -355,59 +363,58 @@ export default class RestApiService extends StorageInterface {
   }
 
   async getCredentials() {
-    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
-    // const credential = null; // Or fetch from store.state.auth.credentials
-    // const headers = credential
-    //   ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-    //   : {};
-    let data = { user: {} };
-
-    const allCookies = document.cookie;
-    const cookieArray = allCookies.split("; ");
-    let accessToken = null;
-    for (const cookie of cookieArray) {
-      const [name, value] = cookie.split("=");
-      if (name.trim() === "access_token") {
-        accessToken = value;
-        break;
-      }
-    }
-    // data = store.state.auth.credentials?.testfiesta[0] || {};
-    if (accessToken) {
-      data.type = "cookie";
-    } else {
-      const url = `${this.baseURL}/${handle}/accessTokens`;
-      const response = await axios.get(url, { withCredentials: true });
-      data = response.data;
-      data.type = "bearer";
-    }
-    return {
-      testfiesta: [
-        {
-          accessToken: data.accessToken,
-          expiresAt: data.expiresAt,
-          type: data.type || "bearer",
-          loggedInAt: data.loggedInAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          oauthTokenIds: data.oauthTokenIds,
-          user: {
-            id: data.user?.uid,
-            email: data.user?.email,
-            name: data.user?.first_name + " " + data.user?.last_name,
-            avatar: data.user?.avatar_url,
-            locale: data.user?.preferences?.locale,
-            verified: data.user?.preferences?.verified,
-          },
-          orgs: data.orgs,
-        },
-      ],
-    };
+    // const handle = "idonn01"; // TODO: Ensure this is set in Vuex
+    // // const credential = null; // Or fetch from store.state.auth.credentials
+    // // const headers = credential
+    // //   ? await TestfiestaIntegrationHelpers.getHeaders(credential)
+    // //   : {};
+    // let data = { user: {} };
+    // const allCookies = document.cookie;
+    // const cookieArray = allCookies.split("; ");
+    // let accessToken = null;
+    // for (const cookie of cookieArray) {
+    //   const [name, value] = cookie.split("=");
+    //   if (name.trim() === "access_token") {
+    //     accessToken = value;
+    //     break;
+    //   }
+    // }
+    // // data = store.state.auth.credentials?.testfiesta[0] || {};
+    // if (accessToken) {
+    //   data.type = "cookie";
+    // } else {
+    //   const url = `${this.baseURL}/${handle}/accessTokens`;
+    //   const response = await axios.get(url, { withCredentials: true });
+    //   data = response.data;
+    //   data.type = "bearer";
+    // }
+    // return {
+    //   testfiesta: [
+    //     {
+    //       accessToken: data.accessToken,
+    //       expiresAt: data.expiresAt,
+    //       type: data.type || "bearer",
+    //       loggedInAt: data.loggedInAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
+    //       oauthTokenIds: data.oauthTokenIds,
+    //       user: {
+    //         id: data.user?.uid,
+    //         email: data.user?.email,
+    //         name: data.user?.first_name + " " + data.user?.last_name,
+    //         avatar: data.user?.avatar_url,
+    //         locale: data.user?.preferences?.locale,
+    //         verified: data.user?.preferences?.verified,
+    //       },
+    //       orgs: data.orgs,
+    //     },
+    //   ],
+    // };
   }
 
   async createPinataConfig() {
     // const url = `http://localhost:5050/core/test`;
 
     // const handle = "idonn01"; // Replace with actual handle
-    const url = `http://localhost:5050/core/idonn01/pinataConfig`;
+    const url = `http://localhost:5050/core/idonn01/pinata/configs`;
 
     const payload = {
       localOnly: false,
