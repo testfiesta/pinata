@@ -41,8 +41,9 @@ export default {
         console.log("Session Clear : ", message);
       }
     }
-
-    const config = await this.$storageService.getConfig();
+    const config = this.$isElectron
+      ? await this.$storageService.getConfig()
+      : await this.$storageService.createConfig();
     this.$store.commit("config/setFullConfig", config);
 
     const credentials = await this.$storageService.getCredentials();

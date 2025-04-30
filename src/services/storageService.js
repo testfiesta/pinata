@@ -16,8 +16,12 @@ export default class StorageService {
     return this.storage.updateState(state);
   }
 
-  async getConfig() {
-    return await this.storage.getConfig();
+  async createConfig() {
+    return await this.storage.createConfig();
+  }
+
+  async getConfig(config) {
+    return await this.storage.getConfig(config);
   }
 
   async updateConfig(config) {
