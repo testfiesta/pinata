@@ -145,7 +145,7 @@
           </div>
           <div class="flex-grow-0">
             <v-switch
-              v-model="localConfig.useLocal"
+              v-model="localConfig.localOnly"
               inset
               hide-details
               dense

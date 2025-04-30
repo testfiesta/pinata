@@ -240,6 +240,7 @@ import { TEXT_TYPES, STATUSES } from "@/modules/constants";
 import DeleteConfirmDialog from "../dialogs/DeleteConfirmDialog.vue";
 import ShareOAuthDialog from "@/components/dialogs/ShareOAuthDialog.vue";
 import { mapGetters } from "vuex";
+import debounce from "lodash/debounce";
 export default {
   name: "GeneralTab",
   components: { ShareOAuthDialog, DeleteConfirmDialog },
@@ -310,11 +311,15 @@ export default {
     metadata: function (newValue) {
       this.meta = newValue;
     },
-    color: function (newValue, oldValue) {
-      if (newValue === oldValue) return;
+    color: {
+      // debounce the color change handler to avoid too many api calls
+      handler: debounce(function (newValue, oldValue) {
+        if (newValue === oldValue) return;
 
-      this.localConfig.defaultColor = newValue.hexa;
-      this.handleConfig();
+        this.localConfig.defaultColor = newValue.hexa;
+        this.handleConfig();
+      }, 400),
+      deep: false,
     },
   },
   created() {
