@@ -261,14 +261,11 @@ export default {
         (c) => c.type === "oauth" && c.clientId && c.clientSecret && c.url
       );
     },
-    showColor() {
-      return this.config.defaultColor ? this.config.defaultColor : "#000000";
-    },
     swatchStyle() {
       const { menu } = this;
       return {
-        backgroundColor: this.config.defaultColor
-          ? this.config.defaultColor
+        backgroundColor: this.localConfig.defaultColor
+          ? this.localConfig.defaultColor
           : "#000000",
         cursor: "pointer",
         height: "30px",
@@ -295,10 +292,11 @@ export default {
         text: "",
       },
       menu: false,
-      color: this.config?.defaultColor,
+      color: this.localConfig?.defaultColor,
       commentTypes: Object.keys(TEXT_TYPES).filter(
         (item) => item !== "Summary"
       ),
+      showColor: this.localConfig?.defaultColor,
     };
   },
   watch: {
@@ -320,6 +318,20 @@ export default {
         this.handleConfig();
       }, 400),
       deep: false,
+    },
+    // Sync showColor with localConfig.defaultColor
+    "localConfig.defaultColor": {
+      handler(newValue) {
+        this.showColor = newValue || "#1976D2FF";
+      },
+      immediate: true,
+    },
+    // Update localConfig.defaultColor when showColor changes
+    showColor: {
+      handler(newValue) {
+        this.localConfig.defaultColor = newValue;
+        this.handleConfig();
+      },
     },
   },
   created() {

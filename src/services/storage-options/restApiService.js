@@ -1,5 +1,5 @@
 import axios from "axios";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 import StorageInterface from "../storageInterface";
 import store from "@/store";
 // import TestfiestaIntegrationHelpers from "@/integrations/TestfiestaIntegrationHelpers";
@@ -268,37 +268,59 @@ export default class RestApiService extends StorageInterface {
   async getMetaData() {}
 
   async createConfig() {
-    // const url = `http://localhost:5050/core/test`;
-
-    // const handle = "idonn01"; // Replace with actual handle
-    const url = `http://localhost:5050/core/idonn01/pinata/configs`;
+    const handle = "idonn01";
+    const url = `${this.baseURL}/${handle}/pinata/configs`;
 
     const payload = {
       localOnly: false,
-      appearance: "light",
+      theme: "light",
       ai: {
         enabled: false,
       },
       showIssue: false,
       appLabel: false,
-      defaultLabel: "#1976D2FF",
+      defaultColor: "#1976D2FF",
       commentType: "Comment",
       audioCapture: false,
       videoQuality: "high",
       debugMode: false,
       summary: false,
       templates: {
-        image: { content: "", text: "" },
-        video: { content: "", text: "" },
-        audio: { content: "", text: "" },
-        text: { content: "", text: "" },
-        file: { content: "", text: "" },
-        mindmap: { content: "", text: "" },
+        image: {
+          content: "",
+          text: "",
+        },
+        video: {
+          content: "",
+          text: "",
+        },
+        audio: {
+          content: "",
+          text: "",
+        },
+        text: {
+          content: "",
+          text: "",
+        },
+        file: {
+          content: "",
+          text: "",
+        },
+        mindmap: {
+          content: "",
+          text: "",
+        },
       },
       defaultTags: [],
       checklist: {
-        presession: { status: false, tasks: [] },
-        postsession: { status: false, tasks: [] },
+        presession: {
+          status: false,
+          tasks: [],
+        },
+        postsession: {
+          status: false,
+          tasks: [],
+        },
       },
       hotkeys: {
         evidence: {},
@@ -306,6 +328,12 @@ export default class RestApiService extends StorageInterface {
         home: {},
         sessionPlanning: {},
         workspace: {},
+      },
+      logo: {
+        enabled: false,
+        path: "",
+        name: "",
+        size: 0,
       },
     };
 
@@ -402,52 +430,48 @@ export default class RestApiService extends StorageInterface {
     console.log(credentials);
     // saving credentials endpoint here
   }
-
-  async getCredentials() {
-    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
-    // const credential = null; // Or fetch from store.state.auth.credentials
-    // const headers = credential
-    // ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-    // : {};
-    let data = { user: {} };
-    const allCookies = document.cookie;
-    const cookieArray = allCookies.split("; ");
-    let accessToken = null;
-    for (const cookie of cookieArray) {
-      const [name, value] = cookie.split("=");
-      if (name.trim() === "access_token") {
-        accessToken = value;
-        break;
-      }
-    }
-    data = store.state.auth.credentials?.testfiesta[0] || {};
-    if (accessToken) {
-      data.type = "cookie";
-    } else {
-      const url = `${this.baseURL}/${handle}/accessTokens`;
-      const response = await axios.get(url, { withCredentials: true });
-      data = response.data;
-      data.type = "bearer";
-    }
-    return {
-      testfiesta: [
-        {
-          accessToken: data.accessToken,
-          expiresAt: data.expiresAt,
-          type: data.type || "bearer",
-          loggedInAt: data.loggedInAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          oauthTokenIds: data.oauthTokenIds,
-          user: {
-            id: data.user?.uid,
-            email: data.user?.email,
-            name: data.user?.first_name + " " + data.user?.last_name,
-            avatar: data.user?.avatar_url,
-            locale: data.user?.preferences?.locale,
-            verified: data.user?.preferences?.verified,
-          },
-          orgs: data.orgs,
-        },
-      ],
-    };
-  }
+  // Todo: Implement this method to fetch credentials from the backend
+  // async getCredentials() {
+  // const handle = "idonn01"; // TODO: Ensure this is set in Vuex
+  // let data = { user: {} };
+  // const allCookies = document.cookie;
+  // const cookieArray = allCookies.split("; ");
+  // let accessToken = null;
+  // for (const cookie of cookieArray) {
+  //   const [name, value] = cookie.split("=");
+  //   if (name.trim() === "access_token") {
+  //     accessToken = value;
+  //     break;
+  //   }
+  // }
+  // data = store.state.auth.credentials?.testfiesta[0] || {};
+  // if (accessToken) {
+  //   data.type = "cookie";
+  // } else {
+  //   const url = `${this.baseURL}/${handle}/accessTokens`;
+  //   const response = await axios.get(url, { withCredentials: true });
+  //   data = response.data;
+  //   data.type = "bearer";
+  // }
+  // return {
+  //   testfiesta: [
+  //     {
+  //       accessToken: data.accessToken,
+  //       expiresAt: data.expiresAt,
+  //       type: data.type || "bearer",
+  //       loggedInAt: data.loggedInAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
+  //       oauthTokenIds: data.oauthTokenIds,
+  //       user: {
+  //         id: data.user?.uid,
+  //         email: data.user?.email,
+  //         name: data.user?.first_name + " " + data.user?.last_name,
+  //         avatar: data.user?.avatar_url,
+  //         locale: data.user?.preferences?.locale,
+  //         verified: data.user?.preferences?.verified,
+  //       },
+  //       orgs: data.orgs,
+  //     },
+  //   ],
+  // };
+  // }
 }

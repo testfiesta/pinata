@@ -9,7 +9,7 @@ export const config = {
     },
     showIssue: false,
     appLabel: false,
-    defaultLabel: "#1976D2FF",
+    defaultColor: "#1976D2FF",
     commentType: "Comment",
     audioCapture: false,
     videoQuality: "high",
@@ -58,6 +58,12 @@ export const config = {
       home: {},
       sessionPlanning: {},
       workspace: {},
+    },
+    logo: {
+      enabled: false,
+      path: "",
+      name: "",
+      size: 0,
     },
   }),
   mutations: {
