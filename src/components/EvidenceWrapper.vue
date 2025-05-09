@@ -398,7 +398,7 @@ export default {
     },
     async activeSession() {
       // set theme mode
-      const isDarkMode = this.config.appearance === "dark";
+      const isDarkMode = this.config.theme === "dark";
       this.$vuetify.theme.dark = isDarkMode;
       localStorage.setItem("isDarkMode", isDarkMode);
 

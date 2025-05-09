@@ -163,15 +163,15 @@ export default {
     if (this.$isElectron) {
       this.getMetadata();
     }
-    this.getCredentials();
+    // this.getCredentials();
   },
   mounted() {
     if (this.$isElectron) {
       this.$root.$on("change-meta", () => {
         this.getMetadata();
-        this.getCredentials().then(() =>
-          this.updateCredentials(this.credentials)
-        );
+        // this.getCredentials().then(() =>
+        //   this.updateCredentials(this.credentials)
+        // );
       });
     }
   },
@@ -192,10 +192,10 @@ export default {
         this.$electronService.setAppearance(this.config.theme);
       }
     },
-    async getCredentials() {
-      const credentials = await this.$storageService.getCredentials();
-      this.$store.commit("auth/setCredentials", credentials);
-    },
+    // async getCredentials() {
+    //   const credentials = await this.$storageService.getCredentials();
+    //   this.$store.commit("auth/setCredentials", credentials);
+    // },
     updateCredentials(value) {
       this.credentials = value;
       this.$store.commit("auth/setCredentials", this.credentials);

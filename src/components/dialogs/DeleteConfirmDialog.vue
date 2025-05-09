@@ -31,9 +31,10 @@
             <v-btn
               depressed
               height="40px"
-              :color="btnBg"
               class="text-capitalize btn rounded-lg mr-3"
-              :style="{ color: currentTheme.secondary }"
+              :style="{
+                color: mainBgReverse,
+              }"
               v-shortkey="cancelHotkey"
               @shortkey="handleCancel()"
               @click="handleCancel()"
@@ -78,6 +79,9 @@ export default {
     ...mapGetters({
       hotkeys: "config/hotkeys",
     }),
+    mainBgReverse() {
+      return this.$vuetify.theme.dark ? "#F2F4F7" : "#161B26";
+    },
     confirmHotkey() {
       return this.$hotkeyHelpers.findBinding("general.save", this.hotkeys);
     },

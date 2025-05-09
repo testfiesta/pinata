@@ -202,6 +202,9 @@ export default {
       quickTest: "sessionQuickTest",
       isAuthenticated: "auth/isAuthenticated",
     }),
+    mainBgReverse() {
+      return this.$vuetify.theme.dark ? "#F2F4F7" : "#161B26";
+    },
     elapsedTime() {
       const timer = this.$store.state.session.timer || 0;
       const date = new Date(null);

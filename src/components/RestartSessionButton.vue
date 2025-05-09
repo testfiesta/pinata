@@ -9,6 +9,9 @@
           class="rounded-lg text-capitalize px-0"
           v-on="{ ...onTooltip }"
           @click="handleRestart"
+          :style="{
+            backgroundColor: mainBgReverse,
+          }"
         >
           <img
             :src="require('../assets/icon/refresh.svg')"
@@ -44,6 +47,11 @@ export default {
     return {
       deleteConfirmDialog: false,
     };
+  },
+  computed: {
+    mainBgReverse() {
+      return this.$vuetify.theme.dark ? "#F2F4F7" : "#161B26";
+    },
   },
   methods: {
     handleRestart() {

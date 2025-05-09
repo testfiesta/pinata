@@ -1459,8 +1459,15 @@ export default {
     async videoRecordProcess() {
       this.handleStream = (stream) => {
         if (this.config.audioCapture && this.audioDevices.length > 0) {
-          stream.addTrack(dest.stream.getAudioTracks()[0]);
+          console.log("Audio devices: ", this.audioDevices);
+          console.log("Audio source: ", dest.stream.getAudioTracks());
+
+          const audioTracks = dest.stream.getAudioTracks();
+          const audioTrack = audioTracks[0];
+          audioTrack.enabled = false; // Mute to prevent feedback
+          stream.addTrack(audioTrack);
         }
+
         const mimeType = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
           ? "video/webm; codecs=vp9"
           : "video/webm";
