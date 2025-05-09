@@ -1,5 +1,6 @@
-const { DEFAULT_FILE_TYPES } = require("@/modules/constants");
+const { STATUSES, DEFAULT_FILE_TYPES } = require("@/modules/constants");
 const uuidv4 = require("uuid");
+const crypto = require("crypto");
 
 module.exports.createImageForWeb = (url) => {
   const fileType = DEFAULT_FILE_TYPES["image"].type;
@@ -31,6 +32,7 @@ module.exports.updateImageForWeb = ({ item, url }) => {
   const { fileName } = item.fileName
     ? { fileName: item.fileName }
     : generateIDAndName("image");
+
   const base64Response = atob(url.split(",")[1]);
   const binaryData = new Uint8Array(base64Response.length);
   for (let i = 0; i < base64Response.length; i++) {
@@ -138,6 +140,53 @@ module.exports.createAudioForWeb = (blob) => {
       fileType,
     },
   };
+};
+
+module.exports.uploadEvidenceForWeb = async () => {
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.onchange = async (event) => {
+      const file = event.target.files[0];
+      if (!file) {
+        return resolve({
+          status: STATUSES.ERROR,
+          message: "No file selected",
+        });
+      }
+
+      const stepID = uuidv4();
+      const attachmentID = uuidv4();
+      const fileName = file.name;
+      const filePath = URL.createObjectURL(file);
+      const fileType = file.type;
+      const fileSize = file.size;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const fileContents = reader.result;
+        const fileChecksum = crypto
+          .createHash("md5")
+          .update(fileContents)
+          .digest("hex");
+
+        resolve({
+          status: STATUSES.SUCCESS,
+          item: {
+            stepID,
+            attachmentID,
+            fileType,
+            fileName,
+            filePath,
+            fileSize,
+            fileChecksum,
+          },
+        });
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  });
 };
 
 module.exports.saveNoteForWeb = (comment) => {

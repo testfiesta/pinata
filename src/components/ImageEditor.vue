@@ -67,7 +67,7 @@ export default {
       if (!this.editSessionItem || !this.editSessionItem.filePath) return;
 
       try {
-        let imgPath = this.editSessionItem.filePath;
+        let imgPath = this.editSessionItem.filePath.split("?")[0];
         if (this.$isElectron) {
           imgPath = `file://${this.editSessionItem.filePath}`;
         }

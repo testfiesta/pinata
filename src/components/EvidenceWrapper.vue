@@ -398,7 +398,7 @@ export default {
     },
     async activeSession() {
       // set theme mode
-      const isDarkMode = this.config.apperance === "dark";
+      const isDarkMode = this.config.theme === "dark";
       this.$vuetify.theme.dark = isDarkMode;
       localStorage.setItem("isDarkMode", isDarkMode);
 
@@ -456,6 +456,7 @@ export default {
         }
         this.processing = false;
       }
+      this.processing = false;
     },
     updateComment() {
       const regex = /(<([^>]+)>)/gi;

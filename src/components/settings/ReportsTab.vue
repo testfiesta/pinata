@@ -19,7 +19,7 @@
           </div>
           <div class="flex-grow-0">
             <v-switch
-              v-model="config.summaryRequired"
+              v-model="localConfig.summaryRequired"
               inset
               hide-details
               dense
@@ -63,7 +63,7 @@
         @change="handleConfig"
       ></v-file-input>
       <v-card
-        v-if="chosenFile.path && reportLogo"
+        v-if="localConfig.logo.path && reportLogo"
         class="mx-2 my-2 px-2 py-2 d-flex flex-column align-center selected"
         max-width="250"
         max-height="350"
@@ -105,26 +105,36 @@ export default {
   },
   data() {
     return {
+      localConfig: {},
       reportLogo: false,
       logoPath: "",
       chosenFile: null,
     };
   },
+  watch: {
+    config: {
+      handler(newConfig) {
+        this.localConfig = structuredClone(newConfig);
+      },
+      deep: true,
+    },
+  },
   created() {
-    if (this.config.logo) {
-      this.reportLogo = this.config.logo.enabled;
+    this.localConfig = structuredClone(this.config);
+    if (this.localConfig.logo) {
+      this.reportLogo = this.localConfig.logo.enabled;
       this.chosenFile = {
-        path: this.config.logo.path,
-        name: this.config.logo.name,
-        size: this.config.logo.size,
+        path: this.localConfig.logo.path,
+        name: this.localConfig.logo.name,
+        size: this.localConfig.logo.size,
       };
       this.logoPath = this.chosenFile.path;
     }
   },
   methods: {
     handleConfig() {
-      let configToChange = structuredClone(this.config);
-      const { path, name, size } = this.chosenFile;
+      let configToChange = this.localConfig;
+      const { path, name, size } = this.chosenFile || {};
       if (this.chosenFile) this.logoPath = this.chosenFile.path;
       configToChange.logo.enabled = this.reportLogo;
       configToChange.logo.path = path;

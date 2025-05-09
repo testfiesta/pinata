@@ -131,6 +131,7 @@ export default {
   data() {
     return {
       privacy: "Private",
+      previousTitle: "",
       privacy_modes: ["Private", "Public"],
       resetConfirmDialog: false,
       sessionName: "",

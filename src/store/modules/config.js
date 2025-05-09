@@ -3,19 +3,44 @@ export const config = {
   namespaced: true,
   state: () => ({
     localOnly: false,
-    apperance: "light",
+    appearance: "light",
     ai: {
       enabled: false,
     },
     showIssue: false,
     appLabel: false,
-    defaultLabel: "#1976D2FF",
+    defaultColor: "#1976D2FF",
     commentType: "Comment",
     audioCapture: false,
     videoQuality: "high",
     debugMode: false,
     summary: false,
-    templates: [],
+    templates: {
+      image: {
+        content: "",
+        text: "",
+      },
+      video: {
+        content: "",
+        text: "",
+      },
+      audio: {
+        content: "",
+        text: "",
+      },
+      text: {
+        content: "",
+        text: "",
+      },
+      file: {
+        content: "",
+        text: "",
+      },
+      mindmap: {
+        content: "",
+        text: "",
+      },
+    },
     defaultTags: [],
     checklist: {
       presession: {
@@ -33,6 +58,12 @@ export const config = {
       home: {},
       sessionPlanning: {},
       workspace: {},
+    },
+    logo: {
+      enabled: false,
+      path: "",
+      name: "",
+      size: 0,
     },
   }),
   mutations: {
