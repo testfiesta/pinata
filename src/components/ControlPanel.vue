@@ -1459,9 +1459,6 @@ export default {
     async videoRecordProcess() {
       this.handleStream = (stream) => {
         if (this.config.audioCapture && this.audioDevices.length > 0) {
-          console.log("Audio devices: ", this.audioDevices);
-          console.log("Audio source: ", dest.stream.getAudioTracks());
-
           const audioTracks = dest.stream.getAudioTracks();
           const audioTrack = audioTracks[0];
           audioTrack.enabled = false; // Mute to prevent feedback
