@@ -14,9 +14,6 @@
               height="40px"
               min-width="40px"
               class="rounded-lg text-capitalize px-0"
-              :style="{
-                backgroundColor: mainBgReverse,
-              }"
               v-on="{ ...evidenceExportDestinationMenu, ...onTooltip }"
             >
               <img
@@ -157,9 +154,6 @@ export default {
       config: "config/fullConfig",
       credentials: "auth/credentials",
     }),
-    mainBgReverse() {
-      return this.$vuetify.theme.dark ? "#F2F4F7" : "#161B26";
-    },
   },
   data() {
     return {
