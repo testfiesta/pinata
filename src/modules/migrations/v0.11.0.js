@@ -6,7 +6,7 @@ export const migrationStruct = {
     config: {
       config: "..",
       useLocal: "localOnly",
-      apperance: "theme",
+      appearance: "theme",
       showIssue: "",
       appLabel: "",
       summary: "summaryRequired",
@@ -59,7 +59,7 @@ export const migrationStruct = {
   down: {
     config: {
       localOnly: "config.useLocal",
-      theme: "config.apperance",
+      theme: "config.appearance",
       defaultColor: "config.defaultColor",
       commentType: "config.commentType",
       audioCapture: "config.audioCapture",

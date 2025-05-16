@@ -1,6 +1,6 @@
 <template>
   <v-container class="content-wrapper">
-    <v-row v-if="configToChange">
+    <v-row v-if="localConfig">
       <v-col cols="12" class="border-bottom pa-4 screen-recording-section">
         <p class="body-1" :style="{ color: currentTheme.default }">
           {{ $tc("caption.ai_assist", 1) }}
@@ -13,7 +13,7 @@
           </div>
           <div class="flex-grow-0">
             <v-switch
-              v-model="config.ai.enabled"
+              v-model="localConfig.ai.enabled"
               inset
               hide-details
               dense
@@ -85,11 +85,6 @@ export default {
       default: () => {},
     },
   },
-  watch: {
-    metadata: function (newValue) {
-      this.meta = newValue;
-    },
-  },
   computed: {
     ...mapGetters({
       config: "config/fullConfig",
@@ -105,8 +100,8 @@ export default {
   },
   data() {
     return {
+      localConfig: {},
       meta: this.metadata,
-      configToChange: null,
       rules: {
         noAsterisk: (value) =>
           !value.includes("*") || this.$tc("caption.invalid_openai_key", 1),
@@ -117,18 +112,28 @@ export default {
       customErrors: [],
     };
   },
-  mounted() {
-    this.configToChange = structuredClone(this.config);
+  watch: {
+    config: {
+      handler(newConfig) {
+        this.localConfig = structuredClone(newConfig);
+      },
+      deep: true,
+    },
+    metadata: function (newValue) {
+      this.meta = newValue;
+    },
+  },
+  created() {
+    this.localConfig = structuredClone(this.config);
   },
   methods: {
     handleConfig() {
-      this.configToChange.ai.enabled = this.config.ai.enabled;
-      if (this.configToChange.ai.enabled) {
-        this.configToChange.ai.openai = DEFAULT_OPENAI_CONFIGS;
+      if (this.localConfig.ai.enabled) {
+        this.localConfig.ai.openai = DEFAULT_OPENAI_CONFIGS;
       } else {
-        this.configToChange.ai.openai = {};
+        this.localConfig.ai.openai = {};
       }
-      this.$emit("submit-config", this.configToChange);
+      this.$emit("submit-config", this.localConfig);
     },
     async handleOpenAIKey() {
       let validates = this.$refs.openAIKey.validate();

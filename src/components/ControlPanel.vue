@@ -170,14 +170,14 @@
                   v-if="$vuetify.theme.dark === false"
                   :src="require('../assets/icon/play.svg')"
                   width="24"
-                                    height="24"
+                  height="24"
                   draggable="false"
                 />
                 <img
                   v-else
                   :src="require('../assets/icon/play-gray.svg')"
                   width="24"
-                                    height="24"
+                  height="24"
                   draggable="false"
                 />
               </v-btn>
@@ -683,6 +683,7 @@ import {
   createAudioForWeb,
   createImageForWeb,
   createVideoForWeb,
+  uploadEvidenceForWeb,
 } from "@/helpers/WebHelpers";
 
 let mediaRecorder;
@@ -791,6 +792,9 @@ export default {
       credentials: "auth/credentials",
       quickTest: "sessionQuickTest",
     }),
+    mainBgReverse() {
+      return this.$vuetify.theme.dark ? "#F2F4F7" : "#161B26";
+    },
     isShareSessionAllowed() {
       return !this.config.localOnly;
     },
@@ -1232,11 +1236,22 @@ export default {
       }
     },
     async uploadEvidence() {
-      // todo add relative handler for web app
       if (this.$isElectron) {
         const { status, message, item } =
           await this.$electronService.uploadEvidence();
 
+        if (status === STATUSES.ERROR) {
+          this.$root.$emit("set-snackbar", message);
+        } else {
+          const data = {
+            ...item,
+            timer_mark: this.$store.state.session.timer,
+          };
+          this.evidenceData = data;
+          this.addEvidenceDialog = true;
+        }
+      } else {
+        const { status, message, item } = await uploadEvidenceForWeb();
         if (status === STATUSES.ERROR) {
           this.$root.$emit("set-snackbar", message);
         } else {
@@ -1357,9 +1372,8 @@ export default {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           video.remove();
           const imgURI = canvas.toDataURL("image/png");
-          stream.getTracks().forEach((track) => track.stop());
+
           if (this.$isElectron) {
-            // todo add web implementation
             const { status, message, item } =
               await this.$electronService.createImage(imgURI);
             if (status === STATUSES.ERROR) {
@@ -1404,7 +1418,8 @@ export default {
             },
           });
         } else {
-          stream = this.mediaStream;
+          // Clone the mediaStream to avoid stopping the original
+          stream = this.mediaStream.clone();
         }
 
         this.handleStream(stream);
@@ -1444,8 +1459,12 @@ export default {
     async videoRecordProcess() {
       this.handleStream = (stream) => {
         if (this.config.audioCapture && this.audioDevices.length > 0) {
-          stream.addTrack(dest.stream.getAudioTracks()[0]);
+          const audioTracks = dest.stream.getAudioTracks();
+          const audioTrack = audioTracks[0];
+          audioTrack.enabled = false; // Mute to prevent feedback
+          stream.addTrack(audioTrack);
         }
+
         const mimeType = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
           ? "video/webm; codecs=vp9"
           : "video/webm";

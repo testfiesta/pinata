@@ -241,11 +241,9 @@ export default {
       }
     },
     toggleSidebar() {
-      console.log("toggleSidebar " + this.sidebarActive);
       this.sidebarActive = !this.sidebarActive;
     },
     setSidebarActive(value) {
-      console.log("setSidebarActive ", !value);
       this.sidebarActive = !value;
     },
   },
