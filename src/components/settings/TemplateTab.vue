@@ -116,11 +116,9 @@ export default {
       config: "config/fullConfig",
     }),
     currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
+      return this.$vuetify.theme.dark
+        ? this.$vuetify.theme.themes.dark
+        : this.$vuetify.theme.themes.light;
     },
   },
   data() {
@@ -132,9 +130,17 @@ export default {
       evidenceTypes: null,
     };
   },
+  watch: {
+    config(newConfig) {
+      if (newConfig && newConfig.templates) {
+        this.configToChange = structuredClone(newConfig);
+        this.templatesToChange = structuredClone(newConfig.templates);
+      }
+    },
+  },
   mounted() {
-    this.templatesToChange = structuredClone(this.config.templates);
     this.configToChange = structuredClone(this.config);
+    this.templatesToChange = structuredClone(this.config.templates);
     this.template = Object.values(this.configToChange.templates)[0];
     this.type = Object.keys(this.configToChange.templates)[0];
     this.evidenceTypes = Object.keys(this.configToChange.templates);
@@ -145,14 +151,17 @@ export default {
       this.template.text = this.template.content.replace(regex, "");
     },
     handleTemplate() {
-      this.template = Object.assign({}, this.templatesToChange[this.type]);
+      this.template = Object.assign(
+        {},
+        structuredClone(this.templatesToChange[this.type])
+      );
     },
     handleCancel() {
-      this.template = Object.values(this.templatesToChange)[0];
+      this.template = structuredClone(Object.values(this.templatesToChange)[0]);
       this.type = Object.keys(this.templatesToChange)[0];
     },
     saveTemplate() {
-      this.templatesToChange[this.type] = this.template;
+      this.templatesToChange[this.type] = structuredClone(this.template);
       this.configToChange.templates = this.templatesToChange;
       this.$emit("submit-config", this.configToChange);
       this.$root.$emit(

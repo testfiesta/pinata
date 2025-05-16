@@ -602,10 +602,6 @@ export default {
   },
   mounted() {
     this.getAllTags();
-    if (this.$isElectron) {
-      // this.$electronService.onActiveSession(this.activeSession);
-      // this.activeSession();
-    }
 
     this.activeSession();
 
