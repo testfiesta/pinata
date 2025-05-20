@@ -37,6 +37,11 @@ export default class StorageInterface {
   }
 
   // eslint-disable-next-line
+    async updateItem(state) {
+    throw new Error("Method 'updateItems(state)' must be implemented.");
+  }
+
+  // eslint-disable-next-line
   async updateItems(state) {
     throw new Error("Method 'updateItems(state)' must be implemented.");
   }

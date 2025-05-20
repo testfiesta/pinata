@@ -264,7 +264,7 @@
                 </div>
                 <div
                   class="video-wrapper"
-                  @click="handleItemClick(item.stepID)"
+                  @click.prevent="handleItemClick(item.stepID)"
                 >
                   <video
                     controls
@@ -898,7 +898,9 @@ export default {
     },
 
     async handleActivateEditSession(id) {
+      console.log("Edit session notes", id);
       this.itemToEdit = await this.$storageService.getItemById(id);
+      console.log("itemToEdit notes", this.itemToEdit);
       this.editEvidenceDialog = true;
     },
     handleSelectedItem(id) {

@@ -161,9 +161,8 @@ const store = new Vuex.Store({
       );
       if (currentItemIndex !== -1) {
         state.session.items[currentItemIndex] = payload;
-      }
-      if (Vue.prototype.$isElectron) {
-        this._vm.$storageService.updateItems(payload);
+      } else if (Vue.prototype.$isElectron) {
+        this._vm.$storageService.updateItem(payload);
       }
     },
 
