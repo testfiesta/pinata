@@ -602,10 +602,6 @@ export default {
   },
   mounted() {
     this.getAllTags();
-    if (this.$isElectron) {
-      // this.$electronService.onActiveSession(this.activeSession);
-      // this.activeSession();
-    }
 
     this.activeSession();
 
@@ -678,7 +674,7 @@ export default {
     },
     async activeSession() {
       // set theme mode
-      const isDarkMode = this.config.apperance === "dark";
+      const isDarkMode = this.config.theme === "dark";
       this.$vuetify.theme.dark = isDarkMode;
       localStorage.setItem("isDarkMode", isDarkMode);
 
@@ -730,8 +726,8 @@ export default {
           this.$root.$emit("set-snackbar", message);
           console.log(message);
         }
-        this.processing = false;
       }
+      this.processing = false;
     },
     updateComment() {
       const regex = /(<([^>]+)>)/gi;

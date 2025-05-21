@@ -81,7 +81,7 @@
           {{ $tc("caption.theme", 1) }}
         </p>
         <v-radio-group
-          v-model="config.theme"
+          v-model="localConfig.theme"
           row
           class="ma-0 pa-0 radio-control"
           dense
@@ -115,7 +115,7 @@
           </div>
           <div class="flex-grow-0">
             <v-switch
-              v-model="config.audioCapture"
+              v-model="localConfig.audioCapture"
               inset
               hide-details
               dense
@@ -129,7 +129,7 @@
           {{ $tc("caption.video_capture_quality", 1) }}
         </p>
         <v-radio-group
-          v-model="config.videoQuality"
+          v-model="localConfig.videoQuality"
           class="ma-0 pa-0 radio-control"
           dense
           hide-details
@@ -217,7 +217,7 @@
         <v-select
           :items="commentTypes"
           color="secondary"
-          v-model="config.commentType"
+          v-model="localConfig.commentType"
           :placeholder="$tc('caption.comment_type')"
           solo
           dense
@@ -240,6 +240,7 @@ import { TEXT_TYPES, STATUSES } from "@/modules/constants";
 import DeleteConfirmDialog from "../dialogs/DeleteConfirmDialog.vue";
 import ShareOAuthDialog from "@/components/dialogs/ShareOAuthDialog.vue";
 import { mapGetters } from "vuex";
+import debounce from "lodash/debounce";
 export default {
   name: "GeneralTab",
   components: { ShareOAuthDialog, DeleteConfirmDialog },
@@ -247,17 +248,6 @@ export default {
     metadata: {
       type: Object,
       default: () => {},
-    },
-  },
-  watch: {
-    metadata: function (newValue) {
-      this.meta = newValue;
-    },
-    color: function (newValue, oldValue) {
-      if (newValue === oldValue) return;
-
-      this.config.defaultColor = newValue.hexa;
-      this.handleConfig();
     },
   },
   computed: {
@@ -271,14 +261,11 @@ export default {
         (c) => c.type === "oauth" && c.clientId && c.clientSecret && c.url
       );
     },
-    showColor() {
-      return this.config.defaultColor ? this.config.defaultColor : "#000000";
-    },
     swatchStyle() {
       const { menu } = this;
       return {
-        backgroundColor: this.config.defaultColor
-          ? this.config.defaultColor
+        backgroundColor: this.localConfig.defaultColor
+          ? this.localConfig.defaultColor
           : "#000000",
         cursor: "pointer",
         height: "30px",
@@ -288,15 +275,14 @@ export default {
       };
     },
     currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
+      return this.$vuetify.theme.dark
+        ? this.$vuetify.theme.themes.dark
+        : this.$vuetify.theme.themes.light;
     },
   },
   data() {
     return {
+      localConfig: {},
       deleteConfirmDialog: false,
       shareOauthDialog: false,
       meta: this.metadata,
@@ -306,20 +292,58 @@ export default {
         text: "",
       },
       menu: false,
-      color: this.config?.defaultColor,
+      color: this.localConfig?.defaultColor,
       commentTypes: Object.keys(TEXT_TYPES).filter(
         (item) => item !== "Summary"
       ),
+      showColor: this.localConfig?.defaultColor,
     };
+  },
+  watch: {
+    config: {
+      handler(newConfig) {
+        this.localConfig = structuredClone(newConfig);
+      },
+      deep: true,
+    },
+    metadata: function (newValue) {
+      this.meta = newValue;
+    },
+    color: {
+      // debounce the color change handler to avoid too many api calls
+      handler: debounce(function (newValue, oldValue) {
+        if (newValue === oldValue) return;
+
+        this.localConfig.defaultColor = newValue.hexa;
+        this.handleConfig();
+      }, 400),
+      deep: false,
+    },
+    // Sync showColor with localConfig.defaultColor
+    "localConfig.defaultColor": {
+      handler(newValue) {
+        this.showColor = newValue || "#1976D2FF";
+      },
+      immediate: true,
+    },
+    // Update localConfig.defaultColor when showColor changes
+    showColor: {
+      handler(newValue) {
+        this.localConfig.defaultColor = newValue;
+        this.handleConfig();
+      },
+    },
+  },
+  created() {
+    this.localConfig = structuredClone(this.config);
   },
   methods: {
     handleConfig() {
-      this.$emit("submit-config", this.config);
+      this.$emit("submit-config", this.localConfig);
     },
     updateRetentionPeriod(value) {
-      let configToChange = structuredClone(this.config);
-      configToChange.cache.retentionPeriod = value ? parseInt(value) : value;
-      this.$emit("submit-config", configToChange);
+      this.localConfig.cache.retentionPeriod = value ? parseInt(value) : value;
+      this.handleConfig();
     },
     async openConfigFile() {
       if (this.$isElectron) {
@@ -360,7 +384,6 @@ export default {
 .content-wrapper {
   width: 100%;
   overflow-y: auto;
-  height: 90vh;
 }
 .body-1 {
   font-style: normal !important;

@@ -235,7 +235,6 @@ export default {
       }
     },
     addItem(newItem) {
-      console.log("Add");
       this.$store.commit("addSessionItem", newItem);
     },
     updateItem(newItem) {

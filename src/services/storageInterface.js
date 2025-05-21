@@ -9,8 +9,13 @@ export default class StorageInterface {
     throw new Error("Method 'updateState()' must be implemented.");
   }
 
-  async getConfig() {
-    throw new Error("Method 'getConfig()' must be implemented.");
+  async createConfig() {
+    throw new Error("Method 'createConfig()' must be implemented.");
+  }
+
+  // eslint-disable-next-line
+  async getConfig(config) {
+    throw new Error("Method 'getConfig(config)' must be implemented.");
   }
 
   async getCredentials() {
@@ -29,6 +34,11 @@ export default class StorageInterface {
   // eslint-disable-next-line
   async getItemById(id) {
     throw new Error("Method 'getItemById(id)' must be implemented.");
+  }
+
+  // eslint-disable-next-line
+    async updateItem(state) {
+    throw new Error("Method 'updateItems(state)' must be implemented.");
   }
 
   // eslint-disable-next-line

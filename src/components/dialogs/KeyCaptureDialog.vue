@@ -20,6 +20,8 @@
   </v-dialog>
 </template>
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "KeyCaptureDialog",
   components: {},
@@ -29,7 +31,7 @@ export default {
       default: () => "",
     },
     selectedBindings: {
-      type: Array,
+      type: [Array, String],
       default: () => [],
     },
   },
@@ -42,12 +44,15 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      hotkeys: "config/hotkeys",
+    }),
     printBindings() {
       if (!this.$hotkeyHelper) {
         return;
       }
       const currentBindings = [...this.modifierKeys, this.characterKey];
-      return this.$hotkeyHelper.printBindings(currentBindings);
+      return this.$hotkeyHelper.printBindings(currentBindings, this.hotkeys);
     },
     currentTheme() {
       if (this.$vuetify.theme.dark) {
@@ -108,6 +113,7 @@ export default {
 
         this.$emit("saveKeyBinding", { key: this.configKey, bindings });
       }
+      this.closing = false; // Reset closing after emitting the event
     },
   },
 };

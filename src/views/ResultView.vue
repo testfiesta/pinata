@@ -79,7 +79,7 @@ export default {
   },
   created() {
     this.fetchItems();
-    this.getCredentials();
+    // this.getCredentials();
   },
   mounted() {
     this.$root.$on("submit-search", this.handleSearch);
@@ -89,10 +89,10 @@ export default {
 
     if (this.$isElectron) {
       this.$electronService.onDataChange(this.fetchItems);
-      this.$electronService.onCredentialChange(this.getCredentials);
+      // this.$electronService.onCredentialChange(this.getCredentials);
       this.$electronService.onMetaChange(() => {
         this.fetchItems();
-        this.getCredentials();
+        // this.getCredentials();
       });
     }
   },
@@ -133,10 +133,10 @@ export default {
         // todo check if something required for web version here
       }
     },
-    async getCredentials() {
-      const credentials = await this.$storageService.getCredentials();
-      this.$store.commit("auth/setCredentials", credentials);
-    },
+    // async getCredentials() {
+    //   const credentials = await this.$storageService.getCredentials();
+    //   this.$store.commit("auth/setCredentials", credentials);
+    // },
     selectEmoji(emoji) {
       this.emojiMenu = false;
       if (

@@ -32,7 +32,7 @@
             </v-list-item-content>
             <v-list-item-action @click="showKeyCaptureDialog(key, bindings)">
               <v-btn fill small block>
-                {{ $hotkeyHelpers.printBindings(bindings) }}
+                {{ $hotkeyHelpers.printBindings(bindings, hotkeys) }}
               </v-btn>
             </v-list-item-action>
           </v-list-item>
@@ -101,9 +101,16 @@ export default {
   methods: {
     saveKeyBinding({ key, bindings }) {
       if (!key || !bindings) return;
-      // Accept key and binding, then update and save
-      this.hotkeys[this.chosenPage][key] = bindings;
-      this.configToChange.hotkeys = this.hotkeys;
+
+      // Create a shallow copy of the hotkeys object to avoid mutation
+      const updatedHotkeys = { ...this.hotkeys };
+      updatedHotkeys[this.chosenPage] = {
+        ...updatedHotkeys[this.chosenPage],
+        [key]: bindings,
+      };
+
+      this.hotkeys = updatedHotkeys;
+      this.configToChange.hotkeys = updatedHotkeys;
 
       this.$emit("submit-config", this.configToChange);
 

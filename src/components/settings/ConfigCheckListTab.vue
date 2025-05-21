@@ -48,7 +48,7 @@
                 <input
                   type="text"
                   placeholder="Add task"
-                  @input="
+                  @change="
                     (evt) =>
                       $store.commit('config/editPresessionTaskContent', {
                         id: task.id,
@@ -118,7 +118,7 @@
                 <input
                   type="text"
                   placeholder="Add task"
-                  @input="
+                  @change="
                     (evt) =>
                       $store.commit('config/editPostsessionTaskContent', {
                         id: task.id,

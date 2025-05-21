@@ -122,11 +122,7 @@
                       <img
                         class="screen-img"
                         style="max-width: 100%"
-                        :src="
-                          $isElectron
-                            ? `file://${item.filePath}`
-                            : `${item.filePath}`
-                        "
+                        :src="getFilePath(item)"
                       />
                     </div>
                     <div v-if="item.tags.length" class="tags-wrapper mb-2">
@@ -1411,6 +1407,11 @@ export default {
     getType(type) {
       return FILE_TYPES[type];
     },
+    getFilePath(item) {
+      return this.$isElectron
+        ? `file://${item.filePath}`
+        : `${item.filePath.split("?")[0]}`;
+    },
     formatTime(timeInSeconds) {
       const seconds = ("0" + (timeInSeconds % 60)).slice(-2);
       const minutes = ("0" + (parseInt(timeInSeconds / 60, 10) % 60)).slice(-2);
@@ -1851,6 +1852,9 @@ export default {
   border-color: #d0d5dd !important;
   font-weight: 500;
   font-size: 14px !important;
+}
+.theme--dark.v-timeline .v-timeline-item__dot {
+  background-color: #374151 !important;
 }
 .timeline-theme .v-timeline-item .v-timeline-item__divider {
   min-width: 48px;

@@ -69,6 +69,7 @@
               'align-start': isItemsExist,
               'align-center': !isItemsExist,
             }"
+            :style="{ backgroundColor: mainBg }"
           >
             <img
               :src="localSourceThumbnail"
@@ -113,7 +114,7 @@
         >
           <SearchWrapper class="mt-16" />
           <div class="toggle-wrapper mt-5">
-            <div class="toggle-container">
+            <div class="toggle-container" :style="{ backgroundColor: inputBg }">
               <div
                 class="toggle-option"
                 :class="{ active: currentTab === 'timeline' }"
