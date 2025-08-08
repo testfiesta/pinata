@@ -1,0 +1,30 @@
+v1.2.2
+
+- Log4j version upgraded to 2.17.1.
+- New sign_hash command addded for signing the hash values
+- New get_certs command added for retrieving certificate chain from cloud signatures service
+
+v1.2.3
+
+- CodeSignTool command can be executed using relative path
+
+v1.2.4
+
+- Increased timeout values, so that CodeSignTool does not terminate connection from server, if request takes longer than 
+expected e.g. batch signing of 100 files.
+
+v1.2.5
+
+- totp_secret parameter added in batch_sign_hash command
+
+v1.2.6
+
+- Released this version to make it consistent with non-windows version. Bug fixed in non-windows version 
+
+v1.2.7
+
+- Support added for malware scan before signing code object
+- Support for signing using OVCS certificates
+- Support for OTP over SMS for second factor authentication
+- Use system settings during HTTP connection
+- get_scan_settings command added to check whether malware scan is enabled or not on server

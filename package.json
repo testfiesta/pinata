@@ -1,0 +1,131 @@
+{
+  "name": "pinata",
+  "version": "1.0.0",
+  "engines": {
+    "npm": ">=8.0.0 <9.0.0",
+    "node": ">=16.0.0 <19.0.0"
+  },
+  "keywords": [],
+  "author": {
+    "name": "TestFiesta, Inc",
+    "email": "contact@testfiesta.com"
+  },
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service electron:build",
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "vue-cli-service lint",
+    "dev": "vue-cli-service electron:serve",
+    "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\"",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps",
+    "publish": "vue-cli-service electron:build -p always"
+  },
+  "main": "background.js",
+  "dependencies": {
+    "@atlaskit/adf-utils": "^18.1.2",
+    "@fortawesome/fontawesome-free": "^6.2.1",
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-regular-svg-icons": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/vue-fontawesome": "^2.0.10",
+    "@johmun/vue-tags-input": "^2.1.0",
+    "@yatt-ai/vuetify-tiptap": "^1.1.0",
+    "adm-zip": "^0.5.9",
+    "axios": "^1.2.1",
+    "child_process": "^1.0.2",
+    "client-oauth2": "^4.3.3",
+    "core-js": "^3.8.3",
+    "d3": "^5.14.2",
+    "dayjs": "^1.11.5",
+    "detect-file-type": "^0.2.8",
+    "dom-to-image-more": "^3.3.0",
+    "extract-zip": "^2.0.1",
+    "ffmpeg-static": "^5.1.0",
+    "ffprobe-static": "^3.1.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "form-data": "^4.0.0",
+    "lodash": "^4.17.21",
+    "node-polyfill-webpack-plugin": "^2.0.1",
+    "os": "^0.1.2",
+    "simple-json-db": "^2.0.0",
+    "sinon": "^15.0.0",
+    "systeminformation": "^5.22.1",
+    "tinycolor2": "^1.6.0",
+    "tui-image-editor": "^3.15.3",
+    "uuid": "3.3.3",
+    "v-emoji-picker": "^2.3.3",
+    "v-mask": "^2.3.0",
+    "vue": "^2.6.14",
+    "vue-i18n": "8",
+    "vue-i18n-bridge": "^9.2.0-beta.10",
+    "vue-input-tag": "^2.0.7",
+    "vue-router": "^3.5.1",
+    "vue-shortkey": "^3.1.7",
+    "vuedraggable": "^2.24.3",
+    "vuetify": "^2.6.0",
+    "vuex": "^3.6.2",
+    "vuex-persist": "^3.1.3",
+    "wavesurfer.js": "^6.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@intlify/vue-i18n-loader": "^3.2.0",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-router": "^5.0.0",
+    "@vue/cli-plugin-unit-jest": "~5.0.0",
+    "@vue/cli-plugin-vuex": "^5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "@vue/server-test-utils": "^1.3.0",
+    "@vue/test-utils": "^1.3.0",
+    "@vue/vue2-jest": "^27.0.0-alpha.2",
+    "babel-jest": "^27.0.6",
+    "electron": "^13.0.0",
+    "electron-builder-notarize": "^1.5.2",
+    "electron-devtools-installer": "^3.1.1",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "jest": "^27.0.5",
+    "prettier": "^2.4.1",
+    "sass": "~1.32.0",
+    "sass-loader": "^10.0.0",
+    "vue-cli-plugin-electron-builder": "nklayman/vue-cli-plugin-electron-builder#5b4046a1a2b38afc2e36e959841fc1ccf64de7fc",
+    "vue-cli-plugin-i18n": "~2.3.1",
+    "vue-cli-plugin-vuetify": "^2.5.8",
+    "vue-template-compiler": "^2.7.13",
+    "vuetify-loader": "^1.7.0"
+  },
+  "resolutions": {
+    "vue-cli-plugin-electron-builder/electron-builder": "^23.0.3"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {},
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
+  }
+}
