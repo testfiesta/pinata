@@ -10,8 +10,8 @@
       content-class="rounded-12px"
     >
       <v-sheet outlined rounded>
-        <v-card :style="{ backgroundColor: currentTheme.background }">
-          <v-card-title class="pa-6" :style="{ color: currentTheme.secondary }">
+        <v-card :style="{ backgroundColor: $theme.background }">
+          <v-card-title class="pa-6" :style="{ color: $theme.secondary }">
             <div class="d-flex justify-space-between align-center w-full">
               <span class="dialog-title">
                 {{ $tc("caption.test_session_summary", 1) }}
@@ -24,8 +24,8 @@
                   solo
                   dense
                   flat
-                  :color="currentTheme.secondary"
-                  :background-color="inputBg"
+                  :color="$theme.secondary"
+                  :background-color="$theme.inputBg"
                   class="rounded-lg custom-select select-comment-type pa-0 mr-3"
                   append-icon="mdi-chevron-down"
                   :menu-props="{ offsetY: true }"
@@ -46,7 +46,7 @@
                   flat
                 >
                   <v-progress-circular
-                    :color="currentTheme.primary"
+                    :color="$theme.primary"
                     size="70"
                     absolute
                     indeterminate
@@ -75,8 +75,8 @@
                       <v-select
                         v-model="selectedHeading"
                         :items="headingOptions"
-                        :background-color="inputBg"
-                        :color="currentTheme.secondary"
+                        :background-color="$theme.inputBg"
+                        :color="$theme.secondary"
                         class="rounded-lg pa-0 mr-3"
                         item-text="text"
                         item-value="level"
@@ -203,7 +203,7 @@
                 height="40px"
                 depressed
                 :color="btnBg"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
                 v-shortkey="cancelHotkey"
                 @shortkey="handleCancel()"
                 @click="handleCancel()"
@@ -214,8 +214,8 @@
                 class="btn px-8 rounded-lg text-capitalize"
                 height="40px"
                 depressed
-                :color="currentTheme.primary"
-                :style="{ color: currentTheme.white }"
+                :color="$theme.primary"
+                :style="{ color: $theme.white }"
                 v-shortkey="confirmHotkey"
                 @shortkey="handleSave()"
                 @click="handleSave()"
@@ -239,7 +239,6 @@ import { TEXT_TYPES, AI_ENABLED_FIELDS } from "../../modules/constants";
 import openAIIntegrationHelper from "../../integrations/OpenAIIntegrationHelpers";
 import { mapGetters } from "vuex";
 import TipTapLinkDialog from "./TipTapLinkDialog.vue";
-import theme from "../../mixins/theme";
 import ExportSessionButton from "../ExportSessionButton.vue";
 
 export default {
@@ -265,7 +264,6 @@ export default {
       }
     },
   },
-  mixins: [theme],
   data() {
     return {
       comment: {
@@ -308,13 +306,6 @@ export default {
     },
     aiAssistEnabled() {
       return this?.config?.ai?.enabled || false;
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

@@ -15,7 +15,7 @@
               v-for="tab of tabs"
               :key="tab.id"
               v-bind="$isElectron ? { to: tab.route } : {}"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
               exact
             >
               {{ tab.name }}
@@ -88,13 +88,6 @@ export default {
     ...mapGetters({
       isAuthenticated: "auth/isAuthenticated",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   data() {
     return {
@@ -159,8 +152,8 @@ export default {
     if (this.$isElectron) {
       this.getMetadata();
     }
-    this.getConfig();
-    this.getCredentials();
+    // this.getConfig();
+    // this.getCredentials();
   },
   mounted() {
     if (this.$isElectron) {
@@ -179,18 +172,13 @@ export default {
     },
     async getConfig() {
       this.config = await this.$storageService.getConfig();
-      this.$store.commit("config/setFullConfig", this.config);
     },
     updateConfig(value) {
       this.config = value;
       this.$storageService.updateConfig(this.config);
-
-      const isDarkMode = this.config.theme === "dark";
-      this.$vuetify.theme.dark = isDarkMode;
-      localStorage.setItem("isDarkMode", isDarkMode.toString());
-
+      this.$store.commit('config/updateThemeMode');
       if (this.$isElectron) {
-        this.$electronService.setAppearance(this.config.theme);
+        this.$electronService.setAppearance(this.config.appearance);
       }
     },
     async getCredentials() {
@@ -202,24 +190,22 @@ export default {
       this.$store.commit("auth/setCredentials", this.credentials);
       this.$storageService.updateCredentials(this.credentials);
     },
+    
   },
 };
 </script>
 
 <style scoped>
 .settings-menu {
-  background-color: #ffffff;
   border-radius: 15px;
   height: 100%;
 }
 .active-tab {
-  background-color: #ffffff;
   border-radius: 15px;
   width: 70%;
   height: 100%;
 }
 .settings-component {
-  background-color: #ffffff;
   border-radius: 15px;
   height: 100%;
 }
@@ -229,9 +215,6 @@ export default {
   justify-content: center;
   width: 100%;
   overflow-y: auto;
-}
-.settings-wrapper {
-  background-color: #f2f4f7;
 }
 .v-tab {
   font-size: 14px;
@@ -243,7 +226,6 @@ export default {
   justify-content: flex-start;
 }
 .v-tab--active {
-  background-color: aliceblue;
   color: #0c2ff3;
 }
 .wrapper {

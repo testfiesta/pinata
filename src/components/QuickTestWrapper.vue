@@ -1,13 +1,13 @@
 <template>
   <v-container
     class="quick_test_wrapper pa-6 w-400 rounded-lg"
-    :style="{ backgroundColor: mainBg }"
+    :style="{ backgroundColor: $theme.mainBg }"
   >
     <div class="top">
       <v-btn
         class="text-capitalize pa-0 back-btn"
         plain
-        :color="btnColor"
+        :color="$theme.btnColor"
         solid
         v-shortkey="backHotkey"
         @shortkey="handleResetConfirmDialog"
@@ -31,7 +31,7 @@
           </div>
           <div
             class="d-flex fs-14 mb-1 font-weight-medium"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
           >
             {{ $tc("caption.session_name", 1) }}
           </div>
@@ -39,12 +39,12 @@
             :placeholder="$t('message.enter_brief_charter_name')"
             autofocus
             class="rounded-lg"
-            :background-color="inputBg"
+            :background-color="$theme.inputBg"
             dense
             height="40px"
             flat
             solo
-            :color="currentTheme.secondary"
+            :color="$theme.secondary"
             :append-icon="
               isAiAssistEnabled
                 ? previousTitle
@@ -57,7 +57,7 @@
           >
             <template v-slot:progress>
               <v-progress-linear
-                :color="currentTheme.primary"
+                :color="$theme.primary"
                 absolute
                 height="5"
                 indeterminate
@@ -69,16 +69,16 @@
       <v-col cols="12">
         <div
           class="d-flex fs-14 mb-1 font-weight-medium"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           {{ $tc("caption.privacy", 1) }}
         </div>
         <v-select
           :items="privacy_modes"
-          :color="currentTheme.secondary"
+          :color="$theme.secondary"
           v-model="privacy"
           :placeholder="$tc('caption.comment_type')"
-          :background-color="inputBg"
+          :background-color="$theme.inputBg"
           height="40px"
           solo
           flat
@@ -116,7 +116,6 @@ import { VContainer, VRow, VCol, VTextField } from "vuetify/lib/components";
 
 import { mapGetters } from "vuex";
 import ResetConfirmDialog from "./dialogs/ResetConfirmDialog.vue";
-import theme from "../mixins/theme";
 
 export default {
   name: "QuickTestWrapper",
@@ -127,7 +126,6 @@ export default {
     VTextField,
     ResetConfirmDialog,
   },
-  mixins: [theme],
   data() {
     return {
       privacy: "Private",
@@ -151,22 +149,6 @@ export default {
     },
     backHotkey() {
       return this.$hotkeyHelpers.findBinding("workspace.back", this.hotkeys);
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
-    btnBg() {
-      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
-    },
-    inputBg() {
-      return this.$vuetify.theme.dark ? "#4B5563" : "#F9F9FB";
     },
   },
   created() {

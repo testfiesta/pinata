@@ -101,13 +101,6 @@ export default {
       items: "sessionItems",
       config: "config/fullConfig",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     searchItems() {
       let tempItems = this.items;
 

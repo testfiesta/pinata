@@ -7,12 +7,12 @@
     style="z-index: 10"
   >
     <v-sheet outlined rounded>
-      <v-card :style="{ backgroundColor: currentTheme.background }">
-        <v-card-text class="text" :style="{ color: currentTheme.secondary }">
+      <v-card :style="{ backgroundColor: $theme.background }">
+        <v-card-text class="text" :style="{ color: $theme.secondary }">
           <v-form ref="form" v-model="valid">
             <div
               class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.node_title", 1) }}
             </div>
@@ -21,7 +21,7 @@
               :rules="textRules"
               autofocus
               class="rounded-lg"
-              :background-color="inputBg"
+              :background-color="$theme.inputBg"
               dense
               height="40px"
               :placeholder="$t('caption.enterNodeTitle')"
@@ -33,7 +33,7 @@
         </v-card-text>
         <div
           class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           {{ $tc("caption.status", 1) }}
         </div>
@@ -54,7 +54,7 @@
         ></v-select>
         <v-card-actions>
           <v-btn
-            :color="currentTheme.primary"
+            :color="$theme.primary"
             depressed
             class="text-capitalize rounded-lg white--text"
             v-shortkey="confirmHotkey"
@@ -82,7 +82,6 @@
 <script>
 import { mapGetters } from "vuex";
 import { TEXT_TYPES } from "@/modules/constants";
-import theme from "../../mixins/theme";
 
 export default {
   name: "NodeEditDialog",
@@ -104,7 +103,6 @@ export default {
       this.status = this.type;
     },
   },
-  mixins: [theme],
   data() {
     return {
       commentTypes: Object.keys(TEXT_TYPES).filter(
@@ -125,13 +123,6 @@ export default {
     },
     cancelHotkey() {
       return this.$hotkeyHelpers.findBinding("general.cancel", this.hotkeys);
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

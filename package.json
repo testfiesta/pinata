@@ -12,7 +12,7 @@
   },
   "license": "GPL-3.0-only",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 8084",
     "build": "vue-cli-service electron:build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",

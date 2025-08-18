@@ -1,6 +1,6 @@
 <template>
   <v-app-bar
-    :color="mainBg"
+    :color="$theme.mainBg"
     class="app-navbar px-2"
     max-height="80px"
     height="80px"
@@ -19,28 +19,6 @@
           <component to="/" :is="isDisabled ? 'span' : 'router-link'">
             <img :src="pinataLogo" alt="logo" draggable="false" />
           </component>
-          <div class="tabs" style="display: none">
-            <v-tabs
-              class="tabs"
-              centered
-              v-model="activeTab"
-              color="primary"
-              background-color="transparent"
-              :height="26"
-              hide-slider
-            >
-              <v-tab class="test-tab" to="/main" exact>
-                {{ $tc("caption.test", 1) }}
-              </v-tab>
-              <v-tab
-                class="workspace-tab"
-                :disabled="$store.state.session.status === 'pending'"
-                to="/main/workspace"
-              >
-                {{ $tc("caption.workspace", 1) }}
-              </v-tab>
-            </v-tabs>
-          </div>
         </div>
       </div>
       <div
@@ -101,10 +79,10 @@
                 depressed
                 color="default"
                 to="/settings"
-                v-if="!isDisabled"
+                v-if="!isDisabled && (isAuthenticated || $isElectron)"
               >
                 <img
-                  :src="require('../../public/icon/gear.svg')"
+                  src="@/assets/svg/gear.svg"
                   width="20"
                   height="20"
                 />
@@ -120,6 +98,7 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
+                    v-if="!isAuthenticated"
                     fab
                     small
                     color="primary"
@@ -150,9 +129,9 @@
 </template>
 
 <script>
-import ExportSessionButton from "../components/ExportSessionButton.vue";
-import RestartSessionButton from "../components/RestartSessionButton.vue";
-import DeleteSessionButton from "../components/DeleteSessionButton.vue";
+import ExportSessionButton from "@/components/ExportSessionButton.vue";
+import RestartSessionButton from "@/components/RestartSessionButton.vue";
+import DeleteSessionButton from "@/components/DeleteSessionButton.vue";
 import LoggedInMenu from "./LoggedInMenu.vue";
 import { mapGetters } from "vuex";
 
@@ -212,14 +191,6 @@ export default {
       return this.$vuetify.theme.dark
         ? "/pinata-logo-white.svg"
         : "/pinata-logo.svg";
-    },
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
-    currentTheme() {
-      return this.$vuetify.theme.dark
-        ? this.$vuetify.theme.themes.dark
-        : this.$vuetify.theme.themes.light;
     },
     showControlPanel() {
       return (

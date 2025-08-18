@@ -2,7 +2,7 @@
   <div class="task-wrapper">
     <div
       class="subtitle-2 label-text"
-      :style="{ color: currentTheme.secondary }"
+      :style="{ color: $theme.secondary }"
     >
       {{ $tc("caption.checklist", 1) }}
     </div>
@@ -67,13 +67,6 @@ export default {
         "sessionPlanning.checklist",
         this.hotkeys
       );
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

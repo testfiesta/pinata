@@ -1,12 +1,12 @@
 <template>
   <v-dialog v-bind="$attrs" v-on="$listeners" persistent width="480">
     <v-sheet outlined class="rounded-lg">
-      <v-card :style="{ backgroundColor: mainBg }">
+      <v-card :style="{ backgroundColor: $theme.mainBg }">
         <v-card-text class="text pt-0">
           <div class="d-flex justify-space-between align-start">
             <p
               class="font-weight-bold text-h6 text-sm-h5 text-start"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $t("message.go_back") }}
             </p>
@@ -37,7 +37,7 @@
             <v-col cols="6">
               <v-btn
                 ref="confirmBtn"
-                :color="currentTheme.primary"
+                :color="$theme.primary"
                 depressed
                 class="text-capitalize rounded-lg white--text"
                 v-shortkey="confirmHotkey"
@@ -58,14 +58,12 @@
 
 <script>
 import { mapGetters } from "vuex";
-import theme from "../../mixins/theme";
 export default {
   name: "ResetConfirmDialog",
   props: {
     title: String,
     text: String,
   },
-  mixins: [theme],
   data() {
     return {};
   },

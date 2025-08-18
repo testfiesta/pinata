@@ -298,13 +298,6 @@ export default {
       itemLists: "sessionItems",
       credentials: "auth/credentials",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     disableDiscard() {
       return (
         (this.selectProject && this.projectLoading) ||

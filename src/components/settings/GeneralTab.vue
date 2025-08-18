@@ -1,87 +1,166 @@
 <template>
   <v-container class="content-wrapper">
-    <v-row>
-      <v-col v-if="$isElectron" cols="12" class="pa-4">
-        <p class="body-1">{{ $tc("caption.app_settings", 1) }}</p>
-        <v-btn
-          class="text-capitalize font-weight-regular"
-          fill
-          small
-          color="primary"
-          :height="30"
-          @click="openConfigFile"
-        >
-          {{ $tc("caption.select_file", 1) }}
-        </v-btn>
-        <span class="subtitle-1 ml-2 mt-2 mb-0">
-          {{ meta.configPath }}
-        </span>
-        <p class="note-caption mt-3 mb-0">
-          {{ $tc("caption.share_config", 1) }}
-        </p>
-      </v-col>
-      <v-col v-if="$isElectron" cols="12" class="pa-4">
-        <v-btn
-          class="text-capitalize font-weight-regular"
-          fill
-          small
-          color="primary"
-          :height="30"
-          @click="openCredentialsFile"
-        >
-          {{ $tc("caption.select_file", 1) }}
-        </v-btn>
-        <span class="subtitle-1 ml-2 mt-2 mb-0">
-          {{ meta.credentialsPath }}
-        </span>
-        <p v-if="serverOAuthCredentials.length" class="note-caption mt-3 mb-0">
-          {{ $tc("caption.split_credentials", 1) }}
-          <a
-            href="#"
-            @click="showOAuthDialog"
-            :style="{ color: currentTheme.secondary }"
+    <v-dialog v-model="showCreateDialog" width="500">
+      <v-sheet outlined rounded :style="{ backgroundColor: $theme.mainBg }">
+        <v-form class="pa-4">
+          <v-text-field
+            class="rounded-lg"
+            :background-color="$theme.inputBg"
+            dense
+            height="40px"
+            flat
+            solo
+            v-model="configName"
+            hide-details
+            :placeholder="$tc('caption.config_name', 1)"
+          ></v-text-field>
+          <v-btn
+            class="text-capitalize font-weight-regular d-flex ml-auto"
+            fill
+            small
+            color="primary"
+            :height="30"
+            @click="addConfig"
           >
-            {{ $tc("caption.here", 1) }}
-          </a>
-        </p>
-      </v-col>
-      <v-col v-if="$isElectron" cols="12" class="border-bottom pa-4">
-        <div class="d-flex align-center">
-          <DeleteConfirmDialog
-            v-model="deleteConfirmDialog"
-            ref="deleteConfirmDialog"
-            :text="$t('message.confirm_clear_cache')"
-            :configItem="config"
-            @confirm="deleteSessions"
-            @cancel="deleteConfirmDialog = false"
-          />
+            {{ $tc("caption.add", 1) }}
+          </v-btn>
+        </v-form>
+      </v-sheet>
+    </v-dialog>
+    <v-row>
+      <template v-if="$isElectron">
+        <v-col cols="12" class="pa-4">
+          <p class="body-1">{{ $tc("caption.app_settings", 1) }}</p>
           <v-btn
             class="text-capitalize font-weight-regular"
             fill
             small
             color="primary"
             :height="30"
-            @click="handleDeleteConfirmDialog"
+            @click="openConfigFile"
           >
-            {{ $tc("caption.clear_cache", 1) }}
+            {{ $tc("caption.select_file", 1) }}
           </v-btn>
-          <v-responsive v-if="config.cache" class="mx-auto" max-width="344">
-            <v-text-field
-              class="ml-8"
-              label="Retention Period"
-              :value="config.cache.retentionPeriod"
-              suffix="Days"
-              @input="updateRetentionPeriod"
-            ></v-text-field>
-          </v-responsive>
-        </div>
-      </v-col>
+          <span class="subtitle-1 ml-2 mt-2 mb-0">
+            {{ meta.configPath }}
+          </span>
+          <p class="note-caption mt-3 mb-0">
+            {{ $tc("caption.share_config", 1) }}
+          </p>
+        </v-col>
+        <v-col cols="12" class="pa-4">
+          <v-btn
+            class="text-capitalize font-weight-regular"
+            fill
+            small
+            color="primary"
+            :height="30"
+            @click="openCredentialsFile"
+          >
+            {{ $tc("caption.select_file", 1) }}
+          </v-btn>
+          <span class="subtitle-1 ml-2 mt-2 mb-0">
+            {{ meta.credentialsPath }}
+          </span>
+          <p v-if="serverOAuthCredentials.length" class="note-caption mt-3 mb-0">
+            {{ $tc("caption.split_credentials", 1) }}
+            <a
+              href="#"
+              @click="showOAuthDialog"
+              :style="{ color: $theme.secondary }"
+            >
+              {{ $tc("caption.here", 1) }}
+            </a>
+          </p>
+        </v-col>
+        <v-col cols="12" class="border-bottom pa-4">
+          <div class="d-flex align-center">
+            <DeleteConfirmDialog
+              v-model="deleteConfirmDialog"
+              ref="deleteConfirmDialog"
+              :text="$t('message.confirm_clear_cache')"
+              :configItem="config"
+              @confirm="deleteSessions"
+              @cancel="deleteConfirmDialog = false"
+            />
+            <v-btn
+              class="text-capitalize font-weight-regular"
+              fill
+              small
+              color="primary"
+              :height="30"
+              @click="handleDeleteConfirmDialog"
+            >
+              {{ $tc("caption.clear_cache", 1) }}
+            </v-btn>
+            <v-responsive v-if="config.cache" class="mx-auto" max-width="344">
+              <v-text-field
+                class="ml-8"
+                label="Retention Period"
+                :value="config.cache.retentionPeriod"
+                suffix="Days"
+                @input="updateRetentionPeriod"
+              ></v-text-field>
+            </v-responsive>
+          </div>
+        </v-col>
+      </template>
+      <template v-else>
+        <v-col cols="12" classs="border-bottm pa-4 confgs-section">
+          <p class="body-1" :style="{ color: $theme.default }">{{ $tc("caption.configs") }}</p>
+          <v-btn
+            class="text-capitalize font-weight-regular"
+            fill
+            small
+            color="primary"
+            :height="30"
+            @click="showCreateDialog = true"
+          >
+            {{ $tc("caption.add_config", 1) }}
+          </v-btn>
+          <v-list :style="{ backgroundColor: $theme.background }">
+            <v-list-item
+              v-for="(value, key) in configs"
+              :key="key"
+              class="d-flex justify-space-between align-center"
+            >
+              <v-list-item-title :style="{ color: $theme.secondary }" class="subtitle-1">
+                {{ value.name }}
+              </v-list-item-title>
+              <v-list-item-action class="d-flex flex-row" v-if="value.uid !== config.uid">
+                <v-btn
+                  class="text-capitalize font-weight-regular"
+                  fill
+                  small
+                  color="primary"
+                  :height="30"
+                  @click="useConfig(value.uid)"
+                  text
+                >
+                  {{ $tc("caption.use", 1) }}
+                </v-btn>
+                <v-btn
+                  class="text-capitalize font-weight-regular"
+                  fill
+                  small
+                  color="error"
+                  :height="30"
+                  @click="handleDeleteConfirmDialog"
+                  icon
+                  >
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-col>
+      </template>
       <v-col cols="12" class="border-bottom pa-4 theme-mode-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.theme", 1) }}
         </p>
         <v-radio-group
-          v-model="config.theme"
+          v-model="config.appearance"
           row
           class="ma-0 pa-0 radio-control"
           dense
@@ -90,7 +169,7 @@
         >
           <v-radio
             :label="$tc('caption.light_mode', 1)"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
             value="light"
           ></v-radio>
           <v-radio
@@ -101,7 +180,7 @@
         </v-radio-group>
       </v-col>
       <v-col cols="12" class="border-bottom pa-4 screen-recording-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.screen_recording", 1) }}
         </p>
         <div class="d-flex align-start">
@@ -109,7 +188,7 @@
             <p class="subtitle-1 mb-2">
               {{ $tc("caption.audio_on_screen_capture", 1) }}
             </p>
-            <p class="caption mb-0" :style="{ color: currentTheme.default }">
+            <p class="caption mb-0" :style="{ color: $theme.default }">
               {{ $t("message.capture_audio") }}.
             </p>
           </div>
@@ -125,7 +204,7 @@
           </div>
         </div>
         <br />
-        <p class="subtitle-1 mb-2" :style="{ color: currentTheme.secondary }">
+        <p class="subtitle-1 mb-2" :style="{ color: $theme.secondary }">
           {{ $tc("caption.video_capture_quality", 1) }}
         </p>
         <v-radio-group
@@ -137,7 +216,7 @@
         >
           <div class="d-flex align-start mb-4">
             <div class="flex-grow-1">
-              <p class="caption mb-0" :style="{ color: currentTheme.default }">
+              <p class="caption mb-0" :style="{ color: $theme.default }">
                 {{ $tc("caption.high_quality_video", 1) }}
               </p>
             </div>
@@ -147,7 +226,7 @@
           </div>
           <div class="d-flex align-start mb-4">
             <div class="flex-grow-1">
-              <p class="caption mb-0" :style="{ color: currentTheme.default }">
+              <p class="caption mb-0" :style="{ color: $theme.default }">
                 {{ $tc("caption.standard_quality_video", 1) }}
               </p>
             </div>
@@ -157,7 +236,7 @@
           </div>
           <div class="d-flex align-start">
             <div class="flex-grow-1">
-              <p class="caption mb-0" :style="{ color: currentTheme.default }">
+              <p class="caption mb-0" :style="{ color: $theme.default }">
                 {{ $tc("caption.low_quality_video", 1) }}
               </p>
             </div>
@@ -168,7 +247,7 @@
         </v-radio-group>
       </v-col>
       <v-col cols="12" class="border-bottom pa-4 screenshot-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.screenshot") }}
         </p>
         <div class="d-flex align-start">
@@ -176,7 +255,7 @@
             <p class="subtitle-1 mb-2">
               {{ $t("message.select_default_color") }}
             </p>
-            <p class="caption mb-0" :style="{ color: currentTheme.default }">
+            <p class="caption mb-0" :style="{ color: $theme.default }">
               {{ $t("message.default_color_description") }}.
             </p>
           </div>
@@ -239,7 +318,8 @@
 import { TEXT_TYPES, STATUSES } from "@/modules/constants";
 import DeleteConfirmDialog from "../dialogs/DeleteConfirmDialog.vue";
 import ShareOAuthDialog from "@/components/dialogs/ShareOAuthDialog.vue";
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
+import makeConfigService from "@/services/api/config";
 export default {
   name: "GeneralTab",
   components: { ShareOAuthDialog, DeleteConfirmDialog },
@@ -264,9 +344,10 @@ export default {
     ...mapGetters({
       config: "config/fullConfig",
       credentials: "auth/credentials",
+      user: 'auth/user'
     }),
     serverOAuthCredentials() {
-      let flattened = Object.values(this.credentials).flatMap((c) => c);
+      let flattened = Object.values(this.credentials || {}).flatMap((c) => c);
       return flattened.filter(
         (c) => c.type === "oauth" && c.clientId && c.clientSecret && c.url
       );
@@ -287,13 +368,6 @@ export default {
         transition: "border-radius 200ms ease-in-out",
       };
     },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   data() {
     return {
@@ -310,9 +384,16 @@ export default {
       commentTypes: Object.keys(TEXT_TYPES).filter(
         (item) => item !== "Summary"
       ),
+      configs: [],
+      configName: '',
+      showCreateDialog: false
     };
   },
   methods: {
+    ...mapMutations({
+      setConfig: "config/setFullConfig",
+      updateThemeMode: "config/updateThemeMode",
+    }),
     handleConfig() {
       this.$emit("submit-config", this.config);
     },
@@ -353,7 +434,41 @@ export default {
     async showOAuthDialog() {
       this.shareOauthDialog = true;
     },
+    async getConfigs(){
+      const configService = makeConfigService(this.$api);
+      await configService.getConfigs(this.user.handle).then((response) => {
+        this.configs = response.data;
+      })
+    },
+    async useConfig(uid) {
+      const config = this.configs.find((c) => c.uid === uid);
+      if (!config) return;
+      this.setConfig(config);
+      this.updateThemeMode();
+    },
+    async addConfig(){
+      const payload = Object.keys(this.config).reduce((acc, key) => {
+        if (key !== 'uid' && key !== 'name' && this.config[key] !== null) {
+          acc[key] = this.config[key];
+        }
+        return acc;
+      }, {
+        name: this.configName,
+        templates: {}
+      }); 
+
+      const configService = makeConfigService(this.$api);
+      await configService.createConfig(this.user.handle, payload).then(async () => {
+        await this.getConfigs();
+      });
+      this.showCreateDialog = false;
+    },
   },
+  async created(){
+    if (!this.$isElectron) {
+      await this.getConfigs();
+    }
+  }
 };
 </script>
 <style scoped>

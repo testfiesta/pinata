@@ -1,7 +1,7 @@
 <template>
   <v-container class="content-wrapper">
     <div>
-      <div class="pa-4" :style="{ color: currentTheme.default }">
+      <div class="pa-4" :style="{ color: $theme.default }">
         <p class="body-1">
           {{ $tc("caption.session_summary", 1) }}
         </p>
@@ -9,7 +9,7 @@
           <div class="flex-grow-1">
             <p
               class="subtitle-1 mb-2"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.mandatory_session_summary", 1) }}
             </p>
@@ -32,7 +32,7 @@
           <div class="flex-grow-1">
             <p
               class="subtitle-1 mb-2"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.add_org_logo_in_pdf", 1) }}
             </p>
@@ -95,13 +95,6 @@ export default {
     ...mapGetters({
       config: "config/fullConfig",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   data() {
     return {

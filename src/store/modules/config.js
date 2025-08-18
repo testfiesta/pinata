@@ -1,9 +1,11 @@
 import Vue from "vue";
+import vuetify from "@/plugins/vuetify";
 export const config = {
   namespaced: true,
   state: () => ({
+    uid: null,
     localOnly: false,
-    apperance: "light",
+    appearance: "light",
     ai: {
       enabled: false,
     },
@@ -15,7 +17,7 @@ export const config = {
     videoQuality: "high",
     debugMode: false,
     summary: false,
-    templates: [],
+    templates: {},
     defaultTags: [],
     checklist: {
       presession: {
@@ -113,6 +115,11 @@ export const config = {
       }
       this._vm.$storageService.updateConfig(state);
     },
+    updateThemeMode(state) {
+      const isDarkMode = state.appearance === "dark";
+      vuetify.framework.theme.isDark = isDarkMode;
+      localStorage.setItem("isDarkMode", isDarkMode.toString());
+    }
   },
   actions: {},
   getters: {

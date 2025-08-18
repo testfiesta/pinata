@@ -2,7 +2,7 @@
   <v-container class="wrapper">
     <div
       class="d-flex justify-center align-center flex-column pa-6 rounded-lg login-wrapper mt-16"
-      :style="{ backgroundColor: mainBg }"
+      :style="{ backgroundColor: $theme.mainBg }"
     >
       <div class="d-flex justify-space-between align-center w-full">
         <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
@@ -37,7 +37,7 @@
                     showZephyrSquadApiToken ? 'mdi-eye' : 'mdi-eye-off'
                   "
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -104,7 +104,6 @@ import axios from "axios";
 import dayjs from "dayjs";
 import zephyrSquadIntegrationHelpers from "../../integrations/ZephyrSquadIntegrationHelpers";
 import { mapGetters } from "vuex";
-import theme from "../../mixins/theme";
 
 export default {
   name: "SigninZephyrSquadWrapper",
@@ -119,7 +118,6 @@ export default {
       this.previousRoute = newValue;
     },
   },
-  mixins: [theme],
   data() {
     return {
       previousRoute: this.prevRoute,
@@ -142,13 +140,6 @@ export default {
     };
   },
   computed: {
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     ...mapGetters({
       credentials: "auth/credentials",
     }),

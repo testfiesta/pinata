@@ -27,6 +27,8 @@ import { faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
+import ThemePlugin from "@/plugins/theme";
+import axios from "axios";
 
 library.add(faComment);
 library.add(faTriangleExclamation);
@@ -40,7 +42,6 @@ library.add(faTableList);
 Vue.use(VueShortkey);
 Vue.use(VTiptap);
 Vue.use(VueMask);
-
 Vue.component("default-layout", DefaultLayout);
 Vue.component("minimize-layout", MinimizeLayout);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
@@ -57,12 +58,17 @@ const plugins = {
     Vue.prototype.$hotkeyHelpers = hotkeyHelpers;
     Vue.prototype.$isElectron = isElectronApp;
     Vue.prototype.$storageService = new StorageService();
+    Vue.prototype.$api = axios.create({
+      baseURL: process.env.VUE_APP_SERVER_INTERNALURL,
+      withCredentials: true,
+    })
     if (isElectronApp) {
       Vue.prototype.$electronService = new ElectronService();
     }
   },
 };
 Vue.use(plugins);
+Vue.use(ThemePlugin);
 
 new Vue({
   vuetify,

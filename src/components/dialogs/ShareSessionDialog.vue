@@ -6,16 +6,16 @@
     width="50%"
     max-width="600px"
   >
-    <v-sheet rounded :style="{ backgroundColor: currentTheme.background }">
-      <v-card :style="{ backgroundColor: currentTheme.background }">
+    <v-sheet rounded :style="{ backgroundColor: $theme.background }">
+      <v-card :style="{ backgroundColor: $theme.background }">
         <v-card-title
           v-if="credentials?.testfiesta"
           class="text"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           Share {{ credentials?.testfiesta[0]?.user?.name }}'s session
         </v-card-title>
-        <v-card-text class="text" :style="{ color: currentTheme.secondary }">
+        <v-card-text class="text" :style="{ color: $theme.secondary }">
           <v-text-field
             v-model="sessionURL"
             disabled
@@ -31,9 +31,9 @@
         <v-card-actions>
           <v-btn
             small
-            :color="currentTheme.primary"
+            :color="$theme.primary"
             class="text-capitalize btn"
-            :style="{ color: currentTheme.white }"
+            :style="{ color: $theme.white }"
             v-shortkey="confirmHotkey"
             @shortkey="handleCopy()"
             @click="handleCopy()"
@@ -42,9 +42,9 @@
           </v-btn>
           <v-btn
             small
-            :color="currentTheme.background"
+            :color="$theme.background"
             class="text-capitalize btn"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
             v-shortkey="cancelHotkey"
             @shortkey="handleClose()"
             @click="handleClose()"
@@ -89,13 +89,6 @@ export default {
     },
     cancelHotkey() {
       return this.$hotkeyHelpers.findBinding("general.cancel", this.hotkeys);
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

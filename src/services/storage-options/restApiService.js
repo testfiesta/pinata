@@ -1,12 +1,15 @@
 import axios from "axios";
-import dayjs from "dayjs";
 import StorageInterface from "../storageInterface";
 import store from "@/store";
-import TestfiestaIntegrationHelpers from "@/integrations/TestfiestaIntegrationHelpers";
-
+import makeUserService from "@/services/api/auth";
+import makeConfigService from "../api/config";
 export default class RestApiService extends StorageInterface {
   constructor() {
     super();
+    this.$api = axios.create({
+      baseURL: process.env.VUE_APP_SERVER_INTERNALURL,
+      withCredentials: true,
+    })
     this.baseURL =
       process.env.VUE_APP_TESTFIESTA_API_URL || "http://localhost:5050/core";
   }
@@ -268,15 +271,16 @@ export default class RestApiService extends StorageInterface {
   async getMetaData() {}
 
   async getConfig(configUid = null) {
-    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
+    
+    const handle = null; // TODO: Ensure this is set in Vuex
     if (!handle) {
       throw new Error(
         "Organization handle is not defined. Ensure the user is logged in."
       );
     }
     const endpoint = configUid
-      ? `${this.baseURL}/${handle}/configs/${configUid}`
-      : `${this.baseURL}/${handle}/configs`;
+      ? `${this.baseURL}/${handle}/pinata/configs/${configUid}`
+      : `${this.baseURL}/${handle}/pinata/configs`;
     try {
       const { data } = await axios.get(endpoint, { withCredentials: true });
       return data;
@@ -288,23 +292,40 @@ export default class RestApiService extends StorageInterface {
     }
   }
 
+  async getConfigs(){
+
+  }
+
   // TODO create pinata config on the backend
   async updateConfig(config) {
-    const credential = null; // Or fetch from store.state.auth.credentials
-    const headers = credential
-      ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-      : {};
-    const url = `${this.baseURL}/app/org/f352ae63-11fc-4dbe-bab1-72561aa25fca/config/5e0f71ff-987d-4240-85eb-df6adf568c31`;
+    const user = store.getters["auth/user"];
+    if(!user)
+      throw new Error("User is not authenticated. Cannot update config.");
+    const payload = {
+      ai: config.ai,
+      appearance: config.appearance,
+      audioCapture: config.audioCapture,
+      videoQuality: config.videoQuality,
+      debugMode: config.debugMode,
+      summary: config.summary,
+      templates: config.templates,
+      defaultTags: config.defaultTags,
+      checklist: config.checklist,
+      hotkeys: config.hotkeys,
+      appLabel: config.appLabel,
+      commentType: config.commentType,
+      defaultLabel: config.defaultLabel,
+      showIssue: config.showIssue,
+      localOnly: config.localOnly,
+    };
 
-    try {
-      const { data } = await axios.put(url, config, { headers });
-      return data.config;
-    } catch (error) {
-      if (error.response?.status === 401) {
-        console.error("Session expired.");
-      }
-      throw error;
-    }
+    console.log(payload, '<------- payload', 'Config', config)
+    
+    const configService = makeConfigService(this.$api);
+    await configService.updateConfig(user.handle, config.uid, payload).then(response => {
+      console.log("Config updated successfully:", response.data);
+      return response.data;
+    })
   }
 
   // TODO: Needed? Never called.
@@ -330,51 +351,20 @@ export default class RestApiService extends StorageInterface {
   }
 
   async getCredentials() {
-    const handle = "idonn01"; // TODO: Ensure this is set in Vuex
-    // const credential = null; // Or fetch from store.state.auth.credentials
-    // const headers = credential
-    //   ? await TestfiestaIntegrationHelpers.getHeaders(credential)
-    //   : {};
-    let data = { user: {} };
-
-    const allCookies = document.cookie;
-    const cookieArray = allCookies.split("; ");
-    let accessToken = null;
-    for (const cookie of cookieArray) {
-      const [name, value] = cookie.split("=");
-      if (name.trim() === "access_token") {
-        accessToken = value;
-        break;
+    const userService = makeUserService(this.$api);
+    // Get user Info then store in Vuex
+    await userService.getProfile().then(async(response) => {
+      store.commit('auth/setUser', response.data)
+    }).catch(err => {
+      if(err.response?.status === 401) {
+        window.location.href = `${process.env.VUE_APP_TESTFIESTA_URL}/login?redirectTo=${encodeURIComponent(window.location.href)}`;
       }
-    }
-    data = store.state.auth.credentials?.testfiesta[0] || {};
-    if (accessToken) {
-      data.type = "cookie";
-    } else {
-      const url = `${this.baseURL}/${handle}/accessTokens`;
-      const response = await axios.get(url, { withCredentials: true });
-      data = response.data;
-      data.type = "bearer";
-    }
-    return {
-      testfiesta: [
-        {
-          accessToken: data.accessToken,
-          expiresAt: data.expiresAt,
-          type: data.type || "bearer",
-          loggedInAt: data.loggedInAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          oauthTokenIds: data.oauthTokenIds,
-          user: {
-            id: data.user?.uid,
-            email: data.user?.email,
-            name: data.user?.first_name + " " + data.user?.last_name,
-            avatar: data.user?.avatar_url,
-            locale: data.user?.preferences?.locale,
-            verified: data.user?.preferences?.verified,
-          },
-          orgs: data.orgs,
-        },
-      ],
-    };
+    })
+
+    // Pull User's Orgs
+    const user = store.getters['auth/user'];
+    await userService.getOrgs(user.uid).then((response) => {
+      store.commit('auth/setUserOrgs', response.data?.orgs || []);
+    })
   }
 }

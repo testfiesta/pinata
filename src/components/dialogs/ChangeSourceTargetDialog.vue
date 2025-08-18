@@ -9,12 +9,12 @@
     max-width="600px"
   >
     <v-sheet outlined rounded>
-      <v-card :style="{ backgroundColor: currentTheme.background }">
-        <v-card-title class="pa-6" :style="{ color: currentTheme.secondary }">
+      <v-card :style="{ backgroundColor: $theme.background }">
+        <v-card-title class="pa-6" :style="{ color: $theme.secondary }">
           <div class="d-flex justify-space-between align-center w-full">
             <span
               class="dialog-title fs-18 font-weight-semibold"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ titleDialog }}
             </span>
@@ -52,7 +52,7 @@
                       <div class="session-name mt-2">
                         <p
                           class="fs-16 font-weight-medium"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ item.name }}
                         </p>
@@ -105,8 +105,8 @@
               <v-btn
                 class="text-capitalize rounded-lg"
                 depressed
-                :color="currentTheme.primary"
-                :style="{ color: currentTheme.white }"
+                :color="$theme.primary"
+                :style="{ color: $theme.white }"
                 :disabled="!activeSource"
                 v-shortkey="confirmHotkey"
                 @shortkey="handleSelect()"
@@ -161,13 +161,6 @@ export default {
     },
     cancelHotkey() {
       return this.$hotkeyHelpers.findBinding("general.cancel", this.hotkeys);
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
     btnBg() {
       return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";

@@ -1,21 +1,5 @@
 <template>
   <div class="d-flex justify-space-between align-center">
-    <v-btn
-      v-if="!$isElectron"
-      fab
-      small
-      color="primary"
-      height="32"
-      width="32"
-      class="mr-3"
-      @click="openSettingsDialog"
-    >
-      <img
-        :src="require('../../public/icon/gear.svg')"
-        width="20"
-        height="20"
-      />
-    </v-btn>
     <div class="flex flex-row justify-center mr-5">
       <v-btn
         id="btn__setting"
@@ -25,17 +9,14 @@
         small
         depressed
         color="default"
-        @click="openSettingWindow"
+        to="/settings"
       >
         <img
-          :src="require('../../public/icon/gear.svg')"
+          src="@/assets/svg/gear.svg"
           width="20"
           height="20"
         />
       </v-btn>
-      <!-- <v-btn id="btn__bell" class="mx-1" fab outlined small color="default">
-        <img :src="require('../assets/icon/bell.svg')" width="24" height="24" />
-      </v-btn> -->
     </div>
     <v-menu
       v-model="showMenu"
@@ -62,7 +43,7 @@
           />
           <strong
             class="ml-3 fs-14"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
             >{{ profileName }}</strong
           >
         </div>
@@ -128,32 +109,22 @@
         </v-list>
       </v-card>
     </v-menu>
-    <SettingsDialog
-      v-model="settingsDialog"
-      ref="settingsDialog"
-      @close="settingsDialog = false"
-    />
   </div>
 </template>
 <script>
 import uuidv4 from "uuid";
 import { VBtn } from "vuetify/lib/components";
 import { mapGetters } from "vuex";
-import SettingsDialog from "@/components/dialogs/SettingsDialog.vue";
-import theme from "../mixins/theme";
 
 export default {
   name: "LoggedInMenu",
   components: {
     VBtn,
-    SettingsDialog,
   },
   props: {},
-  mixins: [theme],
   data() {
     return {
       showMenu: false,
-      settingsDialog: false,
     };
   },
   computed: {
@@ -161,7 +132,7 @@ export default {
       credentials: "auth/credentials",
     }),
     profileName() {
-      for (const cList of Object.values(this.credentials)) {
+      for (const cList of Object.values(this.credentials || {})) {
         if (cList.length > 0) {
           if (cList[0].user.name) {
             return cList[0].user.name;
@@ -171,7 +142,7 @@ export default {
       return this.$t("caption.personal_workspace");
     },
     profileAvatar() {
-      for (const cList of Object.values(this.credentials)) {
+      for (const cList of Object.values(this.credentials || {})) {
         if (cList.length > 0) {
           if (cList[0].user.avatar) {
             return cList[0].user.avatar;
@@ -221,13 +192,14 @@ export default {
       const emptyCredentials = {};
       this.$store.commit("auth/setCredentials", emptyCredentials);
       this.$storageService.updateCredentials(emptyCredentials);
-    },
-    openSettingsDialog() {
-      this.settingsDialog = true;
-    },
-    openSettingWindow() {
-      this.$electronService.openSettingWindow();
-    },
+      if(!this.$isElectron) {
+        this.$api.post("/logout").then(() => {
+          this.$router.push({ path: "/" });
+        }).catch((error) => {
+          console.error("Logout failed:", error);
+        });
+      }
+    }
   },
 };
 </script>

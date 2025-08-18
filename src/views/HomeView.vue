@@ -4,7 +4,7 @@
     <div class="d-flex justify-center flex-grow-1 align-center">
       <div
         class="d-flex justify-center align-center flex-column pa-6 rounded-lg home-wrapper w-full"
-        :style="{ backgroundColor: mainBg }"
+        :style="{ backgroundColor: $theme.mainBg }"
       >
         <div class="logo mb-6 w-full">
           <div class="fs-30 font-weight-semibold text-left">
@@ -24,7 +24,7 @@
           >
             <div
               class="btn-text fs-14"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.quick_test_session", 1) }}
             </div>
@@ -43,7 +43,7 @@
           >
             <div
               class="btn-text fs-14"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.exploratory_session", 1) }}
             </div>
@@ -57,7 +57,7 @@
           >
             <div
               class="btn-text fs-14"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.scripted_test_session", 1) }}
             </div>
@@ -342,18 +342,11 @@ export default {
       loggedInServices: "auth/loggedInServices",
       config: "config/fullConfig",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     btnBg() {
       return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
     },
     mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
+      return this.$vuetify.theme.dark ? "#374151" : this.$theme.white;
     },
     quickTestHotkey() {
       return this.$hotkeyHelpers.findBinding("home.quickTest", this.hotkeys);

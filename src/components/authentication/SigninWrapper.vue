@@ -2,7 +2,7 @@
   <v-container class="wrapper">
     <div
       class="d-flex justify-center align-center flex-column pa-6 rounded-lg login-wrapper mt-16"
-      :style="{ backgroundColor: mainBg }"
+      :style="{ backgroundColor: $theme.mainBg }"
     >
       <div class="d-flex justify-space-between align-center w-full">
         <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
@@ -34,7 +34,7 @@
               <img :src="require('../../assets/icon/jira.png')" />
               <div
                 class="btn-text fs-14 ml-2"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.signin_jira", 1) }}
               </div>
@@ -52,7 +52,7 @@
               <img :src="require('../../assets/icon/testrail.png')" />
               <div
                 class="btn-text fs-14 ml-2"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.signin_testrail", 1) }}
               </div>
@@ -69,7 +69,7 @@
             <img :src="require('../../assets/icon/xray-logo.png')" width="12" />
             <div
               class="btn-text fs-14 ml-2"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.signin_xray", 1) }}
             </div>
@@ -88,7 +88,7 @@
             />
             <div
               class="btn-text fs-14 ml-2"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.signin_zephyr_squad", 1) }}
             </div>
@@ -107,20 +107,20 @@
             />
             <div
               class="btn-text fs-14 ml-2"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.signin_zephyr_scale", 1) }}
             </div>
           </v-btn>
           <!--<v-btn class="mb-4 outline-btn" block outlined color="white">
             <img :src="require('../../assets/icon/qtest.png')" />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
+            <div class="btn-text" :style="{ color: $theme.secondary }">
               {{ $tc("caption.signin_qtest", 1) }}
             </div>
           </v-btn>
           <v-btn class="mb-4 outline-btn" block outlined color="white">
             <img :src="require('../../assets/icon/practitest.png')" />
-            <div class="btn-text" :style="{ color: currentTheme.secondary }">
+            <div class="btn-text" :style="{ color: $theme.secondary }">
               {{ $tc("caption.signin_practitest", 1) }}
             </div>
           </v-btn>-->
@@ -190,23 +190,10 @@ export default {
     };
   },
   computed: {
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     pinataLogo() {
       return this.$vuetify.theme.dark
         ? "/pinata-logo-white.svg"
         : "/pinata-logo.svg";
-    },
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
-    btnBg() {
-      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
     },
   },
   mounted() {},

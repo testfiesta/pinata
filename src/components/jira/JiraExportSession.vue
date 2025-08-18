@@ -9,7 +9,7 @@
         />
       </v-avatar>
     </v-list-item-icon>
-    <v-list-item-content :style="{ color: currentTheme.secondary }">
+    <v-list-item-content :style="{ color: $theme.secondary }">
       <v-list-item-title>{{ title }}</v-list-item-title>
     </v-list-item-content>
 
@@ -18,7 +18,7 @@
         <v-card>
           <v-card-title
             class="dialog-title"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
           >
             {{ $tc("caption.export_item_to_jira", 1) }}
           </v-card-title>
@@ -52,7 +52,7 @@
                   <div class="issue-list">
                     <span
                       class="issue-header"
-                      :style="{ color: currentTheme.secondary }"
+                      :style="{ color: $theme.secondary }"
                     >
                       {{ searchIssueList.length }}
                       {{ $tc("caption.issues", 1) }}
@@ -95,7 +95,7 @@
                   color="white"
                   :disabled="loading"
                   @click="dialog = false"
-                  :style="{ color: currentTheme.black }"
+                  :style="{ color: $theme.black }"
                 >
                   {{ $tc("caption.discard", 1) }}
                 </v-btn>
@@ -169,13 +169,6 @@ export default {
       itemLists: "sessionItems",
       credentials: "auth/credentials",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     searchIssueList() {
       let temp = this.issues;
       if (this.search !== "" && this.search) {

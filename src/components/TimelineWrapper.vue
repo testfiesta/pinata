@@ -24,7 +24,7 @@
               <div class="duration-text mb-3 py-2">
                 <div
                   class="d-flex fs-14 mb-1 font-weight-semibold"
-                  :style="{ color: currentTheme.secondary }"
+                  :style="{ color: $theme.secondary }"
                 >
                   {{ $tc("caption.session_started", 1) }}
                 </div>
@@ -93,7 +93,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.screenshot", 1) }} •
                           {{ item?.comment?.type }}
@@ -282,7 +282,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.video_record", 1) }} •
                           {{ item?.comment?.type }}
@@ -470,7 +470,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.audio", 1) }} •
                           {{ item?.comment?.type }}
@@ -651,7 +651,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.your_details", 1) }} •
                           {{ item?.comment?.type }}
@@ -831,7 +831,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.mind_map", 1) }} •
                           {{ item?.comment?.type }}
@@ -1021,7 +1021,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.your_details", 1) }} •
                           {{ item?.comment?.type }}
@@ -1243,7 +1243,6 @@ import {
   select,
 } from "d3";
 import { mapGetters } from "vuex";
-import theme from "../mixins/theme";
 
 export default {
   name: "TimelineWrapper",
@@ -1292,7 +1291,6 @@ export default {
       this.eventName = newValue;
     },
   },
-  mixins: [theme],
   data() {
     return {
       itemLists: [],
@@ -1327,13 +1325,6 @@ export default {
     },
     current() {
       return dayjs().format("MM-DD-YYYY");
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
     filteredItemLists() {
       return Array.from(

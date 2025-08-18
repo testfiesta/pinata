@@ -414,13 +414,6 @@ export default {
     current() {
       return dayjs().format("MM-DD-YYYY");
     },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     deleteHotkey() {
       return this.$hotkeyHelpers.findBinding("workspace.delete", this.hotkeys);
     },

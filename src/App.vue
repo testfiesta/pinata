@@ -42,8 +42,8 @@ export default {
       }
     }
 
-    const config = await this.$storageService.getConfig();
-    this.$store.commit("config/setFullConfig", config);
+    // const config = await this.$storageService.getConfig();
+    // this.$store.commit("config/setFullConfig", config);
 
     const credentials = await this.$storageService.getCredentials();
     this.$store.commit("auth/setCredentials", credentials);

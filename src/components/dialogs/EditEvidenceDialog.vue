@@ -8,7 +8,7 @@
     max-width="900px"
     eager
   >
-    <v-sheet outlined rounded :style="{ backgroundColor: mainBg }">
+    <v-sheet outlined rounded :style="{ backgroundColor: $theme.mainBg }">
       <div class="content">
         <div
           class="content-top"
@@ -116,7 +116,7 @@
           </div>
           <v-card v-if="commentLoading" class="loading-wrapper" outlined flat>
             <v-progress-circular
-              :color="currentTheme.primary"
+              :color="$theme.primary"
               size="70"
               absolute
               indeterminate
@@ -245,7 +245,7 @@
           </div>
           <div class="comment-type">
             <div
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
               v-shortkey="typeHotkey"
               @shortkey="openCommentType()"
             >
@@ -269,7 +269,7 @@
           fill
           small
           color="white"
-          :style="{ color: currentTheme.black }"
+          :style="{ color: $theme.black }"
           @click="handleClear"
         >
           {{ $tc("caption.clear", 1) }}
@@ -281,7 +281,7 @@
             small
             color="white"
             :disabled="processing"
-            :style="{ color: currentTheme.black }"
+            :style="{ color: $theme.black }"
             v-shortkey="cancelHotkey"
             @shortkey="handleDiscard()"
             @click="handleDiscard"
@@ -312,7 +312,6 @@ import VueTagsInput from "@johmun/vue-tags-input";
 import { VEmojiPicker } from "v-emoji-picker";
 
 import { TEXT_TYPES, AI_ENABLED_FIELDS, FILE_TYPES } from "@/modules/constants";
-import theme from "../../mixins/theme";
 import openAIIntegrationHelper from "../../integrations/OpenAIIntegrationHelpers";
 import { mapGetters } from "vuex";
 
@@ -329,7 +328,6 @@ export default {
       default: () => {},
     },
   },
-  mixins: [theme],
   data() {
     return {
       item: {},
@@ -405,13 +403,6 @@ export default {
       }
       return splitName.length > 1 ? "." + splitName[splitName.length - 1] : "";
     },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   mounted() {
     this.getAllTags();
@@ -448,7 +439,7 @@ export default {
     },
     activeSession() {
       // set theme mode
-      const isDarkMode = this.config.apperance === "dark";
+      const isDarkMode = this.config.appearance === "dark";
       this.$vuetify.theme.dark = isDarkMode;
       localStorage.setItem("isDarkMode", isDarkMode);
 

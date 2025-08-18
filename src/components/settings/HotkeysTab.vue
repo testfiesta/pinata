@@ -1,14 +1,14 @@
 <template>
   <v-container class="content-wrapper">
     <div class="title">{{ $tc("caption.hotkeys", 1) }}</div>
-    <p class="subtitle-1 mb-4" :style="{ color: currentTheme.default }">
+    <p class="subtitle-1 mb-4" :style="{ color: $theme.default }">
       {{ $t("message.speed_hotkey") }}
     </p>
 
     <v-row v-if="configToChange">
       <v-col cols="12" class="pa-4">
         <div class="mb-3 session-type">
-          <p class="subtitle-1 mb-1" :style="{ color: currentTheme.secondary }">
+          <p class="subtitle-1 mb-1" :style="{ color: $theme.secondary }">
             {{ $tc("caption.apply_to", 1) }}
           </p>
           <v-select
@@ -64,13 +64,6 @@ export default {
     ...mapGetters({
       config: "config/fullConfig",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   data() {
     return {

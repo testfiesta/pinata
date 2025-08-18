@@ -1,7 +1,7 @@
 <template>
   <div class="pa-3 authentication-wrapper">
     <v-app-bar
-      :color="mainBg"
+      :color="$theme.mainBg"
       class="px-4 app-navbar"
       height="80px"
       elevation="0"
@@ -35,16 +35,6 @@ export default {
       credentials: "auth/credentials",
       config: "config/fullConfig",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
     pinataLogo() {
       return this.$vuetify.theme.dark
         ? "/pinata-logo-white.svg"

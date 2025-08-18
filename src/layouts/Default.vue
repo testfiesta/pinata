@@ -1,5 +1,5 @@
 <template>
-  <v-app :style="{ backgroundColor: currentTheme.background }">
+  <v-app :style="{ backgroundColor: $theme.background }">
     <v-main>
       <v-overlay :absolute="true" :value="overlay"> </v-overlay>
       <router-view :isAuthenticated="$store.getters['auth/isAuthenticated']" />
@@ -16,23 +16,23 @@
           </v-btn>
         </template>
       </v-snackbar>
-      <AboutDialog v-model="aboutDialog" :version="aboutVersion" />
+      <!-- <AboutDialog v-model="aboutDialog" :version="aboutVersion" /> -->
     </v-main>
   </v-app>
 </template>
 
 <script>
 import { STATUSES } from "../modules/constants";
-import AboutDialog from "../components/dialogs/AboutDialog.vue";
+// import AboutDialog from "../components/dialogs/AboutDialog.vue";
 export default {
   name: "DefaultLayout",
 
   components: {
-    AboutDialog,
+    // AboutDialog,
   },
 
   data: () => ({
-    aboutDialog: false,
+    aboutDialog: true,
     aboutVersion: null,
     overlay: false,
     snackBar: {
@@ -104,13 +104,6 @@ export default {
     },
   },
   computed: {
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
 };
 </script>
