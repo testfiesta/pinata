@@ -2,7 +2,7 @@
   <v-container class="content-wrapper">
     <v-row>
       <v-col cols="12" class="border-bottom pa-4 ext-conn-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.external_connection", 1) }}
         </p>
 
@@ -19,10 +19,7 @@
               @click="signinTestRail"
             >
               <img :src="require('../../assets/icon/testrail.png')" />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_testrail") }}
               </div>
             </v-btn>
@@ -45,10 +42,7 @@
                 :src="require('../../assets/icon/xray-logo.png')"
                 width="12"
               />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_xray") }}
               </div>
             </v-btn>
@@ -71,10 +65,7 @@
                 :src="require('../../assets/icon/zephyr-squad.png')"
                 width="16"
               />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_zephyr_squad") }}
               </div>
             </v-btn>
@@ -97,10 +88,7 @@
                 :src="require('../../assets/icon/zephyr-scale.png')"
                 width="16"
               />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_zephyr_scale") }}
               </div>
             </v-btn>
@@ -120,10 +108,7 @@
               @click="signinJira"
             >
               <img :src="require('../../assets/icon/jira.png')" />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_jira") }}
               </div>
             </v-btn>
@@ -133,13 +118,10 @@
       <v-col cols="12" class="border-bottom pa-4 app-role-section">
         <div class="d-flex align-start">
           <div class="flex-grow-1">
-            <p
-              class="subtitle-1 mb-2"
-              :style="{ color: currentTheme.secondary }"
-            >
+            <p class="subtitle-1 mb-2" :style="{ color: $theme.secondary }">
               {{ $t("message.use_app_only_local") }}
             </p>
-            <p class="caption mb-0" :style="{ color: currentTheme.default }">
+            <p class="caption mb-0" :style="{ color: $theme.default }">
               {{ $t("message.dont_pull_push_data") }}
             </p>
           </div>
@@ -158,11 +140,11 @@
       <!--<v-col cols="12" class="border-bottom pa-4 color-panel-section">
         <p
           class="subtitle-1 mb-4"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           {{ $tc("caption.testfiesta", 1) }}
         </p>
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.add_color", 1) }}
         </p>
         <v-text-field
@@ -193,7 +175,7 @@
         </v-text-field>
       </v-col>
       <v-col cols="12" class="pa-4 cur-org-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           Current Organizations
         </p>
         <div class="d-flex flex-column" style="row-gap: 5px">
@@ -282,13 +264,6 @@ export default {
       config: "config/fullConfig",
       credentials: "auth/credentials",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   methods: {
     handleConfig() {

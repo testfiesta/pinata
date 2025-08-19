@@ -39,7 +39,7 @@
           <a
             href="#"
             @click="showOAuthDialog"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
           >
             {{ $tc("caption.here", 1) }}
           </a>
@@ -77,11 +77,11 @@
         </div>
       </v-col>
       <v-col cols="12" class="border-bottom pa-4 theme-mode-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.theme", 1) }}
         </p>
         <v-radio-group
-          v-model="localConfig.theme"
+          v-model="localConfig.appearance"
           row
           class="ma-0 pa-0 radio-control"
           dense
@@ -90,7 +90,7 @@
         >
           <v-radio
             :label="$tc('caption.light_mode', 1)"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
             value="light"
           ></v-radio>
           <v-radio
@@ -101,7 +101,7 @@
         </v-radio-group>
       </v-col>
       <v-col cols="12" class="border-bottom pa-4 screen-recording-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.screen_recording", 1) }}
         </p>
         <div class="d-flex align-start">
@@ -109,7 +109,7 @@
             <p class="subtitle-1 mb-2">
               {{ $tc("caption.audio_on_screen_capture", 1) }}
             </p>
-            <p class="caption mb-0" :style="{ color: currentTheme.default }">
+            <p class="caption mb-0" :style="{ color: $theme.default }">
               {{ $t("message.capture_audio") }}.
             </p>
           </div>
@@ -125,7 +125,7 @@
           </div>
         </div>
         <br />
-        <p class="subtitle-1 mb-2" :style="{ color: currentTheme.secondary }">
+        <p class="subtitle-1 mb-2" :style="{ color: $theme.secondary }">
           {{ $tc("caption.video_capture_quality", 1) }}
         </p>
         <v-radio-group
@@ -137,7 +137,7 @@
         >
           <div class="d-flex align-start mb-4">
             <div class="flex-grow-1">
-              <p class="caption mb-0" :style="{ color: currentTheme.default }">
+              <p class="caption mb-0" :style="{ color: $theme.default }">
                 {{ $tc("caption.high_quality_video", 1) }}
               </p>
             </div>
@@ -147,7 +147,7 @@
           </div>
           <div class="d-flex align-start mb-4">
             <div class="flex-grow-1">
-              <p class="caption mb-0" :style="{ color: currentTheme.default }">
+              <p class="caption mb-0" :style="{ color: $theme.default }">
                 {{ $tc("caption.standard_quality_video", 1) }}
               </p>
             </div>
@@ -157,7 +157,7 @@
           </div>
           <div class="d-flex align-start">
             <div class="flex-grow-1">
-              <p class="caption mb-0" :style="{ color: currentTheme.default }">
+              <p class="caption mb-0" :style="{ color: $theme.default }">
                 {{ $tc("caption.low_quality_video", 1) }}
               </p>
             </div>
@@ -168,7 +168,7 @@
         </v-radio-group>
       </v-col>
       <v-col cols="12" class="border-bottom pa-4 screenshot-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.screenshot") }}
         </p>
         <div class="d-flex align-start">
@@ -176,7 +176,7 @@
             <p class="subtitle-1 mb-2">
               {{ $t("message.select_default_color") }}
             </p>
-            <p class="caption mb-0" :style="{ color: currentTheme.default }">
+            <p class="caption mb-0" :style="{ color: $theme.default }">
               {{ $t("message.default_color_description") }}.
             </p>
           </div>
@@ -273,11 +273,6 @@ export default {
         borderRadius: menu ? "50%" : "4px",
         transition: "border-radius 200ms ease-in-out",
       };
-    },
-    currentTheme() {
-      return this.$vuetify.theme.dark
-        ? this.$vuetify.theme.themes.dark
-        : this.$vuetify.theme.themes.light;
     },
   },
   data() {

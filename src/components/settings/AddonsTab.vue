@@ -2,7 +2,7 @@
   <v-container class="content-wrapper">
     <v-row v-if="localConfig">
       <v-col cols="12" class="border-bottom pa-4 screen-recording-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.ai_assist", 1) }}
         </p>
         <div class="d-flex align-start">
@@ -23,7 +23,7 @@
           </div>
         </div>
         <br />
-        <p class="subtitle-1 mb-2" :style="{ color: currentTheme.secondary }">
+        <p class="subtitle-1 mb-2" :style="{ color: $theme.secondary }">
           {{ $tc("caption.openai_key", 1) }}
         </p>
         <v-form ref="openAIKey">
@@ -44,7 +44,7 @@
                 block
                 color="white"
                 class="text-capitalize"
-                :style="{ color: currentTheme.black }"
+                :style="{ color: $theme.black }"
                 :disabled="!config?.ai?.enabled"
                 @click="handleCancelOpenAIKey"
               >
@@ -90,13 +90,6 @@ export default {
       config: "config/fullConfig",
       credentials: "auth/credentials",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   data() {
     return {

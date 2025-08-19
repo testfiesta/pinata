@@ -28,6 +28,9 @@ import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
 
+import ThemePlugin from "@/plugins/theme";
+import axios from "axios";
+
 library.add(faComment);
 library.add(faTriangleExclamation);
 library.add(faClipboard);
@@ -60,10 +63,14 @@ const plugins = {
     if (isElectronApp) {
       Vue.prototype.$electronService = new ElectronService();
     }
+    Vue.prototype.$api = axios.create({
+      baseURL: process.env.VUE_APP_SERVER_INTERNALURL,
+      withCredentials: true,
+    });
   },
 };
 Vue.use(plugins);
-
+Vue.use(ThemePlugin);
 new Vue({
   vuetify,
   router,

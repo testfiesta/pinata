@@ -3,9 +3,7 @@
     <div ref="waveform" class="mb-2 waveform"></div>
     <v-row>
       <v-col cols="12" class="progress-bar">
-        <span class="time" :style="{ color: currentTheme.secondary }"
-          >00:00</span
-        >
+        <span class="time" :style="{ color: $theme.secondary }">00:00</span>
         <div class="progress">
           <v-slider
             class="slider-theme"
@@ -24,7 +22,7 @@
           ></v-slider>
         </div>
         <!-- move prop from controlPanel and get colors from Vuetify.js -->
-        <span class="time" :style="{ color: currentTheme.secondary }">{{
+        <span class="time" :style="{ color: $theme.secondary }">{{
           durationTime
         }}</span>
       </v-col>
@@ -145,13 +143,6 @@ export default {
     },
   },
   computed: {
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     isPlaying() {
       if (!this.wavesurfer) return false;
 

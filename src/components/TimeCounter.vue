@@ -7,7 +7,7 @@
             <span class="time-title">
               {{ $tc("caption.elapsed_time", 1) }}
             </span>
-            <span class="time-value" :style="{ color: currentTheme.secondary }">
+            <span class="time-value" :style="{ color: $theme.secondary }">
               {{ elapsedTime }}
             </span>
           </div>
@@ -21,7 +21,7 @@
                 this.$store.state.session.status,
                 { overtime: isOverTimeLimit },
               ]"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
               >{{ remainingTime }}</span
             >
           </div>
@@ -51,13 +51,6 @@ export default {
       date.setSeconds(timer);
       const result = date.toISOString().substr(11, 8);
       return result;
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
     remainingTime() {
       const elapsedTime = this.$store.state.session.timer;

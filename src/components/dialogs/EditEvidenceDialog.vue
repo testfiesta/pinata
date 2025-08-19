@@ -9,7 +9,7 @@
       max-width="900px"
       eager
     >
-      <v-sheet outlined rounded :style="{ backgroundColor: mainBg }">
+      <v-sheet outlined rounded :style="{ backgroundColor: $theme.mainBg }">
         <div class="content">
           <div
             class="content-top"
@@ -101,11 +101,9 @@
                   on-icon="icon-checkbox-on"
                 >
                   <template v-slot:label>
-                    <span
-                      class="fs-14"
-                      :style="{ color: currentTheme.secondary }"
-                      >{{ $tc("caption.required_follow_up", 1) }}</span
-                    >
+                    <span class="fs-14" :style="{ color: $theme.secondary }">{{
+                      $tc("caption.required_follow_up", 1)
+                    }}</span>
                   </template>
                 </v-checkbox>
               </div>
@@ -117,7 +115,7 @@
             >
               <div
                 class="d-flex fs-14 mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.filename", 1) }}
               </div>
@@ -126,7 +124,7 @@
                 flat
                 solo
                 height="40px"
-                :background-color="inputBg"
+                :background-color="$theme.inputBg"
                 v-model="name"
                 :suffix="fileSuffix"
                 :disabled="processing"
@@ -136,7 +134,7 @@
             </div>
             <v-card v-if="commentLoading" class="loading-wrapper" outlined flat>
               <v-progress-circular
-                :color="currentTheme.primary"
+                :color="$theme.primary"
                 size="70"
                 absolute
                 indeterminate
@@ -149,7 +147,7 @@
             >
               <div
                 class="d-flex fs-14 mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.comment", 1) }}
               </div>
@@ -176,8 +174,8 @@
                   <v-select
                     v-model="localItem.selectedHeading"
                     :items="headingOptions"
-                    :background-color="inputBg"
-                    :color="currentTheme.secondary"
+                    :background-color="$theme.inputBg"
+                    :color="$theme.secondary"
                     class="rounded-lg custom-select"
                     item-text="text"
                     item-value="level"
@@ -282,7 +280,7 @@
             >
               <div
                 class="d-flex fs-14 mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.tags_tab", 1) }}
               </div>
@@ -307,7 +305,7 @@
             <div class="flex flex-column">
               <div
                 class="d-flex fs-14 mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.create_new_issue", 1) }}
               </div>
@@ -392,7 +390,7 @@
             <div class="comment-type">
               <div
                 class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
                 v-shortkey="typeHotkey"
                 @shortkey="openCommentType()"
               >
@@ -409,8 +407,8 @@
                 height="40px"
                 :menu-props="{ offsetY: true }"
                 elevation="0"
-                :background-color="inputBg"
-                :color="currentTheme.secondary"
+                :background-color="$theme.inputBg"
+                :color="$theme.secondary"
                 class="rounded-lg custom-select"
                 hide-details="true"
               ></v-select>
@@ -421,7 +419,7 @@
           <v-btn
             fill
             height="40px"
-            :color="btnBg"
+            :color="$theme.btnBg"
             class="text-capitalize rounded-lg"
             depressed
             @click="handleClear"
@@ -432,7 +430,7 @@
             <v-btn
               fill
               height="40px"
-              :color="btnBg"
+              :color="$theme.btnBg"
               depressed
               class="text-capitalize mr-2 rounded-lg"
               :disabled="processing"
@@ -473,7 +471,6 @@ import { VEmojiPicker } from "v-emoji-picker";
 import TipTapLinkDialog from "../dialogs/TipTapLinkDialog.vue";
 
 import { TEXT_TYPES, AI_ENABLED_FIELDS, FILE_TYPES } from "@/modules/constants";
-import theme from "../../mixins/theme";
 import openAIIntegrationHelper from "../../integrations/OpenAIIntegrationHelpers";
 import { mapGetters } from "vuex";
 import jiraIntegrationHelper from "@/integrations/JiraIntegrationHelpers";
@@ -494,7 +491,6 @@ export default {
       default: () => {},
     },
   },
-  mixins: [theme],
   data() {
     return {
       item: {},
@@ -578,13 +574,6 @@ export default {
       }
       return splitName.length > 1 ? "." + splitName[splitName.length - 1] : "";
     },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   mounted() {
     this.getAllTags();
@@ -652,7 +641,7 @@ export default {
     },
     activeSession() {
       // set theme mode
-      const isDarkMode = this.config.theme === "dark";
+      const isDarkMode = this.config.appearance === "dark";
       this.$vuetify.theme.dark = isDarkMode;
       localStorage.setItem("isDarkMode", isDarkMode);
 

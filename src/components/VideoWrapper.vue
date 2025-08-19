@@ -41,7 +41,7 @@
           <div class="start-time">
             <div
               class="subtitle-2 label-text"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.start", 1) }}
             </div>
@@ -52,7 +52,7 @@
               flat
               solo
               height="40px"
-              :background-color="inputBg"
+              :background-color="$theme.inputBg"
               v-model="start"
               class="rounded-lg"
               hide-details="true"
@@ -62,7 +62,7 @@
           <div class="end-time">
             <div
               class="subtitle-2 label-text"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.end", 1) }}
             </div>
@@ -73,7 +73,7 @@
               solo
               class="rounded-lg"
               height="40px"
-              :background-color="inputBg"
+              :background-color="$theme.inputBg"
               dense
               v-model="end"
               hide-details="true"
@@ -92,7 +92,6 @@
 
 <script>
 import { STATUSES } from "../modules/constants";
-import theme from "../mixins/theme";
 export default {
   name: "VideoWrapper",
   components: {},
@@ -127,7 +126,6 @@ export default {
       }
     },
   },
-  mixins: [theme],
   data() {
     return {
       editSessionItem: this.item,
@@ -151,13 +149,6 @@ export default {
         return result;
       } catch (e) {
         return "Infinite";
-      }
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
       }
     },
   },

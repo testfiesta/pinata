@@ -60,11 +60,9 @@
             width="40"
             alt="avatar"
           />
-          <strong
-            class="ml-3 fs-14"
-            :style="{ color: currentTheme.secondary }"
-            >{{ profileName }}</strong
-          >
+          <strong class="ml-3 fs-14" :style="{ color: $theme.secondary }">{{
+            profileName
+          }}</strong>
         </div>
       </template>
 
@@ -140,7 +138,6 @@ import uuidv4 from "uuid";
 import { VBtn } from "vuetify/lib/components";
 import { mapGetters } from "vuex";
 import SettingsDialog from "@/components/dialogs/SettingsDialog.vue";
-import theme from "../mixins/theme";
 
 export default {
   name: "LoggedInMenu",
@@ -149,7 +146,6 @@ export default {
     SettingsDialog,
   },
   props: {},
-  mixins: [theme],
   data() {
     return {
       showMenu: false,

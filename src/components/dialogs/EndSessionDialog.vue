@@ -1,15 +1,15 @@
 <template>
   <v-dialog v-bind="$attrs" v-on="$listeners" persistent width="350">
     <v-sheet outlined rounded>
-      <v-card :style="{ backgroundColor: currentTheme.background }">
+      <v-card :style="{ backgroundColor: $theme.background }">
         <CheckTaskWrapper
           :tasks="$store.state.session.postSessionTasks"
           @taskToggle="handleTaskCheck"
         />
         <div class="footer">
           <v-btn
-            :color="currentTheme.primary"
-            :style="{ color: currentTheme.white }"
+            :color="$theme.primary"
+            :style="{ color: $theme.white }"
             class="btn-end"
             v-shortkey="confirmHotkey"
             @shortkey="endSession()"
@@ -18,9 +18,9 @@
             {{ $tc("caption.end_session", 1) }}
           </v-btn>
           <v-btn
-            :color="currentTheme.background"
+            :color="$theme.background"
             class="btn-end"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
             v-shortkey="cancelHotkey"
             @shortkey="handleCancel()"
             @click="handleCancel()"
@@ -62,13 +62,6 @@ export default {
     },
     tasks() {
       return this.postSessionData ? this.postSessionData.tasks : [];
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

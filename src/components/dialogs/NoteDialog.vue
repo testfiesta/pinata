@@ -9,7 +9,7 @@
       eager
     >
       <v-sheet outlined rounded>
-        <v-card :style="{ backgroundColor: currentTheme.background }">
+        <v-card :style="{ backgroundColor: $theme.background }">
           <v-card-title class="dialog-title">
             {{ $tc("caption.take_note", 1) }}
           </v-card-title>
@@ -24,7 +24,7 @@
                   flat
                 >
                   <v-progress-circular
-                    :color="currentTheme.primary"
+                    :color="$theme.primary"
                     size="70"
                     absolute
                     indeterminate
@@ -33,7 +33,7 @@
                 <div v-else>
                   <div
                     class="d-flex fs-14 mb-1 font-weight-medium"
-                    :style="{ color: currentTheme.secondary }"
+                    :style="{ color: $theme.secondary }"
                   >
                     {{ $tc("caption.comment", 1) }}
                   </div>
@@ -59,8 +59,8 @@
                       <v-select
                         v-model="selectedHeading"
                         :items="headingOptions"
-                        :background-color="inputBg"
-                        :color="currentTheme.secondary"
+                        :background-color="$theme.inputBg"
+                        :color="$theme.secondary"
                         class="rounded-lg custom-select"
                         item-text="text"
                         item-value="level"
@@ -239,11 +239,9 @@
                 on-icon="icon-checkbox-on"
               >
                 <template v-slot:label>
-                  <span
-                    class="fs-14"
-                    :style="{ color: currentTheme.secondary }"
-                    >{{ $tc("caption.required_follow_up", 1) }}</span
-                  >
+                  <span class="fs-14" :style="{ color: $theme.secondary }">{{
+                    $tc("caption.required_follow_up", 1)
+                  }}</span>
                 </template>
               </v-checkbox>
             </div>
@@ -251,7 +249,7 @@
               <v-col cols="12">
                 <div
                   class="d-flex fs-14 mb-1 font-weight-medium"
-                  :style="{ color: currentTheme.secondary }"
+                  :style="{ color: $theme.secondary }"
                 >
                   {{ $tc("caption.tags_tab", 1) }}
                 </div>
@@ -275,7 +273,7 @@
               <v-col class="pr-0">
                 <div
                   class="d-flex fs-14 mb-1 font-weight-medium"
-                  :style="{ color: currentTheme.secondary }"
+                  :style="{ color: $theme.secondary }"
                 >
                   {{ $tc("caption.note_type", 1) }}
                 </div>
@@ -289,8 +287,8 @@
                   height="40px"
                   :menu-props="{ offsetY: true }"
                   elevation="0"
-                  :background-color="inputBg"
-                  :color="currentTheme.secondary"
+                  :background-color="$theme.inputBg"
+                  :color="$theme.secondary"
                   hide-details="true"
                 ></v-select>
               </v-col>
@@ -301,7 +299,7 @@
                   fill
                   height="40px"
                   depressed
-                  :color="btnBg"
+                  :color="$theme.btnBg"
                   class="text-capitalize px-0 btn rounded-lg"
                   @click="handleClear"
                 >
@@ -317,7 +315,7 @@
                 <v-btn
                   fill
                   height="40px"
-                  :color="btnBg"
+                  :color="$theme.btnBg"
                   depressed
                   class="text-capitalize mr-2 rounded-lg"
                   block
@@ -335,8 +333,8 @@
                   height="40px"
                   depressed
                   block
-                  :color="currentTheme.primary"
-                  :style="{ color: currentTheme.white }"
+                  :color="$theme.primary"
+                  :style="{ color: $theme.white }"
                   v-shortkey="confirmHotkey"
                   @shortkey="handleSave()"
                   @click="handleSave()"
@@ -363,7 +361,6 @@ import { mapGetters } from "vuex";
 import TipTapLinkDialog from "./TipTapLinkDialog.vue";
 import { VEmojiPicker } from "v-emoji-picker";
 import { TEXT_TYPES, AI_ENABLED_FIELDS } from "../../modules/constants";
-import theme from "../../mixins/theme";
 
 export default {
   name: "NoteDialog",
@@ -388,7 +385,6 @@ export default {
       this.resetData();
     },
   },
-  mixins: [theme],
   data() {
     return {
       headingOptions: [
@@ -455,13 +451,6 @@ export default {
     },
     aiAssistEnabled() {
       return this?.config?.ai?.enabled || false;
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

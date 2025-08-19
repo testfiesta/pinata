@@ -7,12 +7,12 @@
     content-class="rounded-12px"
   >
     <v-sheet outlined rounded>
-      <v-card :style="{ backgroundColor: currentTheme.background }">
-        <v-card-text class="text" :style="{ color: currentTheme.secondary }">
+      <v-card :style="{ backgroundColor: $theme.background }">
+        <v-card-text class="text" :style="{ color: $theme.secondary }">
           <div class="d-flex justify-space-between align-center">
             <p
               class="text-theme-black font-weight-semibold fs-20 mb-0"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ title }}
             </p>
@@ -33,7 +33,7 @@
               height="40px"
               class="text-capitalize btn rounded-lg mr-3"
               :style="{
-                color: mainBgReverse,
+                color: $theme.mainBgReverse,
               }"
               v-shortkey="cancelHotkey"
               @shortkey="handleCancel()"
@@ -45,9 +45,9 @@
               ref="confirmBtn"
               depressed
               height="40px"
-              :color="currentTheme.danger"
+              :color="$theme.danger"
               class="text-capitalize btn rounded-lg"
-              :style="{ color: currentTheme.white }"
+              :style="{ color: $theme.white }"
               v-shortkey="confirmHotkey"
               @shortkey="handleConfirm()"
               @click="handleConfirm()"
@@ -63,7 +63,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import theme from "../../mixins/theme";
 export default {
   name: "DeleteConfirmDialog",
   props: {
@@ -71,7 +70,6 @@ export default {
     text: String,
     btnConfirmText: String,
   },
-  mixins: [theme],
   data() {
     return {};
   },
@@ -87,13 +85,6 @@ export default {
     },
     cancelHotkey() {
       return this.$hotkeyHelpers.findBinding("general.cancel", this.hotkeys);
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

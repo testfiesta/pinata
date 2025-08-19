@@ -4,7 +4,7 @@
     <div class="d-flex justify-center flex-grow-1 align-center">
       <div
         class="d-flex justify-center align-center flex-column pa-6 rounded-lg home-wrapper w-full"
-        :style="{ backgroundColor: mainBg }"
+        :style="{ backgroundColor: $theme.mainBg }"
       >
         <div class="logo mb-6 w-full">
           <div class="fs-30 font-weight-semibold text-left">
@@ -14,7 +14,7 @@
         <div class="new-section">
           <v-btn
             class="mb-4 text-capitalize rounded-lg white--text font-weight-semibold"
-            :color="btnBg"
+            :color="$theme.btnBg"
             block
             height="40px"
             depressed
@@ -22,10 +22,7 @@
             @shortkey="handleQuickTest()"
             @click="handleQuickTest()"
           >
-            <div
-              class="btn-text fs-14"
-              :style="{ color: currentTheme.secondary }"
-            >
+            <div class="btn-text fs-14" :style="{ color: $theme.secondary }">
               {{ $tc("caption.quick_test_session", 1) }}
             </div>
           </v-btn>
@@ -33,7 +30,7 @@
         <div class="open-section">
           <v-btn
             class="mb-4 text-capitalize rounded-lg white--text font-weight-semibold"
-            :color="btnBg"
+            :color="$theme.btnBg"
             block
             height="40px"
             depressed
@@ -41,24 +38,18 @@
             @shortkey="newSession"
             @click="newSession"
           >
-            <div
-              class="btn-text fs-14"
-              :style="{ color: currentTheme.secondary }"
-            >
+            <div class="btn-text fs-14" :style="{ color: $theme.secondary }">
               {{ $tc("caption.exploratory_session", 1) }}
             </div>
           </v-btn>
           <v-btn
             class="mb-4 text-capitalize rounded-lg white--text font-weight-semibold"
-            :color="btnBg"
+            :color="$theme.btnBg"
             block
             height="40px"
             depressed
           >
-            <div
-              class="btn-text fs-14"
-              :style="{ color: currentTheme.secondary }"
-            >
+            <div class="btn-text fs-14" :style="{ color: $theme.secondary }">
               {{ $tc("caption.scripted_test_session", 1) }}
             </div>
           </v-btn>
@@ -342,19 +333,6 @@ export default {
       loggedInServices: "auth/loggedInServices",
       config: "config/fullConfig",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
-    btnBg() {
-      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
-    },
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
     quickTestHotkey() {
       return this.$hotkeyHelpers.findBinding("home.quickTest", this.hotkeys);
     },

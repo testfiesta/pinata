@@ -8,13 +8,13 @@
             class="settings-menu"
             v-model="activeTab"
             vertical
-            :background-color="mainBg"
+            :background-color="$theme.mainBg"
           >
             <v-tab
               v-for="tab of tabs"
               :key="tab.id"
               v-bind="$isElectron ? { to: tab.route } : {}"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
               exact
             >
               {{ tab.name }}
@@ -25,7 +25,7 @@
           <v-tabs-items
             v-model="activeTab"
             class="active-tab"
-            :style="{ backgroundColor: mainBg }"
+            :style="{ backgroundColor: $theme.mainBg }"
           >
             <v-tab-item
               v-for="tab of tabs"
@@ -91,14 +91,6 @@ export default {
     ...mapGetters({
       isAuthenticated: "auth/isAuthenticated",
     }),
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
-    currentTheme() {
-      return this.$vuetify.theme.dark
-        ? this.$vuetify.theme.themes.dark
-        : this.$vuetify.theme.themes.light;
-    },
   },
   data() {
     return {
@@ -182,14 +174,11 @@ export default {
     updateConfig(value) {
       this.config = value;
       this.$storageService.updateConfig(this.config);
-      const isDarkMode = this.config.theme === "dark";
-      this.$vuetify.theme.dark = isDarkMode;
-      localStorage.setItem("isDarkMode", isDarkMode.toString());
-
+      this.$store.commit("config/updateThemeMode");
       this.$store.commit("config/setFullConfig", this.config);
 
       if (this.$isElectron) {
-        this.$electronService.setAppearance(this.config.theme);
+        this.$electronService.setAppearance(this.config.appearance);
       }
     },
     // async getCredentials() {
@@ -232,7 +221,6 @@ export default {
 }
 
 .v-tab--active {
-  background-color: #f0f3fe;
   color: #0c2ff3 !important;
   border-radius: 8px;
 }

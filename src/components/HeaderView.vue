@@ -1,6 +1,6 @@
 <template>
   <v-app-bar
-    :color="mainBg"
+    :color="$theme.background"
     class="app-navbar px-2"
     max-height="80px"
     height="80px"
@@ -212,14 +212,6 @@ export default {
       return this.$vuetify.theme.dark
         ? "/pinata-logo-white.svg"
         : "/pinata-logo.svg";
-    },
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
-    currentTheme() {
-      return this.$vuetify.theme.dark
-        ? this.$vuetify.theme.themes.dark
-        : this.$vuetify.theme.themes.light;
     },
     showControlPanel() {
       return (

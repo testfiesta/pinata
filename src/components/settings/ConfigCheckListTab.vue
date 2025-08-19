@@ -9,14 +9,14 @@
         <v-tab
           @click="tab = 'pre'"
           class="text-capitalize"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           {{ $tc("caption.pre_session", 1) }}
         </v-tab>
         <v-tab
           @click="tab = 'post'"
           class="text-capitalize"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           {{ $tc("caption.post_session", 1) }}
         </v-tab>
@@ -86,7 +86,7 @@
             <button
               class="link"
               @click="addTask"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ $tc("caption.add_another_task", 1) }}
             </button>
@@ -195,13 +195,6 @@ export default {
       checklistPostsessionTasks: "config/checklistPostsessionTasks",
       checklistPostsessionStatus: "config/checklistPostsessionStatus",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   methods: {
     addTask: function () {

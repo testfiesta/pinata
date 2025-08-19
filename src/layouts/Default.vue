@@ -1,5 +1,5 @@
 <template>
-  <v-app :style="{ backgroundColor: currentTheme.background }">
+  <v-app :style="{ backgroundColor: $theme.background }">
     <v-main>
       <v-overlay :absolute="true" :value="overlay"> </v-overlay>
       <router-view :isAuthenticated="$store.getters['auth/isAuthenticated']" />
@@ -103,14 +103,6 @@ export default {
       this.snackBar.message = message;
     },
   },
-  computed: {
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
-  },
+  computed: {},
 };
 </script>

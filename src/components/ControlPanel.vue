@@ -24,7 +24,7 @@
     >
       <v-row
         class="text-center control-btn-wrapper rounded-12px"
-        :style="{ backgroundColor: mainBgReverse }"
+        :style="{ backgroundColor: $theme.mainBgReverse }"
         v-if="status === 'end'"
       >
         <v-col cols="12" class="d-flex justify-center px-0">
@@ -114,7 +114,7 @@
       <v-row
         class="text-center control-btn-wrapper control-btn-shadow control-panel rounded-12px"
         :style="{
-          backgroundColor: mainBgReverse,
+          backgroundColor: $theme.mainBgReverse,
           right: quickTest ? '8%' : '5%',
         }"
         v-if="status !== 'pending' && status !== 'end'"
@@ -668,7 +668,6 @@ import AudioErrorDialog from "./dialogs/AudioErrorDialog.vue";
 import EndSessionDialog from "./dialogs/EndSessionDialog.vue";
 import LowProfileControlWrapper from "../components/LowProfileControlWrapper.vue";
 import AddEvidenceDialog from "@/components/dialogs/AddEvidenceDialog.vue";
-import theme from "../mixins/theme";
 
 import {
   DEFAULT_MAP_CONNECTIONS,
@@ -738,7 +737,6 @@ export default {
       console.log(e);
     }
   },
-  mixins: [theme],
   watch: {
     selectedItems: function (newValue) {
       this.selected = newValue;
@@ -860,13 +858,6 @@ export default {
       const date = new Date(null);
       date.setSeconds(timer);
       return date.toISOString().substr(11, 8);
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
     summary() {
       let summary = {};

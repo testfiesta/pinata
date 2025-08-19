@@ -1,17 +1,17 @@
 <template>
   <v-dialog v-bind="$attrs" v-on="$listeners" persistent width="350">
     <v-sheet outlined rounded>
-      <v-card :style="{ backgroundColor: currentTheme.background }">
+      <v-card :style="{ backgroundColor: $theme.background }">
         <LogoWrapper :height="20" :width="60" />
-        <v-card-text class="text" :style="{ color: currentTheme.secondary }">
+        <v-card-text class="text" :style="{ color: $theme.secondary }">
           {{ text || $t("message.confirm_delete") }}
         </v-card-text>
         <v-card-actions>
           <v-btn
             small
             ref="confirmBtn"
-            :color="currentTheme.primary"
-            :style="{ color: currentTheme.white }"
+            :color="$theme.primary"
+            :style="{ color: $theme.white }"
             class="text-uppercase btn"
             v-shortkey="confirmHotkey"
             @shortkey="handleConfirm()"
@@ -46,13 +46,6 @@ export default {
     }),
     confirmHotkey() {
       return this.$hotkeyHelpers.findBinding("general.save", this.hotkeys);
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

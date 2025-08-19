@@ -208,13 +208,6 @@ export default {
     };
   },
   computed: {
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     ...mapGetters({
       credentials: "auth/credentials",
       itemLists: "sessionItems",

@@ -22,8 +22,8 @@
           <v-select
             v-model="selectedHeading"
             :items="headingOptions"
-            :background-color="inputBg"
-            :color="currentTheme.secondary"
+            :background-color="$theme.inputBg"
+            :color="$theme.secondary"
             class="rounded-lg custom-select"
             item-text="text"
             item-value="level"
@@ -242,7 +242,7 @@
                     <template v-slot:label>
                       <span
                         class="fs-14"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                         >{{ $tc("caption.required_follow_up", 1) }}</span
                       >
                     </template>
@@ -367,7 +367,7 @@
                     <template v-slot:label>
                       <span
                         class="fs-14"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                         >{{ $tc("caption.required_follow_up", 1) }}</span
                       >
                     </template>
@@ -493,7 +493,7 @@
                     <template v-slot:label>
                       <span
                         class="fs-14"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                         >{{ $tc("caption.required_follow_up", 1) }}</span
                       >
                     </template>
@@ -543,7 +543,7 @@
                     <template v-slot:label>
                       <span
                         class="fs-14"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                         >{{ $tc("caption.required_follow_up", 1) }}</span
                       >
                     </template>
@@ -644,7 +644,7 @@
                     <template v-slot:label>
                       <span
                         class="fs-14"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                         >{{ $tc("caption.required_follow_up", 1) }}</span
                       >
                     </template>
@@ -712,7 +712,7 @@
                     <template v-slot:label>
                       <span
                         class="fs-14"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                         >{{ $tc("caption.required_follow_up", 1) }}</span
                       >
                     </template>
@@ -739,7 +739,6 @@
 <script>
 import draggable from "vuedraggable";
 import { VEmojiPicker } from "v-emoji-picker";
-import theme from "../mixins/theme";
 import { debounce } from "lodash";
 import { FILE_TYPES, TEXT_TYPES } from "../modules/constants";
 import EditEvidenceDialog from "@/components/dialogs/EditEvidenceDialog.vue";
@@ -782,7 +781,6 @@ export default {
       this.eventName = newValue;
     },
   },
-  mixins: [theme],
   data() {
     return {
       notes: { text: "", content: "" },
@@ -822,13 +820,6 @@ export default {
   computed: {
     status() {
       return this.$store.state.session.status;
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

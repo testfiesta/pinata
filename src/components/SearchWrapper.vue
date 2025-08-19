@@ -2,7 +2,7 @@
   <v-text-field
     :placeholder="$tc('caption.search', 1)"
     class="rounded-lg"
-    :background-color="inputBg"
+    :background-color="$theme.inputBg"
     dense
     height="40px"
     flat
@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import theme from "../mixins/theme";
 export default {
   name: "SearchWrapper",
   components: {},
@@ -28,7 +27,6 @@ export default {
       search: "",
     };
   },
-  mixins: [theme],
   methods: {
     handleSearch(val) {
       this.$root.$emit("submit-search", val);

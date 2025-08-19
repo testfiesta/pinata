@@ -18,7 +18,7 @@
         <v-card>
           <v-card-title
             class="dialog-title"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
           >
             {{ $tc("caption.create_new_jira_issue", 1) }}
           </v-card-title>
@@ -43,7 +43,7 @@
                   small
                   block
                   color="white"
-                  :style="{ color: currentTheme.black }"
+                  :style="{ color: $theme.black }"
                   :disabled="loading"
                   @click="handleDiscard()"
                 >
@@ -101,13 +101,6 @@ export default {
       credentials: "auth/credentials",
       items: "sessionItems",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   mounted() {},
   methods: {
