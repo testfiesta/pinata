@@ -114,7 +114,10 @@
         >
           <SearchWrapper class="mt-16" />
           <div class="toggle-wrapper mt-5">
-            <div class="toggle-container" :style="{ backgroundColor: inputBg }">
+            <div
+              class="toggle-container"
+              :style="{ backgroundColor: $theme.inputBg }"
+            >
               <div
                 class="toggle-option"
                 :class="{ active: currentTab === 'timeline' }"

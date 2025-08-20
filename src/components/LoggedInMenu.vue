@@ -1,42 +1,17 @@
 <template>
   <div class="d-flex justify-space-between align-center">
     <v-btn
-      v-if="!$isElectron"
+      id="btn__setting"
+      class="mx-1"
       fab
+      icon
       small
-      color="primary"
-      height="32"
-      width="32"
-      class="mr-3"
-      @click="openSettingsDialog"
+      depressed
+      color="default"
+      @click="handleSettingsClick"
     >
-      <img
-        :src="require('../../public/icon/gear.svg')"
-        width="20"
-        height="20"
-      />
+      <v-icon>mdi-cog</v-icon>
     </v-btn>
-    <div class="flex flex-row justify-center mr-5">
-      <v-btn
-        id="btn__setting"
-        class="mx-1"
-        fab
-        icon
-        small
-        depressed
-        color="default"
-        @click="openSettingWindow"
-      >
-        <img
-          :src="require('../../public/icon/gear.svg')"
-          width="20"
-          height="20"
-        />
-      </v-btn>
-      <!-- <v-btn id="btn__bell" class="mx-1" fab outlined small color="default">
-        <img :src="require('../assets/icon/bell.svg')" width="24" height="24" />
-      </v-btn> -->
-    </div>
     <v-menu
       v-model="showMenu"
       :close-on-content-click="false"
@@ -127,6 +102,7 @@
       </v-card>
     </v-menu>
     <SettingsDialog
+      v-if="settingsDialog"
       v-model="settingsDialog"
       ref="settingsDialog"
       @close="settingsDialog = false"
@@ -155,27 +131,33 @@ export default {
   computed: {
     ...mapGetters({
       credentials: "auth/credentials",
+      user: "auth/user",
     }),
     profileName() {
-      for (const cList of Object.values(this.credentials)) {
-        if (cList.length > 0) {
-          if (cList[0].user.name) {
-            return cList[0].user.name;
+      if (!this.$isElectron && this.user?.uid) {
+        return `${this.user.firstName} ${this.user.lastName}`;
+      }
+      if (this.$isElectron && Object.values(this.credentials).length > 0) {
+        for (const cList of Object.values(this.credentials)) {
+          if (cList.length > 0) {
+            if (cList[0].user.name) {
+              return cList[0].user.name;
+            }
           }
         }
       }
       return this.$t("caption.personal_workspace");
     },
     profileAvatar() {
-      for (const cList of Object.values(this.credentials)) {
-        if (cList.length > 0) {
-          if (cList[0].user.avatar) {
-            return cList[0].user.avatar;
-          } else if (cList[0].user.name) {
-            return "https://www.gravatar.com/avatar/" + cList[0].user.name;
-          }
-        }
-      }
+      // for (const cList of Object.values(this.credentials)) {
+      //   if (cList.length > 0) {
+      //     if (cList[0].user.avatar) {
+      //       return cList[0].user.avatar;
+      //     } else if (cList[0].user.name) {
+      //       return "https://www.gravatar.com/avatar/" + cList[0].user.name;
+      //     }
+      //   }
+      // }
       return "https://www.gravatar.com/avatar/" + uuidv4() + "?d=robohash";
     },
   },
@@ -218,11 +200,12 @@ export default {
       this.$store.commit("auth/setCredentials", emptyCredentials);
       this.$storageService.updateCredentials(emptyCredentials);
     },
-    openSettingsDialog() {
-      this.settingsDialog = true;
-    },
-    openSettingWindow() {
-      this.$electronService.openSettingWindow();
+    handleSettingsClick() {
+      if (this.$isElectron) {
+        this.$electronService.openSettingWindow();
+      } else {
+        this.settingsDialog = true;
+      }
     },
   },
 };

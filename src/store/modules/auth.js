@@ -34,5 +34,6 @@ export const auth = {
       }
       return services;
     },
+    user: (state) => state.user,
   },
 };

@@ -1,6 +1,6 @@
 <template>
   <v-container class="wrapper" fluid>
-    <HeaderView />
+    <HeaderView v-if="$isElectron" />
     <div fluid class="mt-3">
       <v-row>
         <v-col cols="auto">
@@ -221,7 +221,6 @@ export default {
 }
 
 .v-tab--active {
-  color: #0c2ff3 !important;
   border-radius: 8px;
 }
 .active-tab {
