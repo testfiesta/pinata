@@ -1,8 +1,6 @@
 import Vue from "vue";
 import {
   SESSION_STATUSES,
-  DEFAULT_CHARTER_MAP_NODES,
-  DEFAULT_CHARTER_MAP_CONNECTIONS,
 } from "@/modules/constants";
 
 export const state = {
