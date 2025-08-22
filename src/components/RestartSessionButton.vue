@@ -11,7 +11,7 @@
           @click="handleRestart"
         >
           <img
-            :src="require('../assets/icon/refresh.svg')"
+            :src="require('@/assets/icon/refresh.svg?url')"
             width="20"
             height="20"
           />

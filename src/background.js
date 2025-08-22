@@ -1,22 +1,21 @@
 "use strict";
 
 import { app, protocol, BrowserWindow } from "electron";
-import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 
-import createMenu from "./menu";
-import { VIEW_MODE } from "./modules/constants";
+import createMenu from "../menu";
+import { VIEW_MODE } from "../modules/constants";
 
 let isDevelopment = process.env.NODE_ENV !== "production";
 
-const browserUtility = require("./modules/BrowserWindowUtility");
-const persistenceUtility = require("./modules/PersistenceUtility");
-const windowUtility = require("./modules/WindowUtility");
-const serverUtility = require("./modules/ServerUtility");
+const browserUtility = require("../modules/BrowserWindowUtility");
+const persistenceUtility = require("../modules/PersistenceUtility");
+const windowUtility = require("../modules/WindowUtility");
+const serverUtility = require("../modules/ServerUtility");
 
 import { session } from "electron";
 
-require("./modules/IpcHandlers");
+require("../modules/IpcHandlers");
 
 // initialize session
 persistenceUtility.initializeSession();
@@ -42,13 +41,10 @@ async function createWindow() {
     win.webContents.openDevTools();
   }
 
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
-    // Load the url of the dev server if in development mode
-    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
+  if (process.env.VITE_DEV_SERVER_URL) {
+    await win.loadURL(process.env.VITE_DEV_SERVER_URL);
   } else {
-    createProtocol("app");
-    // Load the index.html when not in development
-    win.loadURL("app://./index.html");
+    win.loadFile('dist-electron/index.html');
   }
 
   createMenu(win, isDevelopment);

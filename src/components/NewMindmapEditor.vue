@@ -27,7 +27,7 @@
               }}</span> -->
             <!-- </template> -->
             <!-- <img
-              :src="require('../assets/icon/' + action.icon + '.svg')"
+              :src="require('@/assets/icon/' + action.icon + '.svg?url')"
               width="24"
               height="24"
             /> -->
@@ -86,7 +86,7 @@
                     @click="handleSelect('marker')"
                   >
                     <img
-                      :src="require('../assets/icon/edit.svg')"
+                      :src="require('@/assets/icon/edit.svg?url')"
                       width="24"
                       height="24"
                     />
@@ -102,7 +102,7 @@
                     @click="handleSelect('shape')"
                   >
                     <img
-                      :src="require('../assets/icon/shape.svg')"
+                      :src="require('@/assets/icon/shape.svg?url')"
                       width="24"
                       height="24"
                     />
@@ -110,7 +110,7 @@
                 </template>
                 <span>{{ $tc("caption.shapes", 1) }}</span>
               </v-tooltip>
-              <!-- 
+              <!--
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <div
@@ -119,7 +119,7 @@
                     @click="handleSelect('link')"
                   >
                     <img
-                      :src="require('../assets/icon/link.svg')"
+                      :src="require('@/assets/icon/link.svg?url')"
                       width="24"
                       height="24"
                     />
@@ -135,7 +135,7 @@
                     @click="handleSelect('text')"
                   >
                     <img
-                      :src="require('../assets/icon/text.svg')"
+                      :src="require('@/assets/icon/text.svg?url')"
                       width="24"
                       height="24"
                     />
@@ -151,7 +151,7 @@
                     @click="handleOpenAddModal()"
                   >
                     <img
-                      :src="require('../assets/icon/upload.svg')"
+                      :src="require('@/assets/icon/upload.svg?url')"
                       width="24"
                       height="24"
                     />
@@ -173,7 +173,7 @@
               @click="resetZoom()"
             >
               <img
-                :src="require('../assets/icon/compass.svg')"
+                :src="require('@/assets/icon/compass.svg?url')"
                 width="24"
                 height="24"
               />
@@ -188,7 +188,7 @@
               <template v-slot:activator="{ on }">
                 <div class="cursor-pointer" @click="zoomInOut(1.25)" v-on="on">
                   <img
-                    :src="require('../assets/icon/zoom-in.svg')"
+                    :src="require('@/assets/icon/zoom-in.svg?url')"
                     width="24"
                     height="24"
                   />
@@ -200,7 +200,7 @@
               <template v-slot:activator="{ on }">
                 <div class="cursor-pointer" @click="zoomInOut(0.8)" v-on="on">
                   <img
-                    :src="require('../assets/icon/zoom-out.svg')"
+                    :src="require('@/assets/icon/zoom-out.svg?url')"
                     width="24"
                     height="24"
                   />

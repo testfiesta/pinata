@@ -104,7 +104,7 @@
                 v-if="!isDisabled"
               >
                 <img
-                  :src="require('../../public/icon/gear.svg')"
+                  :src="require('@/assets/svg/GearIcon.svg?url')"
                   width="20"
                   height="20"
                 />

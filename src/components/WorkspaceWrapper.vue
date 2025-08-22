@@ -94,7 +94,7 @@
           :style="{ left: sidebarActive ? '-0.75rem' : '0.075rem' }"
         >
           <img
-            :src="require('../assets/icon/double-arrow.svg')"
+            :src="require('@/assets/icon/double-arrow.svg?url')"
             width="20"
             height="20"
             :class="{ 'reverse-img': !sidebarActive }"
@@ -195,7 +195,7 @@
                         >
                           {{ $tc("caption.export", 1) }}
                           <img
-                            :src="require('../assets/icon/download-white.svg')"
+                            :src="require('@/assets/icon/download-white.svg?url')"
                             width="20"
                             height="20"
                             class="ml-2"

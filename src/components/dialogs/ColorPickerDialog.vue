@@ -30,7 +30,7 @@
               >
                 <div class="flex flex-row align-center justify-center">
                   <img
-                    :src="require('../../assets/icon/fill.svg')"
+                    :src="require('@/assets/icon/fill.svg?url')"
                     width="24"
                     height="24"
                   />
@@ -51,7 +51,7 @@
               >
                 <div class="flex flex-row align-center justify-center">
                   <img
-                    :src="require('../../assets/icon/transparent.svg')"
+                    :src="require('@/assets/icon/transparent.svg?url')"
                     width="24"
                     height="24"
                   />
@@ -72,7 +72,7 @@
               >
                 <div class="flex flex-row align-center justify-center">
                   <img
-                    :src="require('../../assets/icon/nofill.svg')"
+                    :src="require('@/assets/icon/nofill.svg?url')"
                     width="24"
                     height="24"
                   />

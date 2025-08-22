@@ -31,7 +31,7 @@
             @click="signinJira"
           >
             <div class="d-flex align-center justify-center">
-              <img :src="require('../../assets/icon/jira.png')" />
+              <img :src="require('@/assets/icon/jira.png?url')" />
               <div
                 class="btn-text fs-14 ml-2"
                 :style="{ color: $theme.secondary }"
@@ -49,7 +49,7 @@
             @click="signinTestRail"
           >
             <div class="d-flex align-center justify-center">
-              <img :src="require('../../assets/icon/testrail.png')" />
+              <img :src="require('@/assets/icon/testrail.png?url')" />
               <div
                 class="btn-text fs-14 ml-2"
                 :style="{ color: $theme.secondary }"
@@ -66,7 +66,7 @@
             depressed
             @click="signinXray"
           >
-            <img :src="require('../../assets/icon/xray-logo.png')" width="12" />
+            <img :src="require('@/assets/icon/xray-logo.png?url')" width="12" />
             <div
               class="btn-text fs-14 ml-2"
               :style="{ color: $theme.secondary }"
@@ -83,7 +83,7 @@
             @click="signinZephyrSquad"
           >
             <img
-              :src="require('../../assets/icon/zephyr-squad.png')"
+              :src="require('@/assets/icon/zephyr-squad.png?url')"
               width="16"
             />
             <div
@@ -102,7 +102,7 @@
             @click="signinZephyrScale"
           >
             <img
-              :src="require('../../assets/icon/zephyr-scale.png')"
+              :src="require('@/assets/icon/zephyr-scale.png?url')"
               width="16"
             />
             <div
@@ -113,13 +113,13 @@
             </div>
           </v-btn>
           <!--<v-btn class="mb-4 outline-btn" block outlined color="white">
-            <img :src="require('../../assets/icon/qtest.png')" />
+            <img :src="require('@/assets/icon/qtest.png?url')" />
             <div class="btn-text" :style="{ color: $theme.secondary }">
               {{ $tc("caption.signin_qtest", 1) }}
             </div>
           </v-btn>
           <v-btn class="mb-4 outline-btn" block outlined color="white">
-            <img :src="require('../../assets/icon/practitest.png')" />
+            <img :src="require('@/assets/icon/practitest.png?url')" />
             <div class="btn-text" :style="{ color: $theme.secondary }">
               {{ $tc("caption.signin_practitest", 1) }}
             </div>

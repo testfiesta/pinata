@@ -19,7 +19,7 @@
         @click="pauseSession()"
       >
         <img
-          :src="require('../assets/icon/pause-white.svg')"
+          :src="require('@/assets/icon/pause-white.svg?url')"
           width="20"
           height="20"
         />
@@ -32,14 +32,14 @@
         @click="resumeSession()"
       >
         <img
-          :src="require('../assets/icon/play-white.svg')"
+          :src="require('@/assets/icon/play-white.svg?url')"
           width="24"
           height="24"
         />
       </v-btn>
       <v-btn id="btn_end_session" icon class="icon-btn" @click="endSession()">
         <img
-          :src="require('../assets/icon/stop-white.svg')"
+          :src="require('@/assets/icon/stop-white.svg?url')"
           width="20"
           height="20"
         />
@@ -53,7 +53,7 @@
         @click="startRecordVideo()"
       >
         <img
-          :src="require('../assets/icon/video-solid-white.svg')"
+          :src="require('@/assets/icon/video-solid-white.svg?url')"
           width="24"
           height="24"
         />
@@ -67,7 +67,7 @@
         @click="stopRecordVideo()"
       >
         <img
-          :src="require('../assets/icon/video-slash-solid-white.svg')"
+          :src="require('@/assets/icon/video-slash-solid-white.svg?url')"
           width="24"
           height="24"
         />
@@ -81,7 +81,7 @@
         @click="screenshot()"
       >
         <img
-          :src="require('../assets/icon/camera-white.svg')"
+          :src="require('@/assets/icon/camera-white.svg?url')"
           width="19"
           height="17"
         />
@@ -95,7 +95,7 @@
         @click="startRecordAudio()"
       >
         <img
-          :src="require('../assets/icon/microphone-solid-white.svg')"
+          :src="require('@/assets/icon/microphone-solid-white.svg?url')"
           width="27"
           height="27"
         />
@@ -109,7 +109,7 @@
         @click="stopRecordAudio()"
       >
         <img
-          :src="require('../assets/icon/microphone-slash-solid-white.svg')"
+          :src="require('@/assets/icon/microphone-slash-solid-white.svg?url')"
           width="26"
           height="26"
         />
@@ -122,7 +122,7 @@
         @click="showNoteDialog"
       >
         <img
-          :src="require('../assets/icon/pencil-white1.svg')"
+          :src="require('@/assets/icon/pencil-white1.svg?url')"
           width="17"
           height="17"
         />
@@ -134,7 +134,7 @@
         @click="mindMap"
       >
         <img
-          :src="require('../assets/icon/connect-white.svg')"
+          :src="require('@/assets/icon/connect-white.svg?url')"
           width="24"
           height="24"
         />

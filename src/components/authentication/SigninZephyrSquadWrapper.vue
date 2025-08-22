@@ -10,7 +10,7 @@
           {{ $tc("caption.back", 1) }}
         </v-btn>
         <img
-          :src="require('../../assets/icon/zephyr-squad.png')"
+          :src="require('@/assets/icon/zephyr-squad.png?url')"
           alt="zephyr_squad"
           width="42"
         />

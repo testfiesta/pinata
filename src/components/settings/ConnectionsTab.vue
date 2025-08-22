@@ -7,7 +7,7 @@
         </p>
 
         <v-col cols="12">
-          <div class="avatar" v-if="credentials.testrail">
+          <div class="avatar" v-if="credentials?.testrail">
             <ConnectionPanel connectionType="testrail" />
           </div>
           <div v-else>
@@ -18,7 +18,7 @@
               color="white"
               @click="signinTestRail"
             >
-              <img :src="require('../../assets/icon/testrail.png')" />
+              <img :src="require('@/assets/icon/testrail.png?url')" />
               <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_testrail") }}
               </div>
@@ -27,7 +27,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.xray">
+          <div class="avatar" v-if="credentials?.xray">
             <ConnectionPanel connectionType="xray" />
           </div>
           <div v-else>
@@ -39,7 +39,7 @@
               @click="signinXray"
             >
               <img
-                :src="require('../../assets/icon/xray-logo.png')"
+                :src="require('@/assets/icon/xray-logo.png?url')"
                 width="12"
               />
               <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
@@ -50,7 +50,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.zephyrSquad">
+          <div class="avatar" v-if="credentials?.zephyrSquad">
             <ConnectionPanel connectionType="zephyrSquad" />
           </div>
           <div v-else>
@@ -62,7 +62,7 @@
               @click="signinZephyrSquad"
             >
               <img
-                :src="require('../../assets/icon/zephyr-squad.png')"
+                :src="require('@/assets/icon/zephyr-squad.png?url')"
                 width="16"
               />
               <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
@@ -73,7 +73,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.zephyrScale">
+          <div class="avatar" v-if="credentials?.zephyrScale">
             <ConnectionPanel connectionType="zephyrScale" />
           </div>
           <div v-else>
@@ -85,7 +85,7 @@
               @click="signinZephyrScale"
             >
               <img
-                :src="require('../../assets/icon/zephyr-scale.png')"
+                :src="require('@/assets/icon/zephyr-scale.png?url')"
                 width="16"
               />
               <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
@@ -96,7 +96,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.jira">
+          <div class="avatar" v-if="credentials?.jira">
             <ConnectionPanel connectionType="jira" />
           </div>
           <div v-else>
@@ -107,7 +107,7 @@
               color="white"
               @click="signinJira"
             >
-              <img :src="require('../../assets/icon/jira.png')" />
+              <img :src="require('@/assets/icon/jira.png?url')" />
               <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_jira") }}
               </div>
@@ -188,10 +188,10 @@
               hide-details="true"
             ></v-text-field>
             <v-btn icon color="primary" class="ml-2">
-              <img :src="require('../../assets/icon/pencil-white.svg')" />
+              <img :src="require('@/assets/icon/pencil-white.svg?url')" />
             </v-btn>
             <v-btn icon color="primary">
-              <img :src="require('../../assets/icon/trash.svg')" />
+              <img :src="require('@/assets/icon/trash.svg?url')" />
             </v-btn>
           </div>
           <div class="d-flex align-center">
@@ -203,10 +203,10 @@
               hide-details="true"
             ></v-text-field>
             <v-btn icon color="primary" class="ml-2">
-              <img :src="require('../../assets/icon/pencil-white.svg')" />
+              <img :src="require('@/assets/icon/pencil-white.svg?url')" />
             </v-btn>
             <v-btn icon color="primary">
-              <img :src="require('../../assets/icon/trash.svg')" />
+              <img :src="require('@/assets/icon/trash.svg?url')" />
             </v-btn>
           </div>
           <div>

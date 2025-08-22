@@ -16,7 +16,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import ColorPickerDialog from "../dialogs/ColorPickerDialog.vue";
+import ColorPickerDialog from "@/components/dialogs/ColorPickerDialog.vue";
 export default {
   name: "ColorPicker",
   components: {

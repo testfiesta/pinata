@@ -211,7 +211,7 @@
                             @click="handleSelectedItem(item.stepID)"
                           >
                             <img
-                              :src="require('../assets/icon/add-emoticon.svg')"
+                              :src="require('@/assets/icon/add-emoticon.svg?url')"
                               width="24"
                               height="24"
                             />
@@ -336,7 +336,7 @@
                             @click="handleSelectedItem(item.stepID)"
                           >
                             <img
-                              :src="require('../assets/icon/add-emoticon.svg')"
+                              :src="require('@/assets/icon/add-emoticon.svg?url')"
                               width="24"
                               height="24"
                             />
@@ -462,7 +462,7 @@
                             @click="handleSelectedItem(item.stepID)"
                           >
                             <img
-                              :src="require('../assets/icon/add-emoticon.svg')"
+                              :src="require('@/assets/icon/add-emoticon.svg?url')"
                               width="24"
                               height="24"
                             />

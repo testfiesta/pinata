@@ -65,7 +65,7 @@
                         :disabled="processing"
                       >
                         <img
-                          :src="require('../../assets/icon/add-emoticon.svg')"
+                          :src="require('@/assets/icon/add-emoticon.svg?url')"
                           width="24"
                           height="24"
                         />
@@ -325,13 +325,13 @@
                       >
                         <img
                           v-if="$vuetify.theme.dark === false"
-                          :src="require('../../assets/icon/bug.svg')"
+                          :src="require('@/assets/icon/bug.svg?url')"
                           width="24"
                           height="24"
                         />
                         <img
                           v-else
-                          :src="require('../../assets/icon/bug-gray.svg')"
+                          :src="require('@/assets/icon/bug-gray.svg?url')"
                           width="24"
                           height="24"
                         />
@@ -352,7 +352,7 @@
                       <v-list-item-icon class="mr-4">
                         <v-avatar size="24">
                           <img
-                            :src="require('../../assets/icon/jira.png')"
+                            :src="require('@/assets/icon/jira.png?url')"
                             width="24"
                             alt="avatar"
                           />

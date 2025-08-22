@@ -1,7 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
-import VTiptap from "@yatt-ai/vuetify-tiptap";
 import router from "./router";
 import store from "./store";
 import integrationHelpers from "./integrations/IntegrationHelpers";
@@ -41,7 +40,6 @@ library.add(faPlus);
 library.add(faTableList);
 
 Vue.use(VueShortkey);
-Vue.use(VTiptap);
 Vue.use(VueMask);
 
 Vue.component("default-layout", DefaultLayout);
@@ -64,17 +62,17 @@ const plugins = {
       Vue.prototype.$electronService = new ElectronService();
     }
     Vue.prototype.$api = axios.create({
-      baseURL: process.env.VUE_APP_SERVER_INTERNALURL,
+      baseURL: import.meta.env.VITE_APP_SERVER_INTERNALURL,
       withCredentials: true,
     });
   },
 };
 Vue.use(plugins);
 Vue.use(ThemePlugin);
+Vue.use(i18n);
 new Vue({
   vuetify,
   router,
   store,
-  i18n,
   render: (h) => h(App),
 }).$mount("#app");

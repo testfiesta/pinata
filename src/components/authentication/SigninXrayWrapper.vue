@@ -10,7 +10,7 @@
           {{ $tc("caption.back", 1) }}
         </v-btn>
         <img
-          :src="require('../../assets/icon/xray-logo.png')"
+          :src="require('@/assets/icon/xray-logo.png?url')"
           alt="xray"
           height="42"
         />

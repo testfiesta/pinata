@@ -77,7 +77,7 @@
                 <div class="social-integration" v-if="loggedInServices.jira">
                   <button class="social-btn">
                     <img
-                      :src="require('../assets/icon/jira.svg')"
+                      :src="require('@/assets/icon/jira.svg?url')"
                       width="40"
                       height="40"
                       class="social-logo"
@@ -109,7 +109,7 @@
                 >
                   <button class="social-btn">
                     <img
-                      :src="require('../assets/icon/testrail.svg')"
+                      :src="require('@/assets/icon/testrail.svg?url')"
                       width="40"
                       height="40"
                       class="social-logo"
@@ -138,7 +138,7 @@
                 <div class="social-integration" v-if="loggedInServices.xray">
                   <button class="social-btn">
                     <img
-                      :src="require('../assets/icon/xray-logo.png')"
+                      :src="require('@/assets/icon/xray-logo.png?url')"
                       class="social-logo"
                       width="40"
                       height="40"
@@ -170,7 +170,7 @@
                 >
                   <button class="social-btn">
                     <img
-                      :src="require('../assets/icon/zephyr-squad.png')"
+                      :src="require('@/assets/icon/zephyr-squad.png?url')"
                       class="social-logo"
                       width="40"
                       height="40"
@@ -202,7 +202,7 @@
                 >
                   <button class="social-btn">
                     <img
-                      :src="require('../assets/icon/zephyr-scale.png')"
+                      :src="require('@/assets/icon/zephyr-scale.png?url')"
                       class="social-logo"
                       width="40"
                       height="40"
@@ -231,7 +231,7 @@
                 <div class="social-integration" v-if="loggedInServices.qtest">
                   <button class="social-btn">
                     <img
-                      :src="require('../assets/icon/qtest.svg')"
+                      :src="require('@/assets/icon/qtest.svg?url')"
                       width="40"
                       height="40"
                       class="integration-image social-logo"
@@ -263,7 +263,7 @@
                 >
                   <button class="social-btn">
                     <img
-                      :src="require('../assets/icon/practitest.svg')"
+                      :src="require('@/assets/icon/practitest.svg?url')"
                       width="40"
                       height="40"
                       class="social-logo"
@@ -293,7 +293,7 @@
                 @click="$router.push('authentication/signin')"
               >
                 <img
-                  :src="require('../assets/icon/plus-integration.svg')"
+                  :src="require('@/assets/icon/plus-integration.svg?url')"
                   width="40"
                   height="40"
                 />

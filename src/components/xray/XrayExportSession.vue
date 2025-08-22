@@ -3,7 +3,7 @@
     <v-list-item-icon class="mr-4">
       <v-avatar width="12" size="24">
         <img
-          :src="require('../../assets/icon/xray-logo.png')"
+          :src="require('@/assets/icon/xray-logo.png?url')"
           width="12"
           alt="avatar"
         />

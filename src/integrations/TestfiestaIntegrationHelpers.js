@@ -24,13 +24,13 @@ export default {
   },
   async saveSession(credentials) {
     if (!credentials?.testfiesta || credentials?.testfiesta.length < 1) {
-      const url = `${process.env.VUE_APP_TESTFIESTA_API_URL}/app/signup/token`;
+      const url = `${import.meta.env.VITE_APP_TESTFIESTA_API_URL}/app/signup/token`;
       const newCredentialsResponse = await axios.get(url);
       this.saveCredentials(credentials, newCredentialsResponse.data);
     }
 
     // Pull case and session data
-    const url = `${process.env.VUE_APP_TESTFIESTA_API_URL}/pinata/executions`;
+    const url = `${import.meta.env.VITE_APP_TESTFIESTA_API_URL}/pinata/executions`;
     const state = await window.ipc.invoke(IPC_HANDLERS.PERSISTENCE, {
       func: IPC_FUNCTIONS.GET_STATE,
     });

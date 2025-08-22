@@ -1,8 +1,7 @@
-const { STATUSES, DEFAULT_FILE_TYPES } = require("@/modules/constants");
-const uuidv4 = require("uuid");
-const crypto = require("crypto");
+import { STATUSES, DEFAULT_FILE_TYPES } from "@/modules/constants";
+import { v4 as uuidv4 } from "uuid";
 
-module.exports.createImageForWeb = (url) => {
+export const createImageForWeb = (url) => {
   const fileType = DEFAULT_FILE_TYPES["image"].type;
   const { stepID, attachmentID, fileName } = generateIDAndName("image");
 
@@ -28,7 +27,7 @@ module.exports.createImageForWeb = (url) => {
   };
 };
 
-module.exports.updateImageForWeb = ({ item, url }) => {
+export const updateImageForWeb = ({ item, url }) => {
   const { fileName } = item.fileName
     ? { fileName: item.fileName }
     : generateIDAndName("image");
@@ -52,7 +51,7 @@ module.exports.updateImageForWeb = ({ item, url }) => {
   };
 };
 
-module.exports.createMindmapImageForWeb = ({ item, url }) => {
+export const createMindmapImageForWeb = ({ item, url }) => {
   const { fileName } = item.fileName
     ? { fileName: item.fileName }
     : generateIDAndName("mindmap");
@@ -74,7 +73,7 @@ module.exports.createMindmapImageForWeb = ({ item, url }) => {
   };
 };
 
-module.exports.updateMindmapImageForWeb = ({ item, url }) => {
+export const updateMindmapImageForWeb = ({ item, url }) => {
   const { fileName } = item.fileName
     ? { fileName: item.fileName }
     : generateIDAndName("mindmap");
@@ -97,7 +96,7 @@ module.exports.updateMindmapImageForWeb = ({ item, url }) => {
   };
 };
 
-module.exports.createVideoForWeb = (blob) => {
+export const createVideoForWeb = (blob) => {
   const fileType = DEFAULT_FILE_TYPES["video"].type;
   const { stepID, attachmentID, fileName } = generateIDAndName("video");
 
@@ -123,7 +122,7 @@ module.exports.createVideoForWeb = (blob) => {
   };
 };
 
-module.exports.createAudioForWeb = (blob) => {
+export const createAudioForWeb = (blob) => {
   const fileType = DEFAULT_FILE_TYPES["audio"].type;
   const { stepID, attachmentID, fileName } = generateIDAndName("audio");
 
@@ -142,7 +141,7 @@ module.exports.createAudioForWeb = (blob) => {
   };
 };
 
-module.exports.uploadEvidenceForWeb = async () => {
+export const uploadEvidenceForWeb = async () => {
   return new Promise((resolve) => {
     const input = document.createElement("input");
     input.type = "file";
@@ -189,7 +188,7 @@ module.exports.uploadEvidenceForWeb = async () => {
   });
 };
 
-module.exports.saveNoteForWeb = (comment) => {
+export const saveNoteForWeb = (comment) => {
   const fileType = DEFAULT_FILE_TYPES["text"].type;
   const { stepID, attachmentID, fileName } = generateIDAndName("text");
   let blob = new Blob([comment.text], { type: fileType });

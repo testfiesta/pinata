@@ -11,7 +11,7 @@
         <img
           v-on="on"
           :style="swatchStyle"
-          :src="require('../../assets/icon/color-panel.svg')"
+          :src="require('@/assets/icon/color-panel.svg?url')"
           width="30"
           height="30"
         />

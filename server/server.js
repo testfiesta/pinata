@@ -5,7 +5,7 @@ const cors = require("cors");
 const path = require("path");
 
 const app = express();
-const port = process.env.VUE_APP_SERVER_PORT || 64064;
+const port = import.meta.env.VITE_APP_SERVER_PORT || 64064;
 
 const corsOptions = {
   origin: `http://localhost:${port}`,

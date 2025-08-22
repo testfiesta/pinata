@@ -6,7 +6,7 @@
           <img
             width="24"
             height="24"
-            :src="require('../../assets/icon/edit.svg')"
+            :src="require('@/assets/icon/edit.svg?url')"
           />
         </div>
       </template>
@@ -18,7 +18,7 @@
           <img
             width="24"
             height="24"
-            :src="require('../../assets/icon/ellipse.svg')"
+            :src="require('@/assets/icon/ellipse.svg?url')"
           />
         </div>
       </template>
@@ -30,7 +30,7 @@
           <img
             width="24"
             height="24"
-            :src="require('../../assets/icon/triangle.svg')"
+            :src="require('@/assets/icon/triangle.svg?url')"
           />
         </div>
       </template>
@@ -42,7 +42,7 @@
           <img
             width="24"
             height="24"
-            :src="require('../../assets/icon/downward-triangle.svg')"
+            :src="require('@/assets/icon/downward-triangle.svg?url')"
           />
         </div>
       </template>
@@ -54,7 +54,7 @@
           <img
             width="24"
             height="24"
-            :src="require('../../assets/icon/diamond.svg')"
+            :src="require('@/assets/icon/diamond.svg?url')"
           />
         </div>
       </template>

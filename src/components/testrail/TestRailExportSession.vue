@@ -3,7 +3,7 @@
     <v-list-item-icon class="mr-4">
       <v-avatar size="24">
         <img
-          :src="require('../../assets/icon/testrail.png')"
+          :src="require('@/assets/icon/testrail.png?url')"
           width="24"
           alt="avatar"
         />
