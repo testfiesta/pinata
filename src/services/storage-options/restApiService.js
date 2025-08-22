@@ -10,12 +10,12 @@ export default class RestApiService extends StorageInterface {
   constructor() {
     super();
     this.$api = axios.create({
-      baseURL: process.env.VUE_APP_SERVER_INTERNALURL,
+      baseURL: import.meta.env.VITE_APP_SERVER_INTERNALURL,
       withCredentials: true,
     });
 
     this.baseURL =
-      process.env.VUE_APP_TESTFIESTA_API_URL || "http://localhost:5050/core";
+      import.meta.env.VITE_APP_TESTFIESTA_API_URL || "http://localhost:5050/core";
   }
 
   async getState(executionId) {
@@ -495,7 +495,7 @@ export default class RestApiService extends StorageInterface {
       .catch((err) => {
         if (err.response?.status === 401) {
           window.location.href = `${
-            process.env.VUE_APP_TESTFIESTA_URL
+            import.meta.env.VITE_APP_TESTFIESTA_URL
           }/login?redirectTo=${encodeURIComponent(window.location.href)}`;
         }
       });

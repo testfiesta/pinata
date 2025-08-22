@@ -40,8 +40,8 @@ export default {
   computed: {
     playPauseIcon() {
       return this.isPlaying
-        ? require("../assets/icon/timeline-icon/play20px.svg")
-        : require("../assets/icon/timeline-icon/pause20px.svg");
+        ? require("@/assets/icon/timeline-icon/play20px.svg?url")
+        : require("@/assets/icon/timeline-icon/pause20px.svg?url");
     },
   },
   mounted() {

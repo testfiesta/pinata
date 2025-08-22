@@ -2,7 +2,7 @@ const axios = require("axios");
 const open = require("open");
 const https = require("https");
 const path = require("path");
-const port = process.env.VUE_APP_SERVER_PORT || 64064;
+const port = import.meta.env.VITE_APP_SERVER_PORT || 64064;
 
 
 const clientId = process.env.clientId;

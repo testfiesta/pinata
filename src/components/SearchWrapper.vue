@@ -12,7 +12,7 @@
     @input="handleSearch"
   >
     <template v-slot:prepend-inner>
-      <img src="../assets/icon/search.svg" alt="search" class="icon" />
+      <img :src="require('@/assets/icon/search.svg?url')" alt="search" class="icon" />
     </template>
   </v-text-field>
 </template>

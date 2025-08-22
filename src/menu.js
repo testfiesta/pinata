@@ -1,6 +1,7 @@
 import { app, Menu } from "electron";
 import i18n from "./i18n";
-import open from "open";
+const open = require('open');
+
 
 const createMenu = (win) => {
   const template = [

@@ -10,7 +10,7 @@
           {{ $tc("caption.back", 1) }}
         </v-btn>
         <img
-          :src="require('../../assets/icon/jira.svg')"
+          :src="require('@/assets/icon/jira.svg?url')"
           alt="jira"
           height="42"
         />
@@ -417,7 +417,7 @@ export default {
             this.loading = true;
             this.$root.$emit("overlay", true);
 
-            const url = `http://localhost:${process.env.VUE_APP_SERVER_PORT}/oauth2/atlassian`;
+            const url = `http://localhost:${import.meta.env.VITE_APP_SERVER_PORT}/oauth2/atlassian`;
 
             await axios
               .get(url)
@@ -454,10 +454,10 @@ export default {
       if (isValid) {
         this.loading = true;
         this.$root.$emit("overlay", true);
-        const testfiestaURL = `${process.env.VUE_APP_TESTFIESTA_API_URL}`;
+        const testfiestaURL = `${import.meta.env.VITE_APP_TESTFIESTA_API_URL}`;
         const scopes = "read:jira-work write:jira-work read:me offline_access";
         const redirectURL = `${testfiestaURL}/app/oauth/jira`;
-        const clientId = `${process.env.VUE_APP_JIRA_OAUTH_KEY}`;
+        const clientId = `${import.meta.env.VITE_APP_JIRA_OAUTH_KEY}`;
         const serverURL = "https://auth.atlassian.com";
         const tokenId = uuidv4();
         const url = encodeURI(

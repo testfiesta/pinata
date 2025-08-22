@@ -14,7 +14,7 @@
               <template v-slot:icon>
                 <div class="start-end-wrapper">
                   <img
-                    src="../assets/icon/timeline-icon/play.svg"
+                    :src="require('@/assets/icon/timeline-icon/play.svg?url')"
                     alt="play"
                     class="icon"
                     draggable="false"
@@ -37,13 +37,13 @@
               </div>
               <div class="d-flex justify-start align-center">
                 <img
-                  src="../assets/icon/timeline-icon/message.svg"
+                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                   alt="message"
                   class="icon"
                   draggable="false"
                 />
                 <img
-                  src="../assets/icon/timeline-icon/face-smile.svg"
+                  :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                   alt="emoticon"
                   class="icon mx-2"
                   draggable="false"
@@ -77,8 +77,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/camera-blue.svg')
-                            : require('@/assets/icon/timeline-icon/camera-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/camera-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/camera-gray.svg?url')
                         "
                         alt="camera"
                         class="icon"
@@ -157,7 +157,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -193,7 +193,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -262,8 +262,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/video-blue.svg')
-                            : require('@/assets/icon/timeline-icon/video-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/video-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/video-gray.svg?url')
                         "
                         alt="video"
                         class="icon"
@@ -346,7 +346,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -381,7 +381,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -450,8 +450,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/microphone-blue.svg')
-                            : require('@/assets/icon/timeline-icon/microphone-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/microphone-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/microphone-gray.svg?url')
                         "
                         alt="microphone"
                         class="icon"
@@ -524,7 +524,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -559,7 +559,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -631,8 +631,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/message-blue.svg')
-                            : require('@/assets/icon/timeline-icon/message-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/message-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/message-gray.svg?url')
                         "
                         alt="message"
                         class="icon"
@@ -710,7 +710,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -745,7 +745,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -813,8 +813,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/mindmap-blue.svg')
-                            : require('@/assets/icon/timeline-icon/mindmap-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/mindmap-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/mindmap-gray.svg?url')
                         "
                         alt="mindmap"
                         class="icon"
@@ -899,7 +899,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -934,7 +934,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                     />
@@ -1001,8 +1001,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/message-blue.svg')
-                            : require('@/assets/icon/timeline-icon/message-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/message-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/message-gray.svg?url')
                         "
                         alt="message"
                         class="icon"
@@ -1080,7 +1080,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -1115,7 +1115,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -1180,7 +1180,7 @@
       v-if="status !== 'pending' && status !== 'pause'"
     >
       <p>
-        <img :src="require('../assets/icon/plus.svg')" width="24" height="24" />
+        <img :src="require('@/assets/icon/plus.svg?url')" width="24" height="24" />
       </p>
     </v-row>
     <AddEvidenceDialog

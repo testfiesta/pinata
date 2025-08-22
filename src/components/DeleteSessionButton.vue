@@ -12,7 +12,7 @@
           @click="handleDelete"
         >
           <img
-            :src="require('../assets/icon/trash-red.svg')"
+            :src="require('@/assets/icon/trash-red.svg?url')"
             width="20"
             height="20"
           />

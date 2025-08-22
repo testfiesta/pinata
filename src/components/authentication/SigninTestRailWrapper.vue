@@ -10,7 +10,7 @@
           {{ $tc("caption.back", 1) }}
         </v-btn>
         <img
-          :src="require('../../assets/icon/testrail.svg')"
+          :src="require('@/assets/icon/testrail.svg?url')"
           alt="testrail"
           width="42"
         />

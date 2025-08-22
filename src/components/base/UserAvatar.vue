@@ -14,22 +14,22 @@
       alt="logo"
     />
 
-    <UserIcon
+    <!-- <UserIcon
       v-else-if="(!avatar?.user && avatar?.system) || !placeHolderName"
       class="user-icon"
-    />
-    <span v-else class="white--text">
+    /> -->
+    <!-- <span v-else class="white--text">
       {{ rawText ? name : placeHolderName }}
-    </span>
+    </span> -->
   </v-avatar>
 </template>
 <script>
 import { Avatars } from "@/constants/avatars.js";
-import UserIcon from "@/assets/svg/UserIcon.svg";
+// import UserIcon from "@/assets/svg/UserIcon.svg";
 export default {
   name: "UserAvatar",
   components: {
-    UserIcon,
+    // UserIcon,
   },
   inheritAttrs: false,
   props: {

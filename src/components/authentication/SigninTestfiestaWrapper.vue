@@ -14,7 +14,7 @@
         <v-row>
           <v-col cols="12" class="d-flex justify-center pa-0">
             <img
-              :src="require('../../assets/icon/testfiesta.png')"
+              :src="require('@/assets/icon/testfiesta.png?url')"
               alt="testfiesta"
               width="60"
             />

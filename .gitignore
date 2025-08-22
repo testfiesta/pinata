@@ -27,3 +27,5 @@ pnpm-debug.log*
 /dist_electron
 
 /release
+
+components.d.ts

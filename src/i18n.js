@@ -1,29 +1,36 @@
-import Vue from "vue";
-import VueI18n from "vue-i18n";
+import Vue from 'vue'
+import VueI18n from '../node_modules/vue-i18n/dist/vue-i18n.esm.js';
+import { createI18n } from 'vue-i18n-bridge';
+import messages from '@intlify/unplugin-vue-i18n/messages';
 
-Vue.use(VueI18n);
+Vue.use(VueI18n, { bridge: true });
 
-function loadLocaleMessages() {
-  const locales = require.context(
-    "./locales",
-    true,
-    /[A-Za-z0-9-_,\s]+\.json$/i
-  );
-  const messages = {};
-  locales.keys().forEach((key) => {
-    const matched = key.match(/([A-Za-z0-9-_]+)\./i);
-    if (matched && matched.length > 1) {
-      const locale = matched[1];
-      messages[locale] = locales(key);
+function transformMessages(obj, callback) {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+  const newObj = {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      newObj[key] = transformMessages(obj[key], callback);
     }
-  });
-
-  return messages;
+  }
+  return callback(newObj);
 }
 
-export default new VueI18n({
-  locale: process.env.VUE_APP_I18N_LOCALE || "en",
-  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en",
-  messages: loadLocaleMessages(),
-  silentTranslationWarn: true, //process.env.NODE_ENV === "production",
+const legacyMessages = transformMessages(messages, (value) => {
+  if (value.loc) return value.loc.source;
+  return value;
 });
+
+const i18nInstance = createI18n({
+  legacy: true,
+  locale: import.meta.env.VITE_APP_I18N_LOCALE || 'en',
+  messages: legacyMessages,
+  fallbackWarn: false,
+  missingWarn: false
+}, VueI18n);
+
+export default i18nInstance;
+
+export const t = (text, params) => i18nInstance.global.t(text, params);

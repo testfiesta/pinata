@@ -10,7 +10,11 @@
       color="default"
       @click="handleSettingsClick"
     >
-      <v-icon>mdi-cog</v-icon>
+      <img
+        :src="require('@/assets/svg/geard.svg?url')"
+        width="20"
+        height="20"
+      />
     </v-btn>
     <v-menu
       v-model="showMenu"

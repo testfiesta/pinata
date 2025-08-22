@@ -136,14 +136,14 @@
               >
                 <img
                   v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/pause.svg')"
+                  :src="require('@/assets/icon/pause.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
                 />
                 <img
                   v-else
-                  :src="require('../assets/icon/pause-gray.svg')"
+                  :src="require('@/assets/icon/pause-gray.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -168,14 +168,14 @@
               >
                 <img
                   v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/play.svg')"
+                  :src="require('@/assets/icon/play.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
                 />
                 <img
                   v-else
-                  :src="require('../assets/icon/play-gray.svg')"
+                  :src="require('@/assets/icon/play-gray.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -200,14 +200,14 @@
               >
                 <img
                   v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/stop.svg')"
+                  :src="require('@/assets/icon/stop.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
                 />
                 <img
                   v-else
-                  :src="require('../assets/icon/stop-gray.svg')"
+                  :src="require('@/assets/icon/stop-gray.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -232,7 +232,7 @@
                 @click="onSelectScreenshot()"
               >
                 <img
-                  :src="require('../assets/icon/control-panel-icon/camera.svg')"
+                  :src="require('@/assets/icon/control-panel-icon/camera.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -257,7 +257,7 @@
                 @click="onSelectRecordVideo()"
               >
                 <img
-                  :src="require('../assets/icon/control-panel-icon/video.svg')"
+                  :src="require('@/assets/icon/control-panel-icon/video.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -281,7 +281,7 @@
                 @click="stopRecordVideo()"
               >
                 <img
-                  :src="require('../assets/icon/control-panel-icon/video.svg')"
+                  :src="require('@/assets/icon/control-panel-icon/video.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -306,9 +306,7 @@
                 @click="startRecordAudio()"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/microphone.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/microphone.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -334,9 +332,7 @@
                 @click="stopRecordAudio()"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/microphone.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/microphone.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -361,9 +357,7 @@
                 @click="showNoteDialog()"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/notification.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/notification.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -387,9 +381,7 @@
                 @click="addMindmap()"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/mindmap.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/mindmap.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -411,9 +403,7 @@
                 @click="uploadEvidence"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/evidence.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/evidence.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -436,14 +426,14 @@
               >
                 <img
                   v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/union.svg')"
+                  :src="require('@/assets/icon/union.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
                 />
                 <img
                   v-else
-                  :src="require('../assets/icon/union-gray.svg')"
+                  :src="require('@/assets/icon/union-gray.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -523,9 +513,7 @@
                     v-on="{ ...issueCreateDestinationMenu, ...onTooltip }"
                   >
                     <img
-                      :src="
-                        require('../assets/icon/control-panel-icon/bug.svg')
-                      "
+                      :src="require('@/assets/icon/control-panel-icon/bug.svg?url')"
                       width="24"
                       height="24"
                       draggable="false"

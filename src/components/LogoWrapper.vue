@@ -1,7 +1,7 @@
 <template>
   <div class="logo-wrapper">
     <v-img
-      :src="require('../assets/logo.svg')"
+      :src="require('@/assets/logo.svg?url')"
       contain
       :height="height"
       :width="width"
