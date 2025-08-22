@@ -29,7 +29,8 @@
           v-bind="attrs"
           v-on="on"
         >
-          <img
+          <UserAvatar :avatar="user?.avatar" :name="profileName" size="40" />
+          <!-- <img
             style="border-radius: 100%; border: solid 1px #eaecf0"
             :src="profileAvatar"
             width="40"
@@ -37,7 +38,7 @@
           />
           <strong class="ml-3 fs-14" :style="{ color: $theme.secondary }">{{
             profileName
-          }}</strong>
+          }}</strong> -->
         </div>
       </template>
 
@@ -114,12 +115,14 @@ import uuidv4 from "uuid";
 import { VBtn } from "vuetify/lib/components";
 import { mapGetters } from "vuex";
 import SettingsDialog from "@/components/dialogs/SettingsDialog.vue";
+import UserAvatar from "@/components/base/UserAvatar.vue";
 
 export default {
   name: "LoggedInMenu",
   components: {
     VBtn,
     SettingsDialog,
+    UserAvatar,
   },
   props: {},
   data() {
@@ -199,6 +202,16 @@ export default {
       const emptyCredentials = {};
       this.$store.commit("auth/setCredentials", emptyCredentials);
       this.$storageService.updateCredentials(emptyCredentials);
+      if (!this.$isElectron) {
+        this.$api
+          .post("/logout")
+          .then(() => {
+            this.$router.push({ path: "/" });
+          })
+          .catch((error) => {
+            console.error("Logout failed:", error);
+          });
+      }
     },
     handleSettingsClick() {
       if (this.$isElectron) {

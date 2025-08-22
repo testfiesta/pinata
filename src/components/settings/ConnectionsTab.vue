@@ -7,7 +7,7 @@
         </p>
 
         <v-col cols="12">
-          <div class="avatar" v-if="credentials.testrail">
+          <div class="avatar" v-if="credentials?.testrail">
             <ConnectionPanel connectionType="testrail" />
           </div>
           <div v-else>
@@ -27,7 +27,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.xray">
+          <div class="avatar" v-if="credentials?.xray">
             <ConnectionPanel connectionType="xray" />
           </div>
           <div v-else>
@@ -50,7 +50,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.zephyrSquad">
+          <div class="avatar" v-if="credentials?.zephyrSquad">
             <ConnectionPanel connectionType="zephyrSquad" />
           </div>
           <div v-else>
@@ -73,7 +73,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.zephyrScale">
+          <div class="avatar" v-if="credentials?.zephyrScale">
             <ConnectionPanel connectionType="zephyrScale" />
           </div>
           <div v-else>
@@ -96,7 +96,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.jira">
+          <div class="avatar" v-if="credentials?.jira">
             <ConnectionPanel connectionType="jira" />
           </div>
           <div v-else>

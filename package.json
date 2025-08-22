@@ -12,7 +12,7 @@
   },
   "license": "GPL-3.0-only",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 8084",
     "build": "vue-cli-service electron:build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
@@ -97,11 +97,13 @@
     "vue-cli-plugin-electron-builder": "nklayman/vue-cli-plugin-electron-builder#5b4046a1a2b38afc2e36e959841fc1ccf64de7fc",
     "vue-cli-plugin-i18n": "~2.3.1",
     "vue-cli-plugin-vuetify": "^2.5.8",
+    "vue-svg-loader": "^0.16.0",
     "vue-template-compiler": "^2.7.13",
     "vuetify-loader": "^1.7.0"
   },
   "resolutions": {
-    "vue-cli-plugin-electron-builder/electron-builder": "^23.0.3"
+    "vue-cli-plugin-electron-builder/electron-builder": "^23.0.3",
+    "has-symbols": "1.0.3"
   },
   "eslintConfig": {
     "root": true,
