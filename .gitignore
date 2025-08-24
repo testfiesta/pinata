@@ -25,7 +25,7 @@ pnpm-debug.log*
 
 #Electron-builder output
 /dist_electron
-
+/dist-electron
 /release
 
 components.d.ts
