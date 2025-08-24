@@ -5,6 +5,7 @@ import router from "./router";
 import store from "./store";
 import integrationHelpers from "./integrations/IntegrationHelpers";
 import hotkeyHelpers from "./helpers/HotkeyHelpers";
+import './assets/scss/variables.scss'
 
 import DefaultLayout from "./layouts/Default.vue";
 import MinimizeLayout from "./layouts/Minimize.vue";

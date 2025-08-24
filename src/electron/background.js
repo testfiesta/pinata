@@ -3,7 +3,7 @@
 import { app, protocol, BrowserWindow } from "electron";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 
-import createMenu from "../menu";
+import createMenu from "./menu.js";
 import { VIEW_MODE } from "../modules/constants";
 
 let isDevelopment = process.env.NODE_ENV !== "production";

@@ -1,8 +1,6 @@
 import { defineConfig } from 'vite'
 import { createVuePlugin } from 'vite-plugin-vue2'
 import svgLoader from 'vite-svg-loader';
-import electron from 'vite-plugin-electron/simple'
-import renderer from 'vite-plugin-electron-renderer'
 import { VuetifyResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
@@ -11,13 +9,16 @@ import { fileURLToPath } from 'url'
 import path from 'node:path';
 import autoprefixer from 'autoprefixer';
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+import electron from 'vite-plugin-electron'
 
 
 
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const isElectron = mode === 'electron'
+  return {
   plugins: [
     createVuePlugin(),
     VueI18nPlugin({
@@ -40,6 +41,21 @@ export default defineConfig({
         VuetifyResolver(),
       ],
     }),
+    ...( isElectron ? [
+      electron({
+        entry: 'electron/background.js',
+        onstart: (options) => {
+          if (mode === "electron") {
+            options.startup()
+          }
+        },
+        vite: {
+          build: {
+            outDir: 'dist-electron', // output folder for electron files
+          },
+        },
+      })
+    ] : []),
     // electron({
     //   main: {
     //     entry: 'src/background.js',
@@ -69,7 +85,6 @@ export default defineConfig({
     //     input: 'src/preload.js'
     //   }
     // }),
-    renderer()
   ],
   resolve: {
     alias: {
@@ -106,4 +121,5 @@ export default defineConfig({
   define: {
     'process.env.FLUENTFFMPEG_COV': false, // Replaces the define plugin in electron builder
   },
+}
 })
