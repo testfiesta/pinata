@@ -57,8 +57,8 @@ const store = new Vuex.Store({
       },
       nodes: [],
       connections: [],
+      savedTimer: 0,
     },
-    savedTimer: 0,
   },
   mutations: {
     replaceAttachmentUrl(state, { attachmentID, url }) {
@@ -210,9 +210,9 @@ const store = new Vuex.Store({
         Vue.prototype.$isElectron ||
         isStatusChanged ||
         payload.isForce ||
-        payload.timer - state.savedTimer >= 10
+        payload.timer - state.session.savedTimer >= 10
       ) {
-        state.savedTimer = payload.timer;
+        state.session.savedTimer = payload.timer;
       }
     },
 

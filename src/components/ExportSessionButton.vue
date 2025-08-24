@@ -16,7 +16,11 @@
               class="rounded-lg text-capitalize px-0"
               v-on="{ ...evidenceExportDestinationMenu, ...onTooltip }"
             >
-            <DownloadIcon />
+            <img
+              :src="require('@/assets/icon/download.svg?url')"
+              width="20"
+              height="20"
+            />
             </v-btn>
           </template>
           <span>{{ $tc("caption.export_session_report", 1) }}</span>
@@ -26,7 +30,11 @@
         <v-list dense>
           <v-list-item @click="exportSession('archive')">
             <v-list-item-icon class="mr-4">
-              <DownloadIcon />
+              <img
+                :src="require('@/assets/icon/download.svg?url')"
+                width="20"
+                height="20"
+              />
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>
@@ -36,7 +44,11 @@
           </v-list-item>
           <v-list-item @click="exportSession('pdf')">
             <v-list-item-icon class="mr-4">
-              <DownloadIcon />
+              <img
+                :src="require('@/assets/icon/download.svg?url')"
+                width="20"
+                height="20"
+              />
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>

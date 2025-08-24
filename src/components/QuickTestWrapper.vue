@@ -174,6 +174,7 @@ export default {
     startQuickTest() {
       this.$store.commit("setCaseTitle", this.sessionName);
       this.$root.$emit("start-quick-test");
+      this.$emit('start-session')
     },
     async back() {
       await this.$router.push("/");

@@ -30,6 +30,7 @@ import HotkeysTab from "@/components/settings/HotkeysTab.vue";
 import TagsTab from "@/components/settings/TagsTab.vue";
 
 import store from "@/store";
+import WorkspaceView from "@/views/WorkspaceView.vue";
 
 Vue.use(VueRouter);
 
@@ -103,7 +104,22 @@ const routes = [
     path: "/main",
     name: "main",
     component: MainView,
-    children: [{ path: "workspace" }, { path: "workspace/:execID" }],
+    children: [ { path: "workspace/:execID" }],
+  },
+  {
+    path: '/exploratory-test',
+    name: 'exploratoryTest',
+    component: MainView
+  },
+  {
+    path: '/quick-test',
+    name: 'quickTest',
+    component: MainView
+  },
+  {
+    path: '/workspace',
+    name: 'workspace',
+    component: WorkspaceView
   },
   {
     path: "/settings",

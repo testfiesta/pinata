@@ -1,6 +1,6 @@
 <template>
   <v-container class="wrapper" fluid>
-    <HeaderView v-if="$isElectron" />
+    <HeaderView  />
     <div fluid class="mt-3">
       <v-row>
         <v-col cols="auto">

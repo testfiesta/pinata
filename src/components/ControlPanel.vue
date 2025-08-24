@@ -1175,9 +1175,9 @@ export default {
       }
 
       if (this.viewMode === "normal") {
-        const currentPath = this.$router.history.current.path;
-        if (currentPath !== "/main/workspace") {
-          await this.$router.push({ path: "/main/workspace" });
+        const currentPath = this.$router.history.current.name;
+        if (currentPath !== "workspace") {
+          await this.$router.push({ name: "workspace" });
         }
       }
     },

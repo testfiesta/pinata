@@ -125,6 +125,7 @@ export default {
     },
     startNewSession() {
       this.$root.$emit("start-new-exploratory-session");
+      this.$emit('start-session')
     },
 
     async back() {
