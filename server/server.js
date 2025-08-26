@@ -1,8 +1,12 @@
-const fs = require("fs");
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const path = require("path");
+import fs from "fs";
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = import.meta.env.VITE_APP_SERVER_PORT || 64064;
@@ -25,7 +29,8 @@ app.use(express.static(path.join(__dirname, "images")));
 app.disable("x-powered-by");
 
 // modules
-require("./modules/JiraUtility")(app);
+import JiraUtility from "./modules/JiraUtility.js";
+JiraUtility(app);
 
 try {
   app.listen(port, () => {

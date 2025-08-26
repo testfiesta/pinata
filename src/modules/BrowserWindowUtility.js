@@ -1,30 +1,34 @@
-const { VIEW_MODE } = require("./constants");
+import { VIEW_MODE } from '@/modules/constants.js';
 
-module.exports.setBrowserWindow = (browserWindow) => {
-  this._browserWindow = browserWindow;
+let _browserWindow;
+let _lowProfiledWindow;
+let _viewMode;
+
+export const setBrowserWindow = (browserWindow) => {
+  _browserWindow = browserWindow;
 };
 
-module.exports.getBrowserWindow = () => {
-  return this._browserWindow;
+export const getBrowserWindow = () => {
+  return _browserWindow;
 };
 
-module.exports.setLowProfiledWindow = (lowProfiledWindow) => {
-  this._lowProfiledWindow = lowProfiledWindow;
+export const setLowProfiledWindow = (lowProfiledWindow) => {
+  _lowProfiledWindow = lowProfiledWindow;
 };
 
-module.exports.getLowProfiledWindow = () => {
-  return this._lowProfiledWindow;
+export const getLowProfiledWindow = () => {
+  return _lowProfiledWindow;
 };
 
-module.exports.setViewMode = (viewMode) => {
-  this._viewMode = viewMode;
+export const setViewMode = (viewMode) => {
+  _viewMode = viewMode;
 };
 
-module.exports.getViewMode = () => {
-  return this._viewMode;
+export const getViewMode = () => {
+  return _viewMode;
 };
 
-module.exports.getParentWindow = () => {
-  if (this._viewMode === VIEW_MODE.NORMAL) return this._browserWindow;
-  else return this._lowProfiledWindow;
+export const getParentWindow = () => {
+  if (_viewMode === VIEW_MODE.NORMAL) return _browserWindow;
+  else return _lowProfiledWindow;
 };

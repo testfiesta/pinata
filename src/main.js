@@ -1,20 +1,20 @@
 import Vue from "vue";
-import App from "./App.vue";
-import vuetify from "./plugins/vuetify";
-import router from "./router";
-import store from "./store";
-import integrationHelpers from "./integrations/IntegrationHelpers";
-import hotkeyHelpers from "./helpers/HotkeyHelpers";
-import './assets/scss/variables.scss'
+import App from "@/App.vue";
+import vuetify from "@/plugins/vuetify";
+import router from "@/router";
+import store from "@/store";
+import integrationHelpers from "@/integrations/IntegrationHelpers";
+import hotkeyHelpers from "@/helpers/HotkeyHelpers";
+import '@/assets/scss/variables.scss'
 
-import DefaultLayout from "./layouts/Default.vue";
-import MinimizeLayout from "./layouts/Minimize.vue";
+import DefaultLayout from "@/layouts/Default.vue";
+import MinimizeLayout from "@/layouts/Minimize.vue";
 
 import VueShortkey from "vue-shortkey";
 
 import VueMask from "v-mask";
-import i18n from "./i18n";
-import StorageService from "./services/storageService";
+import i18n from "@/i18n";
+import StorageService from "@/services/storageService";
 import ElectronService from "@/services/electronService";
 
 import { library } from "@fortawesome/fontawesome-svg-core";

@@ -1,21 +1,18 @@
 "use strict";
 
-import { app, protocol, BrowserWindow } from "electron";
-import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import { app, protocol, BrowserWindow, session } from "electron";
 
 import createMenu from "./menu.js";
-import { VIEW_MODE } from "../modules/constants";
+import { VIEW_MODE } from "../modules/constants.js";
+
+import * as browserUtility from "../modules/BrowserWindowUtility.js";
+import * as persistenceUtility from "../modules/PersistenceUtility.js";
+import * as windowUtility from "../modules/WindowUtility.js";
+import * as serverUtility from "../modules/ServerUtility.js";
+
+import "../modules/IpcHandlers.js";
 
 let isDevelopment = process.env.NODE_ENV !== "production";
-
-const browserUtility = require("../modules/BrowserWindowUtility");
-const persistenceUtility = require("../modules/PersistenceUtility");
-const windowUtility = require("../modules/WindowUtility");
-const serverUtility = require("../modules/ServerUtility");
-
-import { session } from "electron";
-
-require("../modules/IpcHandlers");
 
 // initialize session
 persistenceUtility.initializeSession();
@@ -37,6 +34,7 @@ async function createWindow() {
   const win = windowUtility.getMainWindow();
   browserUtility.setBrowserWindow(win);
   browserUtility.setViewMode(VIEW_MODE.NORMAL);
+
   if (isDevelopment) {
     win.webContents.openDevTools();
   }
@@ -44,7 +42,7 @@ async function createWindow() {
   if (process.env.VITE_DEV_SERVER_URL) {
     await win.loadURL(process.env.VITE_DEV_SERVER_URL);
   } else {
-    win.loadFile('dist-electron/index.html');
+    await win.loadFile("dist_electron/index.html");
   }
 
   createMenu(win, isDevelopment);
@@ -62,8 +60,6 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
@@ -76,14 +72,7 @@ app.on("ready", async () => {
     details.requestHeaders["User-Agent"] = "PINATA";
     callback({ cancel: false, requestHeaders: details.requestHeaders });
   });
-  if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
-    try {
-      await installExtension(VUEJS_DEVTOOLS);
-    } catch (e) {
-      console.error("Vue Devtools failed to install:", e.toString());
-    }
-  }
+
   createWindow();
 });
 

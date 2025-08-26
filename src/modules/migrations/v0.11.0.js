@@ -1,5 +1,5 @@
-const uuidv4 = require("uuid");
-const { DEFAULT_FILE_TYPES } = require("../constants");
+import { v4 as uuidv4 } from "uuid";
+import { DEFAULT_FILE_TYPES } from "@/modules/constants";
 
 export const migrationStruct = {
   up: {

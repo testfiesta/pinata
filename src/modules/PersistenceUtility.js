@@ -1,9 +1,10 @@
-const JSONdb = require("simple-json-db");
-const { app, remote } = require("electron");
-const path = require("path");
-const fs = require("fs");
-const browserUtility = require("./BrowserWindowUtility");
-const { STATUSES } = require("./constants");
+import JSONdb from "simple-json-db";
+import { app, remote } from "electron";
+import { join, resolve } from "path";
+import { existsSync, readdirSync, mkdirSync } from "fs";
+import { getBrowserWindow } from "./BrowserWindowUtility";
+import { STATUSES } from "./constants";
+import { pathToFileURL } from "url";
 
 const configDir = (app || remote.app).getPath("userData");
 const jsonDbConfig = {
@@ -16,9 +17,9 @@ let metaDb, configDb, credentialDb, dataDb;
 let browserWindow;
 
 const defaultMeta = {
-  configPath: path.join(configDir, "config.json"),
-  credentialsPath: path.join(configDir, "credentials.json"),
-  sessionPath: path.join(configDir, "sessions"),
+  configPath: join(configDir, "config.json"),
+  credentialsPath: join(configDir, "credentials.json"),
+  sessionPath: join(configDir, "sessions"),
   sessionDataPath: "",
   version: currentVersion,
 };
@@ -137,18 +138,18 @@ const defaultConfig = {
   },
 };
 
-module.exports.initializeSession = () => {
-  const sessionPath = path.join(configDir, "sessions");
-  if (!fs.existsSync(sessionPath)) {
+export function initializeSession() {
+  const sessionPath = join(configDir, "sessions");
+  if (!existsSync(sessionPath)) {
     createRootSessionDirectory();
   }
 
-  metaDb = new JSONdb(path.join(configDir, "meta.json"), jsonDbConfig);
+  metaDb = new JSONdb(join(configDir, "meta.json"), jsonDbConfig);
   let metadata = {
     version: currentVersion,
   };
   if (metaDb) {
-    metadata = this.getMetadata();
+    metadata = getMetadata();
   }
 
   metadata = applyMigrations("meta", currentVersion, metadata);
@@ -157,7 +158,7 @@ module.exports.initializeSession = () => {
     metadata.configPath = defaultMeta.configPath;
   }
   configDb = new JSONdb(metadata.configPath, jsonDbConfig);
-
+  console.log("metadata.configPath =", metadata.configPath);
   const configData = applyMigrations("config", currentVersion, configDb.JSON());
 
   if (!metadata.credentialsPath) {
@@ -173,7 +174,7 @@ module.exports.initializeSession = () => {
 
   let sessionData;
   if (metadata.sessionDataPath) {
-    if (fs.existsSync(metadata.sessionDataPath)) {
+    if (existsSync(metadata.sessionDataPath)) {
       dataDb = new JSONdb(metadata.sessionDataPath, jsonDbConfig);
       sessionData = applyMigrations("data", currentVersion, dataDb.JSON());
     } else {
@@ -198,7 +199,7 @@ module.exports.initializeSession = () => {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 const recursivelyMerge = (oldConfig, newConfig) => {
   if (!(oldConfig instanceof Object) || Array.isArray(oldConfig)) {
@@ -229,7 +230,7 @@ const recursivelyMerge = (oldConfig, newConfig) => {
   return builtConfig;
 };
 
-const applyMigrations = (type, newVersion, data) => {
+const applyMigrations = async (type, newVersion, data) => {
   let oldVersion = data.version || "0.0.0";
   let migratedData = Object.assign(data, {});
 
@@ -251,9 +252,11 @@ const applyMigrations = (type, newVersion, data) => {
 
     const isDevelopment = process.env.NODE_ENV !== "production";
     let migrationFilesPath = isDevelopment
-      ? path.resolve(__dirname, "../src/modules/migrations/")
-      : path.resolve(process.resourcesPath, "./migrations/");
-    let migrationFiles = fs.readdirSync(migrationFilesPath);
+      ? resolve(__dirname, "../src/modules/migrations/")
+      : resolve(process.resourcesPath, "./migrations/");
+
+
+    let migrationFiles = readdirSync(migrationFilesPath);
     let migrationVersions = migrationFiles.map((fileName) => {
       let temp = fileName.substring(1, fileName.length - 3).split(".");
       return temp.map((num) => parseInt(num));
@@ -329,7 +332,10 @@ const applyMigrations = (type, newVersion, data) => {
       nextMigrationIndex,
       migrationFiles.length
     )) {
-      const { migrationStruct } = require(`./migrations/${migration}`);
+      const migrationPath = resolve(migrationFilesPath, migration);
+      const migrationUrl = pathToFileURL(migrationPath).href;
+
+      const { migrationStruct } = await import(migrationUrl);
       if (!migrationStruct[direction][type]) continue;
 
       // Order of operations here - move first, then functions
@@ -401,9 +407,9 @@ const migrateKeys = (migrations, data) => {
 };
 
 const createRootSessionDirectory = () => {
-  let sessionPaths = [path.join(configDir, "sessions")];
+  let sessionPaths = [join(configDir, "sessions")];
   sessionPaths.forEach((path) => {
-    fs.mkdirSync(path, { recursive: true });
+    mkdirSync(path, { recursive: true });
   });
 };
 
@@ -420,8 +426,8 @@ const getItemById = (id) => {
   return item;
 };
 
-module.exports.createNewSession = (state) => {
-  const sessionDataPath = path.join(
+export function createNewSession(state) {
+  const sessionDataPath = join(
     configDir,
     "sessions",
     state.session.sessionID,
@@ -439,9 +445,9 @@ module.exports.createNewSession = (state) => {
   dataDb.set("session", session);
   dataDb.set("case", state.case);
   dataDb.set("version", currentVersion);
-};
+}
 
-module.exports.getSessionID = () => {
+export function getSessionID() {
   try {
     if (dataDb) {
       const session = dataDb.get("session");
@@ -452,9 +458,9 @@ module.exports.getSessionID = () => {
     console.log(error);
     return "";
   }
-};
+}
 
-module.exports.getCaseID = () => {
+export function getCaseID() {
   try {
     if (dataDb) {
       const cas = dataDb.get("case");
@@ -465,9 +471,9 @@ module.exports.getCaseID = () => {
     console.log(error);
     return "";
   }
-};
+}
 
-module.exports.getState = () => {
+export function getState() {
   try {
     if (dataDb) {
       return {
@@ -481,10 +487,10 @@ module.exports.getState = () => {
     console.log(error);
     return {};
   }
-};
+}
 
 // You must pass the entire state to use this.
-module.exports.updateState = (state) => {
+export function updateState(state) {
   if (dataDb) {
     let session, cse;
     try {
@@ -499,9 +505,9 @@ module.exports.updateState = (state) => {
     dataDb.set("case", { ...cse, ...state.case });
     dataDb.set("session", { ...session, ...state.session });
   }
-};
+}
 
-module.exports.getItems = () => {
+export function getItems() {
   if (dataDb) {
     try {
       const session = dataDb.get("session");
@@ -512,23 +518,23 @@ module.exports.getItems = () => {
     }
   }
   return [];
-};
+}
 
-module.exports.addItem = (item) => {
+export function addItem(item) {
   try {
     let session = dataDb.get("session");
     let items = session.items || [];
     items.push(item);
     session.items = items;
     dataDb.set("session", session);
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("DATA_CHANGE");
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-module.exports.updateItem = (newItem) => {
+export function updateItem(newItem) {
   try {
     debugger;
     let session = dataDb.get("session");
@@ -540,14 +546,14 @@ module.exports.updateItem = (newItem) => {
     });
     session.items = items;
     dataDb.set("session", session);
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("DATA_CHANGE");
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-module.exports.updateItems = (items) => {
+export function updateItems(items) {
   try {
     let session = dataDb.get("session");
     if (!session) {
@@ -556,19 +562,19 @@ module.exports.updateItems = (items) => {
     }
     session.items = items;
     dataDb.set("session", session);
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("DATA_CHANGE");
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-module.exports.deleteItems = (ids) => {
+export function deleteItems(ids) {
   try {
     ids.map((id) => {
       removeItemById(id);
     });
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("DATA_CHANGE");
     return Promise.resolve({
       status: STATUSES.SUCCESS,
@@ -577,9 +583,9 @@ module.exports.deleteItems = (ids) => {
   } catch (error) {
     return Promise.resolve({ status: STATUSES.ERROR, message: error.message });
   }
-};
+}
 
-module.exports.getItemById = (id) => {
+const _getItemById = (id) => {
   try {
     const data = getItemById(id);
     return data;
@@ -587,27 +593,28 @@ module.exports.getItemById = (id) => {
     return null;
   }
 };
+export { _getItemById as getItemById };
 
-module.exports.getConfig = () => {
+export function getConfig() {
   try {
     return configDb.JSON();
   } catch (error) {
     return {};
   }
-};
+}
 
-module.exports.updateConfig = (config) => {
+export function updateConfig(config) {
   try {
     configDb.JSON(config);
     configDb.sync();
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("CONFIG_CHANGE");
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-module.exports.getCredentials = () => {
+export function getCredentials() {
   try {
     // eslint-disable-next-line no-unused-vars
     const { version: _, ...credentials } = credentialDb.JSON();
@@ -615,29 +622,29 @@ module.exports.getCredentials = () => {
   } catch (error) {
     return {};
   }
-};
+}
 
-module.exports.updateCredentials = (credentials) => {
+export function updateCredentials(credentials) {
   try {
     credentialDb.JSON(credentials);
     credentialDb.sync();
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("CREDENTIAL_CHANGE");
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-module.exports.getMetadata = () => {
+export function getMetadata() {
   try {
     return metaDb.JSON();
   } catch (error) {
     console.log(`Unable to retrieve metadata: ${error}`);
     return {};
   }
-};
+}
 
-module.exports.updateMetadata = (meta) => {
+export function updateMetadata(meta) {
   try {
     for (const [key, value] of Object.entries(meta)) {
       metaDb.set(key, value);
@@ -651,78 +658,78 @@ module.exports.updateMetadata = (meta) => {
     if (meta.sessionDataPath) {
       dataDb = new JSONdb(meta.sessionDataPath, jsonDbConfig);
     }
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("META_CHANGE");
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-module.exports.getNotes = () => {
+export function getNotes() {
   try {
     const session = dataDb.get("session");
     return session.notes;
   } catch (error) {
     return [];
   }
-};
+}
 
-module.exports.updateNotes = (notes) => {
+export function updateNotes(notes) {
   try {
     let session = dataDb.get("session");
     session.notes = notes;
     dataDb.set("session", session);
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("DATA_CHANGE");
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-module.exports.getNodes = () => {
+export function getNodes() {
   try {
     const session = dataDb.get("session");
     return session.nodes;
   } catch (error) {
     return [];
   }
-};
+}
 
-module.exports.updateNodes = (nodes) => {
+export function updateNodes(nodes) {
   try {
     let session = dataDb.get("session");
     session.nodes = nodes;
     dataDb.set("session", session);
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("DATA_CHANGE");
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-module.exports.getConnections = () => {
+export function getConnections() {
   try {
     const session = dataDb.get("session");
     return session.connections;
   } catch (error) {
     return [];
   }
-};
+}
 
-module.exports.updateConnections = (connections) => {
+export function updateConnections(connections) {
   try {
     let session = dataDb.get("session");
     session.connections = connections;
     dataDb.set("session", session);
-    browserWindow = browserUtility.getBrowserWindow();
+    browserWindow = getBrowserWindow();
     browserWindow.webContents.send("DATA_CHANGE");
   } catch (error) {
     console.log(error);
   }
-};
+}
 
-module.exports.resetData = () => {
-  if (fs.existsSync(metaDb.get("sessionDataPath"))) {
+export function resetData() {
+  if (existsSync(metaDb.get("sessionDataPath"))) {
     try {
       let session = dataDb.get("session");
       session.items = [];
@@ -731,10 +738,10 @@ module.exports.resetData = () => {
         text: "",
       };
       dataDb.set("session", session);
-      browserWindow = browserUtility.getBrowserWindow();
+      browserWindow = getBrowserWindow();
       browserWindow.webContents.send("DATA_CHANGE");
     } catch (error) {
       console.log(error);
     }
   }
-};
+}

@@ -1,19 +1,19 @@
-const { app, BrowserWindow, screen } = require("electron");
+import { app, BrowserWindow, screen } from "electron";
 
 let isDevelopment = process.env.NODE_ENV !== "production";
 
 let settingsWin, modalWin;
 
-const browserUtility = require("./BrowserWindowUtility");
-const path = require("path");
+import { getBrowserWindow, getLowProfiledWindow, setLowProfiledWindow, setViewMode, getParentWindow } from "./BrowserWindowUtility";
+import { join } from "path";
 
-const { VIEW_MODE, IPC_BIND_KEYS } = require("./constants");
+import { VIEW_MODE, IPC_BIND_KEYS } from "./constants";
 
-module.exports.setDevMode = async ({ enabled }) => {
+export async function setDevMode({ enabled }) {
   isDevelopment = enabled;
-};
+}
 
-module.exports.getMainWindow = () => {
+export function getMainWindow() {  
   const win = new BrowserWindow({
     width: 1440,
     height: 900,
@@ -21,7 +21,7 @@ module.exports.getMainWindow = () => {
     minHeight: 600,
     center: true,
     // eslint-disable-next-line no-undef
-    icon: path.join(__static, "logo.png"),
+    icon: join(app.getAppPath(), "src/assets/icon/logo.png"),
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -29,16 +29,16 @@ module.exports.getMainWindow = () => {
       webSecurity: false,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       enableRemoteModule: true,
-      preload: path.join(app.getAppPath(), "preload.js"),
+      preload: join(app.getAppPath(), "src/electron/preload.js"),
     },
   });
 
   return win;
-};
+}
 
-module.exports.openLowProfileWindow = (data) => {
-  const browserWindow = browserUtility.getBrowserWindow();
-  const lowProfiledWindow = browserUtility.getLowProfiledWindow();
+export function openLowProfileWindow(data) {
+  const browserWindow = getBrowserWindow();
+  const lowProfiledWindow = getLowProfiledWindow();
   const url =
     process.env.NODE_ENV === "development"
       ? "http://localhost:8080/#/minimize"
@@ -58,13 +58,13 @@ module.exports.openLowProfileWindow = (data) => {
       transparent: true,
       resizable: false,
       // eslint-disable-next-line no-undef
-      icon: path.join(__static, "logo.png"),
+      icon: join(app.getAppPath(), "src/assets/icon/logo.png"),
       webPreferences: {
         devTools: false,
         nodeIntegration: true,
         webSecurity: false,
         enableRemoteModule: true,
-        preload: path.join(app.getAppPath(), "preload.js"),
+        preload: join(app.getAppPath(), "src/electron/preload.js"),
       },
     });
 
@@ -79,11 +79,11 @@ module.exports.openLowProfileWindow = (data) => {
 
     minimizeWin.on("close", () => {
       minimizeWin = null;
-      browserUtility.setLowProfiledWindow(null);
+      setLowProfiledWindow(null);
       browserWindow.show();
     });
 
-    browserUtility.setLowProfiledWindow(minimizeWin);
+    setLowProfiledWindow(minimizeWin);
     browserWindow.hide();
   } else {
     browserWindow.hide();
@@ -91,28 +91,28 @@ module.exports.openLowProfileWindow = (data) => {
     lowProfiledWindow.show();
   }
 
-  browserUtility.setViewMode(VIEW_MODE.MINI);
-};
+  setViewMode(VIEW_MODE.MINI);
+}
 
-module.exports.closeLowProfileWindow = (data) => {
-  const browserWindow = browserUtility.getBrowserWindow();
-  const lowProfiledWindow = browserUtility.getLowProfiledWindow();
+export function closeLowProfileWindow(data) {
+  const browserWindow = getBrowserWindow();
+  const lowProfiledWindow = getLowProfiledWindow();
   lowProfiledWindow.close();
   browserWindow.webContents.send(data.bindKey, data.data);
-  browserUtility.setViewMode(VIEW_MODE.NORMAL);
-};
+  setViewMode(VIEW_MODE.NORMAL);
+}
 
-module.exports.closeSessionAndLowProfiledWindow = (data) => {
-  const browserWindow = browserUtility.getBrowserWindow();
-  const lowProfiledWindow = browserUtility.getLowProfiledWindow();
+export function closeSessionAndLowProfiledWindow(data) {
+  const browserWindow = getBrowserWindow();
+  const lowProfiledWindow = getLowProfiledWindow();
   lowProfiledWindow.hide();
   browserWindow.webContents.send(IPC_BIND_KEYS.END_SESSION, data.data);
   browserWindow.show();
-  browserUtility.setViewMode(VIEW_MODE.NORMAL);
-};
+  setViewMode(VIEW_MODE.NORMAL);
+}
 
-module.exports.openSettingWindow = () => {
-  const browserWindow = browserUtility.getBrowserWindow();
+export function openSettingWindow() {
+  const browserWindow = getBrowserWindow();
   const url =
     process.env.NODE_ENV === "development"
       ? "http://localhost:8080/#/settings"
@@ -127,13 +127,13 @@ module.exports.openSettingWindow = () => {
       center: true,
       parent: browserWindow,
       // eslint-disable-next-line no-undef
-      icon: path.join(__static, "logo.png"),
+      icon: join(app.getAppPath(), "src/assets/icon/logo.png"),
       webPreferences: {
         devTools: true,
         nodeIntegration: true,
         webSecurity: false,
         enableRemoteModule: true,
-        preload: path.join(app.getAppPath(), "preload.js"),
+        preload: join(app.getAppPath(), "src/electron/preload.js"),
       },
     });
 
@@ -153,21 +153,21 @@ module.exports.openSettingWindow = () => {
       settingsWin = null;
     });
   }
-};
+}
 
-module.exports.closeSettingWindow = () => {
+export function closeSettingWindow() {
   settingsWin.close();
-};
+}
 
-module.exports.setWindowSize = ({ width, height }) => {
+export function setWindowSize({ width, height }) {
   // TODO - Handle window sizing better without manual resizing and fixed sizes
-  const browserWindow = browserUtility.getBrowserWindow();
+  const browserWindow = getBrowserWindow();
   browserWindow.setSize(width, height);
   browserWindow.center();
-};
+}
 
-module.exports.openModalWindow = (data) => {
-  const parentWindow = browserUtility.getParentWindow();
+export function openModalWindow(data) {
+  const parentWindow = getParentWindow();
   const url =
     process.env.NODE_ENV === "development"
       ? `http://localhost:8080/#/${data.path}`
@@ -183,13 +183,13 @@ module.exports.openModalWindow = (data) => {
       parent: parentWindow,
       resizable: false,
       // eslint-disable-next-line no-undef
-      icon: path.join(__static, "logo.png"),
+      icon: join(app.getAppPath(), "src/assets/icon/logo.png"),
       webPreferences: {
         devTools: true,
         nodeIntegration: true,
         webSecurity: false,
         enableRemoteModule: true,
-        preload: path.join(app.getAppPath(), "preload.js"),
+        preload: join(app.getAppPath(), "src/electron/preload.js"),
       },
     });
 
@@ -210,22 +210,22 @@ module.exports.openModalWindow = (data) => {
       modalWin = null;
     });
   }
-};
+}
 
-module.exports.closeModalWindow = (data) => {
+export function closeModalWindow(data) {
   if (data) {
-    const parentWindow = browserUtility.getParentWindow();
+    const parentWindow = getParentWindow();
     parentWindow.webContents.send(data.bindKey, data.data);
   }
   modalWin.close();
-};
+}
 
-module.exports.moveWindow = (data) => {
-  const minimizeWindow = browserUtility.getLowProfiledWindow();
+export function moveWindow(data) {
+  const minimizeWindow = getLowProfiledWindow();
 
   const currentPosition = minimizeWindow.getPosition();
   minimizeWindow.setPosition(
     currentPosition[0] + data.x,
     currentPosition[1] + data.y
   );
-};
+}

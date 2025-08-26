@@ -641,20 +641,20 @@
 import { VBtn, VCol, VContainer, VIcon, VRow } from "vuetify/lib/components";
 import uuidv4 from "uuid";
 
-import testfiestaIntegrationHelper from "../integrations/TestfiestaIntegrationHelpers";
-import SourcePickerDialog from "./dialogs/SourcePickerDialog.vue";
-import ChangeSourceTargetDialog from "./dialogs/ChangeSourceTargetDialog.vue";
-import ShareSessionDialog from "./dialogs/ShareSessionDialog.vue";
-import NoteDialog from "./dialogs/NoteDialog.vue";
-import SummaryDialog from "./dialogs/SummaryDialog.vue";
-import DeleteConfirmDialog from "./dialogs/DeleteConfirmDialog.vue";
-import ResetConfirmDialog from "./dialogs/ResetConfirmDialog.vue";
-import SaveConfirmDialog from "./dialogs/SaveConfirmDialog.vue";
-import NewSessionDialog from "./dialogs/NewSessionDialog.vue";
-import DurationConfirmDialog from "./dialogs/DurationConfirmDialog.vue";
-import AudioErrorDialog from "./dialogs/AudioErrorDialog.vue";
-import EndSessionDialog from "./dialogs/EndSessionDialog.vue";
-import LowProfileControlWrapper from "../components/LowProfileControlWrapper.vue";
+import testfiestaIntegrationHelper from "@/integrations/TestfiestaIntegrationHelpers";
+import SourcePickerDialog from "@/components/dialogs/SourcePickerDialog.vue";
+import ChangeSourceTargetDialog from "@/components/dialogs/ChangeSourceTargetDialog.vue";
+import ShareSessionDialog from "@/components/dialogs/ShareSessionDialog.vue";
+import NoteDialog from "@/components/dialogs/NoteDialog.vue";
+import SummaryDialog from "@/components/dialogs/SummaryDialog.vue";
+import DeleteConfirmDialog from "@/components/dialogs/DeleteConfirmDialog.vue";
+import ResetConfirmDialog from "@/components/dialogs/ResetConfirmDialog.vue";
+import SaveConfirmDialog from "@/components/dialogs/SaveConfirmDialog.vue";
+import NewSessionDialog from "@/components/dialogs/NewSessionDialog.vue";
+import DurationConfirmDialog from "@/components/dialogs/DurationConfirmDialog.vue";
+import AudioErrorDialog from "@/components/dialogs/AudioErrorDialog.vue";
+import EndSessionDialog from "@/components/dialogs/EndSessionDialog.vue";
+import LowProfileControlWrapper from "@/components/LowProfileControlWrapper.vue";
 import AddEvidenceDialog from "@/components/dialogs/AddEvidenceDialog.vue";
 
 import {

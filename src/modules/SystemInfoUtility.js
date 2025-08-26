@@ -1,21 +1,21 @@
-const os = require("os");
-const si = require("systeminformation");
+import { hostname } from "os";
+import { osInfo as _osInfo, system, bios, cpu, mem } from "systeminformation";
 
 async function getCurrentDateTime() {
   return new Date().toLocaleString("en-US", { timeZone: "UTC" });
 }
 
 async function getComputerName() {
-  return os.hostname();
+  return hostname();
 }
 
 async function getOperatingSystem() {
-  const osInfo = await si.osInfo();
+  const osInfo = await _osInfo();
   return `${osInfo.distro} ${osInfo.release} ${osInfo.arch}`;
 }
 
 async function getSystemInfo() {
-  const systemInfo = await si.system();
+  const systemInfo = await system();
   return {
     manufacturer: systemInfo.manufacturer,
     model: systemInfo.model,
@@ -23,21 +23,21 @@ async function getSystemInfo() {
 }
 
 async function getBIOSVersion() {
-  const biosInfo = await si.bios();
+  const biosInfo = await bios();
   return biosInfo.version;
 }
 
 async function getProcessor() {
-  const cpuInfo = await si.cpu();
+  const cpuInfo = await cpu();
   return `${cpuInfo.manufacturer} ${cpuInfo.brand} (${cpuInfo.physicalCores} CPUs), ~${cpuInfo.speed}GHz`;
 }
 
 async function getMemory() {
-  const memInfo = await si.mem();
+  const memInfo = await mem();
   return `${(memInfo.total / 1024 / 1024).toFixed(0)}MB RAM`;
 }
 
-module.exports.getSystemInfo = async () => {
+const _getSystemInfo = async () => {
   try {
     const currentDateTime = await getCurrentDateTime();
     const computerName = await getComputerName();
@@ -64,3 +64,4 @@ module.exports.getSystemInfo = async () => {
     return null; // or handle the error in a different way as per your requirement
   }
 };
+export { _getSystemInfo as getSystemInfo };

@@ -43,15 +43,29 @@ export default defineConfig(({ mode }) => {
     }),
     ...( isElectron ? [
       electron({
-        entry: 'electron/background.js',
+        entry: './src/electron/background.js',
         onstart: (options) => {
           if (mode === "electron") {
             options.startup()
           }
         },
         vite: {
+          resolve: {
+            alias: {
+              '@': path.resolve(__dirname, 'src'), // same alias as renderer
+            },
+          },
+          plugins:[
+            VueI18nPlugin({
+              include: [path.resolve(__dirname, 'src/locales/**')],
+              strictMessage: false
+            }),
+          ],
           build: {
-            outDir: 'dist-electron', // output folder for electron files
+            outDir: 'dist_electron', // output folder for electron files,
+            rollupOptions: {
+              external: ['open', 'fluent-ffmpeg', 'ffmpeg-static', 'ffprobe-static']
+            },
           },
         },
       })

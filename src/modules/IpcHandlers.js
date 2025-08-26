@@ -1,20 +1,18 @@
 import { ipcMain } from "electron";
-import { IPC_HANDLERS, IPC_FUNCTIONS } from "./constants";
-const captureUtility = require("./CaptureUtility");
-const persistenceUtility = require("./PersistenceUtility");
-const fileSystemUtility = require("./FileSystemUtility");
-const menuUtility = require("./MenuUtility");
-const windowUtility = require("./WindowUtility");
-const serverUtility = require("./ServerUtility");
-const systemInfoUtility = require("./SystemInfoUtility");
-
+import { IPC_HANDLERS, IPC_FUNCTIONS } from "@/modules/constants";
+import * as captureUtility from '@/modules/CaptureUtility.js';
+import * as persistenceUtility from '@/modules/PersistenceUtility.js';
+import * as fileSystemUtility from '@/modules/FileSystemUtility.js';
+import * as menuUtility from '@/modules/MenuUtility.js';
+import * as windowUtility from '@/modules/WindowUtility.js';
+import * as serverUtility from '@/modules/ServerUtility.js';
+import * as systemInfoUtility from '@/modules/SystemInfoUtility.js';
 ipcMain.handle(IPC_HANDLERS.BROWSER, async (event, args) => {
   switch (args.func) {
     default:
       return null;
   }
 });
-
 ipcMain.handle(IPC_HANDLERS.CAPTURE, async (event, args) => {
   switch (args.func) {
     case IPC_FUNCTIONS.GET_MEDIA_SOURCE:

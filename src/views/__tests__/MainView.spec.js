@@ -2,10 +2,10 @@ import Vuetify from "vuetify";
 import Vuex from "vuex";
 import VueRouter from "vue-router";
 
-import MainView from "../MainView";
-import TestWrapper from "../../components/TestWrapper";
-import WorkspaceWrapper from "../../components/WorkspaceWrapper";
-import TimeCounter from "../../components/TimeCounter";
+import MainView from "@/views/MainView.vue";
+import TestWrapper from "@/components//TestWrapper";
+import WorkspaceWrapper from "@/components//WorkspaceWrapper";
+import TimeCounter from "@/components/TimeCounter.vue";
 import storeConfig from "@/store/store-config";
 
 import { mount, createLocalVue } from "@vue/test-utils";

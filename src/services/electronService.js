@@ -140,7 +140,6 @@ export default class ElectronService {
   }
 
   async dragItem(item) {
-    console.log(item);
     return await window.ipc.invoke(IPC_HANDLERS.FILE_SYSTEM, {
       func: IPC_FUNCTIONS.DRAG_ITEM,
       data: item,
