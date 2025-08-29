@@ -35,23 +35,27 @@
         :selectedItems="selected"
         event-type="dblclick"
         :sourceThumbnail.sync="sourceThumbnail"
-      />
-      <ControlPanel
-        class="pa-0"
-        @add-item="addItem"
-        @update-item="updateItem"
-        :selectedItems="selected"
-        :preSessionRequirementsMet="presessionValid"
-        view-mode="normal"
-        ref="controlPanel"
-        @start-session="onStartSession"
-      />
+      >
+        <template #controlPanel>
+          <ControlPanel
+            :selectedItems="selected"
+            :items="items"
+            :config-item="config"
+            :credential-items="credentials"
+            :srcId="sourceId"
+            view-mode="normal"
+            @add-item="addItem"
+          />
+        </template>
+      </WorkspaceWrapper>
     </div>
   </v-container>
   
 </template>
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
+import { SESSION_STATUSES } from "@/modules/constants";
+import ControlPanel from '@/components/ControlPanel.vue'
 export default {
   data(){
     return {
@@ -59,7 +63,13 @@ export default {
       sources: [],
       sidebarActive: false,
       sourcePickerDialog: false,
+      status: null,
+      interval: null,
+      timer: 0,
     }
+  },
+  components:{
+    ControlPanel
   },
   computed: {
     ...mapGetters({
@@ -76,13 +86,6 @@ export default {
       date.setSeconds(timer);
       return date.toISOString().substr(11, 8);
     },
-    presessionValid() {
-      if (!this.checklistPresessionStatus) {
-        return true;
-      } else {
-        return this.$store.getters.requiredPreSessionTasksChecked;
-      }
-    },
     sourceThumbnail() {
       return (
         this.sources.find((source) => source.id === this.sourceId)?.thumbnail ||
@@ -91,6 +94,9 @@ export default {
     },
   },
   methods: {
+    ...mapMutations({
+      updateSession: 'updateSession'
+    }),
     fetchSources() {
       if (this.$isElectron) {
         return this.$electronService.getMediaSource();
@@ -105,17 +111,35 @@ export default {
     updateSelected(value) {
       this.selected = value;
     },
-    updateItem(newItem) {
-      this.$store.commit("updateSessionItem", newItem);
+    updateStoreSession(isForce = false) {
+      this.$store.commit("updateSession", {
+        status: this.status,
+        timer: this.timer,
+        duration: this.duration,
+        isForce,
+      });
     },
-    addItem(newItem) {
-      this.$store.commit("addSessionItem", newItem);
+    stopInterval() {
+      clearInterval(this.interval);
+      this.interval = null;
+      this.updateStoreSession();
+    },
+    startInterval() {
+      if (!this.interval) {
+        this.interval = setInterval(() => {
+          this.timer += 1;
+
+          this.updateStoreSession();
+          if (this.isDuration && this.duration <= 0) {
+            this.durationConfirmDialog = true;
+            this.isDuration = false;
+            this.stopInterval();
+          }
+        }, 1000);
+      }
     },
     endSession() {
       this.$refs?.controlPanel?.endSession();
-    },
-    onStartSession(id) {
-      this.sourceId = id;
     },
     changeSessionStatus(status) {
       if (this.$isElectron) {
@@ -152,15 +176,22 @@ export default {
   mounted() {
     this.setInitialPreSession();
     this.setInitialPostSession();
-    this.$root.$on("toggle-sidebar", this.toggleSidebar);
-    this.$root.$on("set-sidebar", this.setSidebarActive);
-    this.$root.$on("update-selected", this.updateSelected);
-    this.$root.$on("sources-loaded", this.setSources);
-    this.$root.$on("close-sourcepickerdialog", this.hideSourcePickerDialog);
-    this.$root.$on("new-session", () => {
-      this.setInitialPreSession();
-      this.setInitialPostSession();
-    });
+    if (
+      this.$store.state.session.status === SESSION_STATUSES.START ||
+      this.$store.state.session.status === SESSION_STATUSES.PROCEED ||
+      this.$store.state.session.status === SESSION_STATUSES.RESUME
+    ) {
+      
+      this.$store.commit("updateSession", {
+        timer: 0,
+        duration: 0,
+        isForce: true,
+      });
+
+      this.startInterval();
+    }else{
+      return this.$router.push({name: 'main'})
+    }
   },
   beforeDestroy() {
     this.$root.$off("toggle-sidebar", this.toggleSidebar);

@@ -112,6 +112,7 @@
           class="app-height-global rounded-lg card pa-6 position-relative"
           :style="{ backgroundColor: $theme.mainBg }"
         >
+          <slot name="controlPanel"></slot>
           <SearchWrapper class="mt-16" />
           <div class="toggle-wrapper mt-5">
             <div

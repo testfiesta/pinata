@@ -43,7 +43,7 @@ import ExploratoryTestWrapper from "../components/ExploratoryTestWrapper.vue";
 import QuickTestWrapper from "@/components/QuickTestWrapper.vue";
 import CheckTaskWrapper from "@/components/CheckTaskWrapper.vue";
 import { SESSION_STATUSES } from "../modules/constants";
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
   name: "MainView",
@@ -59,6 +59,7 @@ export default {
       showMenu: false,
       sourcePickerDialog: false,
       sources: [],
+      selected: [],
       sourceId: "",
       loaded: false,
       interval: null,
@@ -66,7 +67,9 @@ export default {
       duration: this.$store.state.case.duration,
       isDuration: false,
       durationConfirmDialog: false,
-      status: this.$store.state.session.status,
+      activeMediaStreams: [],
+      mediaStream: null,
+
     };
   },
   created() {
@@ -86,6 +89,13 @@ export default {
       credentials: "auth/credentials",
       quickTest: "sessionQuickTest",
     }),
+    presessionValid() {
+      if (!this.checklistPresessionStatus) {
+        return true;
+      } else {
+        return this.$store.getters.requiredPreSessionTasksChecked;
+      }
+    },
     activeTab: {
       get() {
         return this.$route.path;
@@ -104,14 +114,117 @@ export default {
     },
   },
   methods: {
+    ...mapMutations({
+      updateSession: 'updateSession'
+    }),
+    async showSourcePickerDialog() {
+      if (this.$isElectron) {
+        try {
+          let data = await this.fetchSources();
+          this.loaded = true;
+          this.sources = data;
+          this.$root.$emit("sources-loaded", data);
+
+          this.sourcePickerDialog = true;
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        this.mediaStream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            displaySurface: "window",
+            cursor: "always",
+          },
+          audio: true,
+        });
+        this.activeMediaStreams.push(this.mediaStream); // Track the media stream
+        await this.startSession();
+      }
+    },
+    async startSession(id = null) {
+      if (this.$isElectron) {
+        this.sourceId = id;
+        this.$emit("start-session", id);
+      }
+      this.sourcePickerDialog = false;
+
+      this.timer = this.$store.state.session.timer;
+      this.duration = this.$store.state.case.duration;
+      if (this.duration > 0) {
+        this.isDuration = true;
+      }
+
+      if (this.started === "") {
+        this.started = this.getCurrentDateTime();
+        this.$store.commit("setSessionStarted", this.started);
+      }
+
+      if (this.status !== SESSION_STATUSES.START) {
+        this.changeSessionStatus(SESSION_STATUSES.START);
+      }
+
+      if (!this.$store.state.session.sessionID) {
+        const data = {
+          case: {
+            title: this.$store.state.case.title,
+            charter: this.$store.state.case.charter,
+            preconditions: this.$store.state.case.preconditions,
+            duration: this.$store.state.case.duration,
+          },
+          session: {
+            status: this.$store.state.session.status,
+            timer: this.$store.state.session.timer,
+            started: this.$store.state.session.started,
+            ended: this.$store.state.session.ended,
+            quickTest: this.$store.state.session.quickTest,
+            path: this.$route.path,
+          },
+        };
+        // If the test session is not quick test session, create a new one
+        if (!this.$store.state.session.quickTest) {
+          console.log("Creating new session");
+          await this.$storageService.createNewSession(data);
+        }
+
+        if (this.$isElectron) {
+          const caseID = await this.$storageService.getCaseId();
+          const sessionID = await this.$storageService.getSessionId();
+          this.$store.commit("setCaseID", caseID);
+          this.$store.commit("setSessionID", sessionID);
+        }
+      }
+
+      if (this.viewMode === "normal") {
+        const currentPath = this.$router.history.current.name;
+        if (currentPath !== "workspace") {
+          await this.$router.push({ name: "workspace" });
+        }
+      }
+    },
+    changeSessionStatus(status) {
+      this.updateSession({status}) //  Update Vuex store
+      if (this.$isElectron) {
+        this.$electronService.changeMenuBySessionStatus(status);
+      }
+    },
     handleTaskCheck(taskId, checked) {
       this.$store.commit("togglePreSessionTask", {
         taskId,
         checked: !!checked,
       });
     },
-    startNewSession(){
+    async startNewSession(){
+      await this.showSourcePickerDialog();
       this.$router.push({name: 'workspace'})
+    },
+    onStartSession(id) {
+      this.sourceId = id;
+    },
+    updateItem(newItem) {
+      this.$store.commit("updateSessionItem", newItem);
+    },
+    addItem(newItem) {
+      this.$store.commit("addSessionItem", newItem);
     },
     // TODO get working with webapp
     async getCurrentExecution() {
