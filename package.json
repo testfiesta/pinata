@@ -14,6 +14,7 @@
     "test:unit": "jest",
     "lint": "eslint --ext .js,.vue src",
     "dev:electron": "vite --mode=electron",
+    "migrate": "node scripts/run-migrations.js",
     "i18n:report": "vue-i18n-extract report -v './src/**/*.?(js|vue)' -l './src/locales/**/*.json'",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",

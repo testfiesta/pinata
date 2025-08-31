@@ -1,10 +1,9 @@
 import JSONdb from "simple-json-db";
 import { app, remote } from "electron";
-import { join, resolve } from "path";
-import { existsSync, readdirSync, mkdirSync } from "fs";
+import { join } from "path";
+import { existsSync, mkdirSync } from "fs";
 import { getBrowserWindow } from "./BrowserWindowUtility";
 import { STATUSES } from "./constants";
-import { pathToFileURL } from "url";
 
 const configDir = (app || remote.app).getPath("userData");
 const jsonDbConfig = {
@@ -16,127 +15,7 @@ const currentVersion = app.getVersion();
 let metaDb, configDb, credentialDb, dataDb;
 let browserWindow;
 
-const defaultMeta = {
-  configPath: join(configDir, "config.json"),
-  credentialsPath: join(configDir, "credentials.json"),
-  sessionPath: join(configDir, "sessions"),
-  sessionDataPath: "",
-  version: currentVersion,
-};
-
-const defaultConfig = {
-  localOnly: false,
-  theme: "light",
-  defaultColor: "#1976D2FF",
-  commentType: "Comment",
-  audioCapture: false,
-  videoQuality: "high",
-  debugMode: false,
-  summaryRequired: false,
-  ai: {
-    enabled: false,
-  },
-  defaultTags: [],
-  templates: {
-    image: {
-      content: "",
-      text: "",
-    },
-    video: {
-      content: "",
-      text: "",
-    },
-    audio: {
-      content: "",
-      text: "",
-    },
-    text: {
-      content: "",
-      text: "",
-    },
-    file: {
-      content: "",
-      text: "",
-    },
-    mindmap: {
-      content: "",
-      text: "",
-    },
-  },
-  checklist: {
-    presession: {
-      tasks: [],
-      status: false,
-    },
-    postsession: {
-      tasks: [],
-      status: false,
-    },
-  },
-  hotkeys: {
-    general: {
-      cancel: ["ctrl", "c"],
-      save: ["ctrl", "s"],
-    },
-    home: {
-      quickTest: ["ctrl", "q"],
-      newExploratorySession: ["ctrl", "e"],
-      openExploratorySession: ["ctrl", "o"],
-    },
-    sessionPlanning: {
-      title: ["ctrl", "t"],
-      charter: ["ctrl", "h"],
-      timeLimit: ["ctrl", "l"],
-      preconditions: ["ctrl", "p"],
-      checklist: ["ctrl", "e"],
-      start: "general.save",
-    },
-    workspace: {
-      pause: ["ctrl", "p"],
-      resume: "workspace.pause",
-      stop: ["ctrl", "h"],
-      videoStart: ["ctrl", "v"],
-      videoStop: "workspace.videoStart",
-      screenshot: ["ctrl", "r"],
-      audioStart: ["ctrl", "a"],
-      audioStop: "workspace.audioStart",
-      note: ["ctrl", "n"],
-      mindmap: ["ctrl", "m"],
-      changeSource: ["ctrl", "o"],
-      createIssue: ["ctrl", "i"],
-      back: ["ctrl", "b"],
-      copy: ["alt", "c"],
-      paste: ["alt", "v"],
-      edit: ["alt", "e"],
-      delete: ["del"],
-    }, // Dialogs on workspace use general.save and general.cancel
-    evidence: {
-      name: ["ctrl", "n"],
-      followUp: ["ctrl", "f"],
-      comment: ["ctrl", "d"],
-      tags: ["ctrl", "t"],
-      type: ["ctrl", "y"],
-      save: "general.save",
-      cancel: "general.cancel",
-    },
-  },
-  version: currentVersion,
-  logo: {
-    enabled: false,
-    path: "",
-    name: "",
-    size: 0,
-  },
-  cache: {
-    retentionPeriod: 7,
-  },
-  colors: {
-    shapeColor: "#101828",
-    markerColor: "#101828",
-    connectorColor: "#101828",
-    textColor: "#101828",
-  },
-};
+const { defaultMeta, defaultConfig, recursivelyMerge } = require("./shared-utils.js");
 
 export function initializeSession() {
   const sessionPath = join(configDir, "sessions");
@@ -152,35 +31,19 @@ export function initializeSession() {
     metadata = getMetadata();
   }
 
-  metadata = applyMigrations("meta", currentVersion, metadata);
+  metadata = recursivelyMerge(metadata, defaultMeta);
 
   if (!metadata.configPath) {
     metadata.configPath = defaultMeta.configPath;
   }
   configDb = new JSONdb(metadata.configPath, jsonDbConfig);
-  console.log("metadata.configPath =", metadata.configPath);
-  const configData = applyMigrations("config", currentVersion, configDb.JSON());
+  
+  const configData = recursivelyMerge(configDb.JSON(), defaultConfig);
 
   if (!metadata.credentialsPath) {
     metadata.credentialsPath = defaultMeta.credentialsPath;
   }
   credentialDb = new JSONdb(metadata.credentialsPath, jsonDbConfig);
-
-  const credentialData = applyMigrations(
-    "credentials",
-    currentVersion,
-    credentialDb.JSON()
-  );
-
-  let sessionData;
-  if (metadata.sessionDataPath) {
-    if (existsSync(metadata.sessionDataPath)) {
-      dataDb = new JSONdb(metadata.sessionDataPath, jsonDbConfig);
-      sessionData = applyMigrations("data", currentVersion, dataDb.JSON());
-    } else {
-      metaDb.set("sessionDataPath", "");
-    }
-  }
 
   try {
     metaDb.JSON(metadata);
@@ -189,222 +52,11 @@ export function initializeSession() {
     configDb.JSON(configData);
     configDb.sync();
 
-    credentialDb.JSON(credentialData);
     credentialDb.sync();
-
-    if (sessionData) {
-      dataDb.JSON(sessionData);
-      dataDb.sync();
-    }
   } catch (error) {
     console.log(error);
   }
 }
-
-const recursivelyMerge = (oldConfig, newConfig) => {
-  if (!(oldConfig instanceof Object) || Array.isArray(oldConfig)) {
-    if (!oldConfig || oldConfig.constructor !== newConfig.constructor) {
-      // Overwriting if the type has changed in the default
-      return newConfig;
-    }
-    return oldConfig;
-  }
-  if (!(newConfig instanceof Object) || Array.isArray(newConfig)) {
-    return newConfig;
-  }
-
-  let builtConfig = {};
-  for (const key of Object.keys(newConfig)) {
-    builtConfig[key] = recursivelyMerge(
-      oldConfig[key],
-      newConfig[key],
-      `path.${key}`
-    );
-  }
-  for (const key of Object.keys(oldConfig)) {
-    // Preserving keys in the config but not in default
-    if (!Object.keys(newConfig).includes(key)) {
-      builtConfig[key] = oldConfig[key];
-    }
-  }
-  return builtConfig;
-};
-
-const applyMigrations = async (type, newVersion, data) => {
-  let oldVersion = data.version || "0.0.0";
-  let migratedData = Object.assign(data, {});
-
-  if (newVersion !== oldVersion) {
-    // Split newVersion and oldVersion to compare
-    let splitNewVersion = newVersion.substring(1).split(".");
-    splitNewVersion = splitNewVersion.map((num) => parseInt(num));
-    let splitDataVersion = oldVersion.split(".");
-    splitDataVersion = splitDataVersion.map((num) => parseInt(num));
-    let direction = "up";
-    for (let i = 0; i < splitNewVersion.length; i++) {
-      if (splitNewVersion[i] < splitDataVersion[i]) {
-        direction = "down";
-        break;
-      }
-    }
-
-    // Read migration files
-
-    const isDevelopment = process.env.NODE_ENV !== "production";
-    let migrationFilesPath = isDevelopment
-      ? resolve(__dirname, "../src/modules/migrations/")
-      : resolve(process.resourcesPath, "./migrations/");
-
-
-    let migrationFiles = readdirSync(migrationFilesPath);
-    let migrationVersions = migrationFiles.map((fileName) => {
-      let temp = fileName.substring(1, fileName.length - 3).split(".");
-      return temp.map((num) => parseInt(num));
-    });
-    // List is in order from lowest to highest
-    if (direction === "down") {
-      migrationFiles.reverse();
-      migrationVersions.reverse();
-    }
-
-    // Find the the next migration to run.
-    let nextMigrationIndex;
-    for (let i = 0; i < migrationVersions.length; i++) {
-      if (direction === "up") {
-        if (migrationVersions[i][0] < splitDataVersion[0]) {
-          continue;
-        }
-        if (migrationVersions[i][0] === splitDataVersion[0]) {
-          if (migrationVersions[i][1] < splitDataVersion[1]) {
-            continue;
-          }
-
-          if (migrationVersions[i][1] > splitDataVersion[1]) {
-            nextMigrationIndex = i;
-            break;
-          }
-
-          if (migrationVersions[i][1] === splitDataVersion[1]) {
-            if (migrationVersions[i][2] <= splitDataVersion[2]) {
-              continue;
-            } else {
-              nextMigrationIndex = i;
-              break;
-            }
-          }
-        }
-        if (migrationVersions[i][0] > splitDataVersion[0]) {
-          nextMigrationIndex = i;
-          break;
-        }
-      } else {
-        if (migrationVersions[i][0] > splitDataVersion[0]) {
-          continue;
-        }
-        if (migrationVersions[i][0] === splitDataVersion[0]) {
-          if (migrationVersions[i][1] > splitDataVersion[1]) {
-            continue;
-          }
-
-          if (migrationVersions[i][1] < splitDataVersion[1]) {
-            nextMigrationIndex = i;
-            break;
-          }
-
-          if (migrationVersions[i][1] === splitDataVersion[1]) {
-            if (migrationVersions[i][2] >= splitDataVersion[2]) {
-              continue;
-            } else {
-              nextMigrationIndex = i;
-              break;
-            }
-          }
-        }
-        if (migrationVersions[i][0] < splitDataVersion[0]) {
-          nextMigrationIndex = i;
-          break;
-        }
-      }
-    }
-
-    // Run migrations in order
-    for (const migration of migrationFiles.slice(
-      nextMigrationIndex,
-      migrationFiles.length
-    )) {
-      const migrationPath = resolve(migrationFilesPath, migration);
-      const migrationUrl = pathToFileURL(migrationPath).href;
-
-      const { migrationStruct } = await import(migrationUrl);
-      if (!migrationStruct[direction][type]) continue;
-
-      // Order of operations here - move first, then functions
-      let moveUpMigrations = {};
-      let moveLateralMigrations = {};
-      let otherMigrations = {};
-      for (const [key, value] of Object.entries(
-        migrationStruct[direction][type]
-      )) {
-        if (
-          value === ".." ||
-          (value.length > 1 && value.split(".").length > 1)
-        ) {
-          moveUpMigrations[key] = value;
-        } else if (value.constructor === String) {
-          moveLateralMigrations[key] = value;
-        } else {
-          otherMigrations[key] = value;
-        }
-      }
-
-      migratedData = migrateKeys(moveUpMigrations, migratedData);
-      migratedData = migrateKeys(moveLateralMigrations, migratedData);
-      migratedData = migrateKeys(otherMigrations, migratedData);
-    }
-  }
-
-  let updatedData = migratedData;
-  switch (type) {
-    case "meta":
-      updatedData = recursivelyMerge(migratedData, defaultMeta);
-      break;
-    case "config":
-      updatedData = recursivelyMerge(migratedData, defaultConfig);
-      break;
-  }
-  updatedData.version = newVersion;
-
-  return updatedData;
-};
-
-const migrateKeys = (migrations, data) => {
-  // Apply migration transformations
-  for (const [key, value] of Object.entries(migrations)) {
-    if (value.constructor === String) {
-      if (data[key]) {
-        if (value === "..") {
-          for (const [subKey, subValue] of Object.entries(data[key])) {
-            data[subKey] = subValue;
-          }
-        } else if (value.length > 1 && value.split(".") > 1) {
-          if (/^[A-za-z0-9.-_]+$/.test(value)) {
-            eval(`data.${value} = data[key];`);
-          } else {
-            console.log(`Invalid migration value [${value}] skipping...`);
-          }
-        } else if (value !== "") {
-          data[value] = data[key];
-        }
-        delete data[key];
-      }
-    } else if (value.constructor === Function) {
-      if (data[key]) {
-        data[key] = value(data[key]);
-      }
-    }
-  }
-  return data;
-};
 
 const createRootSessionDirectory = () => {
   let sessionPaths = [join(configDir, "sessions")];

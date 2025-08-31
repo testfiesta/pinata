@@ -29,7 +29,7 @@ export function getMainWindow() {
       webSecurity: false,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       enableRemoteModule: true,
-      preload: join(app.getAppPath(), "src/electron/preload.js"),
+      preload: join(__dirname, "preload.js"),
     },
   });
 
@@ -64,7 +64,7 @@ export function openLowProfileWindow(data) {
         nodeIntegration: true,
         webSecurity: false,
         enableRemoteModule: true,
-        preload: join(app.getAppPath(), "src/electron/preload.js"),
+        preload: join(__dirname, "preload.js"),
       },
     });
 
@@ -133,7 +133,7 @@ export function openSettingWindow() {
         nodeIntegration: true,
         webSecurity: false,
         enableRemoteModule: true,
-        preload: join(app.getAppPath(), "src/electron/preload.js"),
+        preload: join(__dirname, "preload.js"),
       },
     });
 
@@ -189,7 +189,7 @@ export function openModalWindow(data) {
         nodeIntegration: true,
         webSecurity: false,
         enableRemoteModule: true,
-        preload: join(app.getAppPath(), "src/electron/preload.js"),
+        preload: join(__dirname, "preload.js"),
       },
     });
 

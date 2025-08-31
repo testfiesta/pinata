@@ -219,7 +219,7 @@ export async function exportSession(params) {
       nodeIntegration: true,
       webSecurity: false,
       enableRemoteModule: true,
-      preload: join(app.getAppPath(), "preload.js"),
+      preload: join(__dirname, "preload.js"),
     },
   });
 
@@ -358,7 +358,6 @@ export async function deleteSession(type) {
   if (type === "all") status = deleteFolder(metadata.sessionPath);
   else {
     let config = getConfig();
-    console.log(config, '<--- config')
     status = deleteOldFiles(metadata.sessionPath, config.cache.retentionPeriod);
   }
   if (status)
