@@ -45,6 +45,7 @@
             :srcId="sourceId"
             view-mode="normal"
             @add-item="addItem"
+            @start-session="onStartSession"
           />
         </template>
       </WorkspaceWrapper>
@@ -66,6 +67,7 @@ export default {
       status: null,
       interval: null,
       timer: 0,
+      sourceId: "",
     }
   },
   components:{
@@ -79,6 +81,8 @@ export default {
       checklistPresessionStatus: "config/checklistPresessionStatus",
       checklistPresessionTasks: "config/checklistPresessionTasks",
       checklistPostsessionTasks: "config/checklistPostsessionTasks",
+      credentials: "auth/credentials",
+      config: "config/fullConfig",
     }),
     elapsedTime() {
       const timer = this.session.timer || 0;
@@ -104,6 +108,9 @@ export default {
     },
     toggleSidebar() {
       this.sidebarActive = !this.sidebarActive;
+    },
+    onStartSession(id) {
+      this.sourceId = id;
     },
     setSidebarActive(value) {
       this.sidebarActive = !value;
@@ -171,6 +178,9 @@ export default {
     },
     setSources(sources) {
       this.sources = sources;
+    },
+    addItem(newItem) {
+      this.$store.commit("addSessionItem", newItem);
     },
   },
   mounted() {

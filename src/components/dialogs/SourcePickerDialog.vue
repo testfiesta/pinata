@@ -160,6 +160,9 @@ export default {
     },
   },
   methods: {
+    handleClose() {
+      this.$emit("close-sourcepickerdialog");
+    },
     handleSelect() {
       this.$emit("submit-source", this.activeSource);
     },

@@ -21,7 +21,7 @@ export function getMainWindow() {
     minHeight: 600,
     center: true,
     // eslint-disable-next-line no-undef
-    icon: join(app.getAppPath(), "src/assets/icon/logo.png"),
+    icon: join(app.getAppPath(), "src/assets/icon/pinata.png"),
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -58,7 +58,7 @@ export function openLowProfileWindow(data) {
       transparent: true,
       resizable: false,
       // eslint-disable-next-line no-undef
-      icon: join(app.getAppPath(), "src/assets/icon/logo.png"),
+      icon: join(app.getAppPath(), "src/assets/icon/pinata.png"),
       webPreferences: {
         devTools: false,
         nodeIntegration: true,
@@ -127,7 +127,7 @@ export function openSettingWindow() {
       center: true,
       parent: browserWindow,
       // eslint-disable-next-line no-undef
-      icon: join(app.getAppPath(), "src/assets/icon/logo.png"),
+      icon: join(app.getAppPath(), "src/assets/icon/pinata.png"),
       webPreferences: {
         devTools: true,
         nodeIntegration: true,
@@ -183,7 +183,7 @@ export function openModalWindow(data) {
       parent: parentWindow,
       resizable: false,
       // eslint-disable-next-line no-undef
-      icon: join(app.getAppPath(), "src/assets/icon/logo.png"),
+      icon: join(app.getAppPath(), "src/assets/icon/pinata.png"),
       webPreferences: {
         devTools: true,
         nodeIntegration: true,

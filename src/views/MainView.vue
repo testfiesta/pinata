@@ -34,6 +34,14 @@
           </v-tab-item>
         </v-tabs-items>
       </div>
+      <SourcePickerDialog
+        v-model="sourcePickerDialog"
+        :sources="sources"
+        :sourceId="sourceId"
+        :loaded="loaded"
+        @submit-source="startSession"
+        @close-sourcepickerdialog="hideSourcePickerDialog"
+    />
     </div>
   </v-container>
 </template>
@@ -44,6 +52,7 @@ import QuickTestWrapper from "@/components/QuickTestWrapper.vue";
 import CheckTaskWrapper from "@/components/CheckTaskWrapper.vue";
 import { SESSION_STATUSES } from "../modules/constants";
 import { mapGetters, mapMutations } from "vuex";
+import SourcePickerDialog from '@/components/dialogs/SourcePickerDialog.vue'
 
 export default {
   name: "MainView",
@@ -51,6 +60,7 @@ export default {
     QuickTestWrapper,
     ExploratoryTestWrapper,
     CheckTaskWrapper,
+    SourcePickerDialog,
     HeaderView: () => import("@/components/HeaderView.vue"),
   },
   data() {
@@ -139,6 +149,14 @@ export default {
         });
         this.activeMediaStreams.push(this.mediaStream); // Track the media stream
         await this.startSession();
+      }
+    },
+    hideSourcePickerDialog() {
+      this.sourcePickerDialog = false;
+    },
+    async fetchSources() {
+      if (this.$isElectron) {
+        return await this.$electronService.getMediaSource();
       }
     },
     async startSession(id = null) {
