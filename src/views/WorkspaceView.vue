@@ -91,10 +91,7 @@ export default {
       return date.toISOString().substr(11, 8);
     },
     sourceThumbnail() {
-      return (
-        this.sources.find((source) => source.id === this.sourceId)?.thumbnail ||
-        ""
-      );
+      return this.session.sourceThumbnail
     },
   },
   methods: {

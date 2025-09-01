@@ -14,7 +14,7 @@
             style="height: 100%"
           >
             <QuickTestWrapper 
-              @start-session="startNewSession"
+              @start-session="showSourcePickerDialog"
              />
           </v-tab-item>
           <v-tab-item
@@ -23,7 +23,7 @@
             style="height: 100%"
           >
             <ExploratoryTestWrapper
-                @start-session="startNewSession"
+                @start-session="showSourcePickerDialog"
                 style="height: 100%"
               />
             <CheckTaskWrapper
@@ -122,6 +122,12 @@ export default {
         this.checklistPresessionStatus
       );
     },
+    sourceThumbnail() {
+      return (
+        this.sources.find((source) => source.id === this.sourceId)?.thumbnail ||
+        ""
+      );
+    },
   },
   methods: {
     ...mapMutations({
@@ -162,7 +168,10 @@ export default {
     async startSession(id = null) {
       if (this.$isElectron) {
         this.sourceId = id;
-        this.$emit("start-session", id);
+        this.$store.commit('updateSession', {
+          sourceId: id,
+          sourceThumbnail: this.sourceThumbnail
+        })
       }
       this.sourcePickerDialog = false;
 
@@ -196,6 +205,7 @@ export default {
             ended: this.$store.state.session.ended,
             quickTest: this.$store.state.session.quickTest,
             path: this.$route.path,
+            // ...(id ? { sourceId: id} : {})
           },
         };
         // If the test session is not quick test session, create a new one
@@ -212,11 +222,9 @@ export default {
         }
       }
 
-      if (this.viewMode === "normal") {
-        const currentPath = this.$router.history.current.name;
-        if (currentPath !== "workspace") {
-          await this.$router.push({ name: "workspace" });
-        }
+      const currentPath = this.$router.history.current.name;
+      if (currentPath !== "workspace") {
+        await this.$router.push({ name: "workspace" });
       }
     },
     changeSessionStatus(status) {
@@ -230,10 +238,6 @@ export default {
         taskId,
         checked: !!checked,
       });
-    },
-    async startNewSession(){
-      await this.showSourcePickerDialog();
-      this.$router.push({name: 'workspace'})
     },
     onStartSession(id) {
       this.sourceId = id;

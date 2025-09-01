@@ -265,9 +265,18 @@ async function runMigrations() {
     }
 
     console.log("Migrations completed successfully");
+    return { metaDb, configDb, credentialDb, dataDb };
   } catch (error) {
     console.error("Migration error:", error);
+    throw error;
   }
 }
 
-module.exports = { runMigrations };
+// Export the databases so they can be imported in PersistenceUtility
+module.exports = { 
+  runMigrations,
+  getMetaDb: () => metaDb,
+  getConfigDb: () => configDb,
+  getCredentialDb: () => credentialDb,
+  getDataDb: () => dataDb
+};

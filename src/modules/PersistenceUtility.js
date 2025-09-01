@@ -15,47 +15,24 @@ const currentVersion = app.getVersion();
 let metaDb, configDb, credentialDb, dataDb;
 let browserWindow;
 
-const { defaultMeta, defaultConfig, recursivelyMerge } = require("./shared-utils.js");
+const { 
+  getMetaDb, 
+  getConfigDb, 
+  getCredentialDb, 
+  getDataDb,
+  runMigrations
+} = require(join(__dirname, 'migrations.js'));
 
-export function initializeSession() {
+export async function initializeSession() {
   const sessionPath = join(configDir, "sessions");
   if (!existsSync(sessionPath)) {
     createRootSessionDirectory();
   }
-
-  metaDb = new JSONdb(join(configDir, "meta.json"), jsonDbConfig);
-  let metadata = {
-    version: currentVersion,
-  };
-  if (metaDb) {
-    metadata = getMetadata();
-  }
-
-  metadata = recursivelyMerge(metadata, defaultMeta);
-
-  if (!metadata.configPath) {
-    metadata.configPath = defaultMeta.configPath;
-  }
-  configDb = new JSONdb(metadata.configPath, jsonDbConfig);
-  
-  const configData = recursivelyMerge(configDb.JSON(), defaultConfig);
-
-  if (!metadata.credentialsPath) {
-    metadata.credentialsPath = defaultMeta.credentialsPath;
-  }
-  credentialDb = new JSONdb(metadata.credentialsPath, jsonDbConfig);
-
-  try {
-    metaDb.JSON(metadata);
-    metaDb.sync();
-
-    configDb.JSON(configData);
-    configDb.sync();
-
-    credentialDb.sync();
-  } catch (error) {
-    console.log(error);
-  }
+  await runMigrations();
+  metaDb = getMetaDb();
+  configDb = getConfigDb();
+  credentialDb = getCredentialDb();
+  dataDb = getDataDb();
 }
 
 const createRootSessionDirectory = () => {

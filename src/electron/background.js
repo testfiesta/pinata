@@ -9,14 +9,10 @@ import * as browserUtility from "../modules/BrowserWindowUtility.js";
 import * as persistenceUtility from "../modules/PersistenceUtility.js";
 import * as windowUtility from "../modules/WindowUtility.js";
 import * as serverUtility from "../modules/ServerUtility.js";
-const { runMigrations } = require("./migrations.js");
 
 import "../modules/IpcHandlers.js";
 
 let isDevelopment = process.env.NODE_ENV !== "production";
-if (isDevelopment) {
-  runMigrations();
-}
 
 // initialize session
 persistenceUtility.initializeSession();

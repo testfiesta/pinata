@@ -58,6 +58,8 @@ const store = new Vuex.Store({
       nodes: [],
       connections: [],
       savedTimer: 0,
+      sourceId: null,
+      sourceThumbnail: null
     },
   },
   mutations: {
@@ -205,7 +207,12 @@ const store = new Vuex.Store({
       if (state.session.sessionID !== payload.sessionID && payload.sessionID) {
         state.session.sessionID = payload.sessionID;
       }
-
+      if(state.session.sourceId !== payload.sourceId && payload.sourceId){
+        state.session.sourceId = payload.sourceId
+      }
+      if(state.session.sourceThumbnail !== payload.sourceThumbnail && payload.sourceThumbnail){
+        state.session.sourceThumbnail = payload.sourceThumbnail
+      }
       if (
         Vue.prototype.$isElectron ||
         isStatusChanged ||
