@@ -32,6 +32,13 @@
               @taskToggle="handleTaskCheck"
             />
           </v-tab-item>
+          <v-tab-item
+            value="/scripted-test"
+            :transition="false"
+            style="height: 100%"
+          >
+            <ScriptedTestWrapper/>
+          </v-tab-item>
         </v-tabs-items>
       </div>
       <SourcePickerDialog
@@ -53,7 +60,8 @@ import CheckTaskWrapper from "@/components/CheckTaskWrapper.vue";
 import { SESSION_STATUSES } from "../modules/constants";
 import { mapGetters, mapMutations } from "vuex";
 import SourcePickerDialog from '@/components/dialogs/SourcePickerDialog.vue'
-
+import ScriptedTestWrapper from "@/components/ScriptedTestWrapper.vue";
+import HeaderView from '@/components/HeaderView.vue'
 export default {
   name: "MainView",
   components: {
@@ -61,7 +69,8 @@ export default {
     ExploratoryTestWrapper,
     CheckTaskWrapper,
     SourcePickerDialog,
-    HeaderView: () => import("@/components/HeaderView.vue"),
+    ScriptedTestWrapper,
+    HeaderView,
   },
   data() {
     return {

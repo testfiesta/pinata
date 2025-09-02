@@ -117,6 +117,11 @@ const routes = [
     component: MainView
   },
   {
+    path: '/scripted-test',
+    name: 'scriptedTest',
+    component: MainView
+  },
+  {
     path: '/workspace',
     name: 'workspace',
     component: WorkspaceView

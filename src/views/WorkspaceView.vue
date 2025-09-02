@@ -50,13 +50,30 @@
         </template>
       </WorkspaceWrapper>
     </div>
+    <template>
+    <EndSessionDialog
+      v-model="endSessionDialog"
+      :post-session-data="postSessionData"
+      @proceed="closeEndSessionDialog"
+    />
+    <SummaryDialog
+      ref="summaryDialog"
+      v-model="summaryDialog"
+      :configItem="config"
+      :credentialItems="credentials"
+      :summary="summary"
+      @submit-summary="addSummary"
+    />
+    </template>
   </v-container>
   
 </template>
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import { SESSION_STATUSES } from "@/modules/constants";
+import { SESSION_STATUSES, DEFAULT_FILE_TYPES } from "@/modules/constants";
 import ControlPanel from '@/components/ControlPanel.vue'
+import EndSessionDialog from "@/components/dialogs/EndSessionDialog.vue";
+import uuidv4 from "uuid";
 export default {
   data(){
     return {
@@ -68,10 +85,14 @@ export default {
       interval: null,
       timer: 0,
       sourceId: "",
+      resetConfirmDialog: false,
+      endSessionDialog: false,
+      summaryDialog: false,
     }
   },
   components:{
-    ControlPanel
+    ControlPanel,
+    EndSessionDialog
   },
   computed: {
     ...mapGetters({
@@ -80,6 +101,7 @@ export default {
       session: 'fullSession',
       checklistPresessionStatus: "config/checklistPresessionStatus",
       checklistPresessionTasks: "config/checklistPresessionTasks",
+      postSessionData: "config/postSessionData",
       checklistPostsessionTasks: "config/checklistPostsessionTasks",
       credentials: "auth/credentials",
       config: "config/fullConfig",
@@ -90,8 +112,20 @@ export default {
       date.setSeconds(timer);
       return date.toISOString().substr(11, 8);
     },
+    getCurrentDateTime() {
+      return new Date().toISOString();
+    },
     sourceThumbnail() {
       return this.session.sourceThumbnail
+    },
+    summary() {
+      let summary = {};
+      this.items.map((item) => {
+        if (item?.comment?.type === "Summary") {
+          summary = item;
+        }
+      });
+      return summary;
     },
   },
   methods: {
@@ -143,7 +177,69 @@ export default {
       }
     },
     endSession() {
-      this.$refs?.controlPanel?.endSession();
+      if (this.postSessionData.status) {
+        this.showEndSessionDialog();
+      } else {
+        this.showSummaryDialog();
+      }
+    },
+    closeEndSessionDialog(status) {
+      this.endSessionDialog = false;
+      if (status) {
+        this.showSummaryDialog();
+      }
+    },
+    showEndSessionDialog() {
+      this.endSessionDialog = true;
+    },
+    showSummaryDialog() {
+      this.summaryDialog = true;
+
+      setTimeout(() => {
+        this.$refs.summaryDialog.$refs.comment.editor.commands.focus();
+      }, 200);
+    },
+    async addSummary(value) {
+      // TODO - handle summary like a regular note and allow additional metadata
+      const data = {
+        stepID: uuidv4(),
+        fileType: DEFAULT_FILE_TYPES["text"].type,
+        comment: value,
+        tags: [],
+        emoji: [],
+        followUp: false,
+        timer_mark: this.timer,
+        createdAt: Date.now(),
+      };
+      if (Object.keys(this.summary).length) {
+        delete data.stepID;
+        const newSummary = {
+          ...this.summary,
+          ...data,
+        };
+        this.$store.commit("updateSessionItem", newSummary);
+      } else {
+        this.$store.commit("addSessionItem", data);
+      }
+      this.summaryDialog = false;
+      await this.endSessionProcess();
+    },
+    async endSessionProcess() {
+      if(!this.$isElectron)
+        this.stopAllMediaStreams();
+      this.sourceId = "";
+      this.ended = this.getCurrentDateTime;
+      this.$store.commit("setSessionEnded", this.ended);
+      this.status = SESSION_STATUSES.END;
+      this.changeSessionStatus(SESSION_STATUSES.END);
+      this.stopInterval();
+      this.$root.$emit("handle-mindmap");
+      this.finishSession();
+      // await this.$router.push({ path: "/result" });
+    },
+    async finishSession() {
+      this.$store.commit("clearState");
+      await this.$router.push("/");
     },
     changeSessionStatus(status) {
       if (this.$isElectron) {
