@@ -5,7 +5,6 @@ db-rest-mock.json
 
 
 # local env files
-.env.local
 .env.*.local
 
 # Log files
@@ -29,3 +28,4 @@ pnpm-debug.log*
 /release
 
 components.d.ts
+config.bat
