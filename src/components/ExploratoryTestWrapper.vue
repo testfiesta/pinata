@@ -124,7 +124,6 @@ export default {
       this.activeTab = "mindMap";
     },
     startNewSession() {
-      this.$root.$emit("start-new-exploratory-session");
       this.$emit('start-session')
     },
 
