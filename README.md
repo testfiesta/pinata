@@ -79,7 +79,6 @@ Many thanks to all of the testers and developers who have contributed to Piñata
 [@narkhedeshubham](https://github.com/narkhedeshubham)
 [@anakhavviswanathan](https://github.com/anakhavviswanathan)
 [@jimholmes](https://github.com/jimholmes)
-[@dacoaster](https://github.com/dacoaster)
 
 ### Built With
 
@@ -92,7 +91,7 @@ Many thanks to all of the testers and developers who have contributed to Piñata
 
 If you looking to contribute - please checkout the [contributing guidelines](docs/CONTRIBUTING.md).
 
-If you're just looking to take it for a spin, check out the pre-built [packages](https://github.com/testfiesta/pinata/releases) and find the one built for your platform. Can't find the platform you're looking for? Let us know you'd like a new one supported by submitting a [feature requests](https://github.com/dacoaster/pinata/labels/enhancement)!
+If you're just looking to take it for a spin, check out the pre-built [packages](https://github.com/testfiesta/pinata/releases) and find the one built for your platform. Can't find the platform you're looking for? Let us know you'd like a new one supported by submitting a [feature requests](https://github.com/testfiesta/pinata/labels/enhancement)!
 
 ### Installation
 
@@ -110,7 +109,7 @@ To allow Piñata taking screenshots and record your screen please make sure you 
 ## Usage
 
 - You can find a quick waklthrough by the very helpful @parwalrahul at the excellent MoT community [here](https://www.ministryoftesting.com/articles/acfa4d56)!
-- Check out our [docs](https://docs.pinata.ai). Note: these docs are rough and need a lot of work.
+- Join our [Discord](https://discord.gg/YXeYZBxq46)
 
 ## Roadmap
 
