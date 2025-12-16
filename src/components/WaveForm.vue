@@ -20,6 +20,8 @@
 
 <script>
 import WaveSurfer from "wavesurfer.js";
+import playIcon from "@/assets/icon/timeline-icon/play20px.svg?url";
+import pauseIcon from "@/assets/icon/timeline-icon/pause20px.svg?url";
 
 export default {
   name: "WaveSurferPlayer",
@@ -39,9 +41,19 @@ export default {
   },
   computed: {
     playPauseIcon() {
-      return this.isPlaying
-        ? require("@/assets/icon/timeline-icon/play20px.svg?url")
-        : require("@/assets/icon/timeline-icon/pause20px.svg?url");
+      return this.isPlaying ? playIcon : pauseIcon;
+    },
+    audioUrl() {
+      if (!this.audioFile) return '';
+      // If it's already a URL use as is
+      if (this.audioFile.startsWith('http') || 
+          this.audioFile.startsWith('blob:') || 
+          this.audioFile.startsWith('data:') ||
+          this.audioFile.startsWith('file://')) {
+        return this.audioFile;
+      }
+      // For Electron, add file:// prefix for local paths
+      return this.$isElectron ? `file://${this.audioFile}` : this.audioFile;
     },
   },
   mounted() {
@@ -58,7 +70,7 @@ export default {
     });
 
     // Load the audio file
-    this.waveSurfer.load(this.audioFile);
+    this.waveSurfer.load(this.audioUrl);
 
     this.waveSurfer.on("play", () => {
       this.isPlaying = true;

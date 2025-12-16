@@ -1376,6 +1376,7 @@ export default {
     },
     dropItem(event, dropIndex) {
       event.preventDefault();
+      event.stopPropagation();
       const dragIndex = this.draggingIndex;
 
       if (dragIndex !== null && dragIndex !== dropIndex) {
@@ -1388,6 +1389,7 @@ export default {
 
       // Reset dragging state
       this.draggingIndex = null;
+      this.isDragging = false;
     },
     dragEnd() {
       this.draggingIndex = null;
@@ -1506,10 +1508,14 @@ export default {
       this.editEvidenceDialog = true;
     },
     async dragItem(event, item) {
+      if (!item.filePath) return;
+      
       event.preventDefault();
 
       let modifiedItem = { ...item };
-      modifiedItem.filePath = modifiedItem.filePath.split("?")[0];
+      if(modifiedItem.filePath){
+        modifiedItem.filePath = modifiedItem.filePath.split("?")[0];
+      }
 
       if (this.$isElectron) {
         // todo make dragging work in the web app
