@@ -447,7 +447,7 @@ export async function openCredentialsFile() {
 
 export function dragItem(event, data) {
   // eslint-disable-next-line no-undef
-  const iconPath = join(app.getAppPath(), "assets/icon/drag-drop.png");
+  const iconPath = join(app.getAppPath(), "src/assets/icon/drag-drop.png");
   event.sender.startDrag({
     file: data.filePath,
     icon: iconPath,

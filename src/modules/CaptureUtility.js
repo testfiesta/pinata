@@ -168,6 +168,7 @@ export function optimizeVideo({ filePath }) {
   return new Promise(function (resolve, reject) {
     ffmpeg(filePath)
       .videoCodec("libx264")
+      .addOption("-preset", "veryfast")
       .audioCodec("aac")
       .format(fileFormat)
       .save(tempPath)
