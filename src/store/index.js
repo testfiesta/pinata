@@ -188,36 +188,37 @@ const store = new Vuex.Store({
 
     updateSession(state, payload) {
       let isStatusChanged = false;
-      if (state.session.status !== payload.status) {
+      // Only update status if it's provided in the payload
+      if (payload.hasOwnProperty('status') && state.session.status !== payload.status) {
         state.session.status = payload.status;
         isStatusChanged = true;
       }
-      if (state.session.timer !== payload.timer) {
+      if (payload.hasOwnProperty('timer') && state.session.timer !== payload.timer) {
         state.session.timer = payload.timer;
       }
-      if (state.case.duration !== payload.duration) {
+      if (payload.hasOwnProperty('duration') && state.case.duration !== payload.duration) {
         state.case.duration = payload.duration;
       }
-      if (state.session.ended !== payload.ended && payload.ended) {
+      if (payload.hasOwnProperty('ended') && state.session.ended !== payload.ended && payload.ended) {
         state.session.ended = payload.ended;
       }
-      if (state.session.quickTest !== payload.quickTest && payload.quickTest) {
+      if (payload.hasOwnProperty('quickTest') && state.session.quickTest !== payload.quickTest && payload.quickTest) {
         state.session.quickTest = payload.quickTest;
       }
-      if (state.session.sessionID !== payload.sessionID && payload.sessionID) {
+      if (payload.hasOwnProperty('sessionID') && state.session.sessionID !== payload.sessionID && payload.sessionID) {
         state.session.sessionID = payload.sessionID;
       }
-      if(state.session.sourceId !== payload.sourceId && payload.sourceId){
+      if (payload.hasOwnProperty('sourceId') && state.session.sourceId !== payload.sourceId && payload.sourceId){
         state.session.sourceId = payload.sourceId
       }
-      if(state.session.sourceThumbnail !== payload.sourceThumbnail && payload.sourceThumbnail){
+      if (payload.hasOwnProperty('sourceThumbnail') && state.session.sourceThumbnail !== payload.sourceThumbnail && payload.sourceThumbnail){
         state.session.sourceThumbnail = payload.sourceThumbnail
       }
       if (
         Vue.prototype.$isElectron ||
         isStatusChanged ||
         payload.isForce ||
-        payload.timer - state.session.savedTimer >= 10
+        (payload.hasOwnProperty('timer') && payload.timer - state.session.savedTimer >= 10)
       ) {
         state.session.savedTimer = payload.timer;
       }

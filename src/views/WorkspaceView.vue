@@ -84,6 +84,9 @@ export default {
       status: null,
       interval: null,
       timer: 0,
+      duration: 0,
+      isDuration: false,
+      durationConfirmDialog: false,
       sourceId: "",
       resetConfirmDialog: false,
       endSessionDialog: false,
@@ -93,6 +96,35 @@ export default {
   components:{
     ControlPanel,
     EndSessionDialog
+  },
+  watch: {
+    "$store.state.session.status": {
+      deep: true,
+      handler(newValue) {
+        this.status = newValue;
+        if (
+          this.status === SESSION_STATUSES.START ||
+          this.status === SESSION_STATUSES.RESUME ||
+          this.status === SESSION_STATUSES.PROCEED
+        ) {
+          this.startInterval();
+        } else {
+          this.stopInterval();
+        }
+      },
+    },
+    "$store.state.session.timer": {
+      deep: true,
+      handler(newValue) {
+        this.timer = newValue;
+      },
+    },
+    "$store.state.case.duration": {
+      deep: true,
+      handler(newValue) {
+        this.duration = newValue;
+      },
+    },
   },
   computed: {
     ...mapGetters({
@@ -279,18 +311,23 @@ export default {
   mounted() {
     this.setInitialPreSession();
     this.setInitialPostSession();
+    this.$root.$on("close-summarydialog", () => {
+      this.summaryDialog = false;
+    });
+    
+    // Initialize status, timer and duration from store
+    this.status = this.$store.state.session.status;
+    this.timer = this.$store.state.session.timer;
+    this.duration = this.$store.state.case.duration;
+    if (this.duration > 0) {
+      this.isDuration = true;
+    }
+    
     if (
       this.$store.state.session.status === SESSION_STATUSES.START ||
       this.$store.state.session.status === SESSION_STATUSES.PROCEED ||
       this.$store.state.session.status === SESSION_STATUSES.RESUME
     ) {
-      
-      this.$store.commit("updateSession", {
-        timer: 0,
-        duration: 0,
-        isForce: true,
-      });
-
       this.startInterval();
     }else{
       return this.$router.push({name: 'main'})

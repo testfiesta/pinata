@@ -933,7 +933,6 @@ export default {
       if (this.$store.state.session.status === SESSION_STATUSES.START) {
         this.startSession(this.sourceId);
       }
-      this.startInterval();
     }
   },
   beforeDestroy() {

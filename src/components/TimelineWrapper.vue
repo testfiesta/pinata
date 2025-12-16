@@ -1345,6 +1345,7 @@ export default {
     this.$root.$on("set-selected-evidence", (selected) => {
       this.selectedEvidence = selected;
     });
+    this.$root.$on("submit-search", this.handleSearch);
     // this.renderAllMaps();
   },
   methods: {
@@ -1629,6 +1630,25 @@ export default {
           console.error("Error with WaveSurfer:", error);
           reject(error);
         });
+      });
+    },
+    handleSearch(searchTerm) {
+      if (!searchTerm) {
+        this.itemLists = this.items;
+        return;
+      }
+
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+      this.itemLists = this.items.filter((item) => {
+        const commentText = item.comment?.text?.toLowerCase() || "";
+        const tagsText = item.tags
+          ?.map((tag) => tag.text.toLowerCase())
+          .join(" ") || "";
+        return (
+          commentText.includes(lowerCaseSearchTerm) ||
+          tagsText.includes(lowerCaseSearchTerm)
+        );
       });
     },
   },
