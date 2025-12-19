@@ -9,8 +9,10 @@ import logo from '@/assets/icon/logo.png'
 
 const configDir = (app || remote.app).getPath("userData");
 
-import { getItemById, createNewSession as _createNewSession, getItems, updateMetadata, updateItems, getSessionID, getMetadata, getConfig } from "./PersistenceUtility";
+import { initializeSession, getItemById, createNewSession as _createNewSession, getItems, updateMetadata, updateItems, getSessionID, getMetadata, getConfig } from "./PersistenceUtility";
 import { STATUSES, FILE_TYPES } from "@/modules/constants";
+
+initializeSession();
 
 export async function exportItems(ids) {
   const fileName =
