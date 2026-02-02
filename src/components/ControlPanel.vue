@@ -606,13 +606,13 @@
       @save="saveSession(callback)"
       @discard="discardSession(callback)"
     />
-    <!-- <DurationConfirmDialog
+    <DurationConfirmDialog
       v-model="durationConfirmDialog"
       :text="$t('message.confirm_proceed_session_time')"
       :configItem="config"
       @end="end"
       @proceed="proceed"
-    /> -->
+    />
     <AudioErrorDialog
       v-model="audioErrorDialog"
       :text="$t('message.error_recording_audio')"
@@ -1088,13 +1088,12 @@ export default {
       if (!this.interval) {
         this.interval = setInterval(() => {
           this.timer += 1;
-          
+
           if (this.isDuration && this.duration > 0) {
             this.duration -= 1;
-            console.log("Duration remaining:", this.duration);
-          }
-          this.updateStoreSession();
-          if (this.isDuration && this.duration <= 0) {
+          }  
+          this.updateStoreSession();          
+          if (this.isDuration && this.duration <= 0) { 
             this.durationConfirmDialog = true;
             this.isDuration = false;
             this.stopInterval();
@@ -1166,6 +1165,7 @@ export default {
         // If the test session is not quick test session, create a new one
         if (!this.$store.state.session.quickTest) {
           console.log("Creating new session");
+          this.startInterval();
           await this.$storageService.createNewSession(data);
         }
 
