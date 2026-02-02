@@ -51,6 +51,13 @@
       </WorkspaceWrapper>
     </div>
     <template>
+    <DurationConfirmDialog
+      v-model="durationConfirmDialog"
+      :text="$t('message.confirm_proceed_session_time')"
+      :configItem="config"
+      @end="end"
+      @proceed="proceed"
+    />
     <EndSessionDialog
       v-model="endSessionDialog"
       :post-session-data="postSessionData"
@@ -73,6 +80,7 @@ import { mapGetters, mapMutations } from "vuex";
 import { SESSION_STATUSES, DEFAULT_FILE_TYPES } from "@/modules/constants";
 import ControlPanel from '@/components/ControlPanel.vue'
 import EndSessionDialog from "@/components/dialogs/EndSessionDialog.vue";
+import DurationConfirmDialog from "@/components/dialogs/DurationConfirmDialog.vue";
 import uuidv4 from "uuid";
 export default {
   data(){
@@ -95,7 +103,8 @@ export default {
   },
   components:{
     ControlPanel,
-    EndSessionDialog
+    EndSessionDialog,
+    DurationConfirmDialog
   },
   watch: {
     "$store.state.session.status": {
@@ -195,13 +204,21 @@ export default {
       this.updateStoreSession();
     },
     startInterval() {
+      console.log("🌎 WORKSPACEVIEW startInterval() called, this.interval:", this.interval);
       if (!this.interval) {
+        console.log("🌎 WORKSPACEVIEW - Creating interval");
         this.interval = setInterval(() => {
           this.timer += 1;
-
+          console.log("🌎 WORKSPACEVIEW timer:", this.timer);
+ if (this.isDuration && this.duration > 0) {
+        this.duration -= 1;
+        console.log("Duration remaining:", this.duration);
+      }
           this.updateStoreSession();
+           console.log("confirm dialog:", this.durationConfirmDialog);
           if (this.isDuration && this.duration <= 0) {
             this.durationConfirmDialog = true;
+            console.log("confirm dialog:", this.durationConfirmDialog);
             this.isDuration = false;
             this.stopInterval();
           }
@@ -214,6 +231,16 @@ export default {
       } else {
         this.showSummaryDialog();
       }
+    },
+    end() {
+      this.durationConfirmDialog = false;
+      this.endSession();
+    },
+    proceed() {
+      this.durationConfirmDialog = false;
+      this.status = SESSION_STATUSES.PROCEED;
+      this.changeSessionStatus(SESSION_STATUSES.PROCEED);
+      this.startInterval();
     },
     closeEndSessionDialog(status) {
       this.endSessionDialog = false;
