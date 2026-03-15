@@ -1,7 +1,29 @@
-const uuidv4 = require("uuid");
-const { DEFAULT_FILE_TYPES } = require("../constants");
+const { v4: uuidv4 } = require("uuid");
 
-export const migrationStruct = {
+const DEFAULT_FILE_TYPES = {
+  image: {
+    type: "image/png",
+    suffix: "png",
+  },
+  video: {
+    type: "video/mp4",
+    suffix: "mp4",
+  },
+  audio: {
+    type: "audio/mp3",
+    suffix: "mp3",
+  },
+  text: {
+    type: "text/plain",
+    suffix: "txt",
+  },
+  mindmap: {
+    type: "application/json",
+    suffix: "mindmap",
+  },
+};
+
+const migrationStruct = {
   up: {
     config: {
       config: "..",
@@ -122,3 +144,5 @@ export const migrationStruct = {
     },
   },
 };
+
+module.exports = { migrationStruct };

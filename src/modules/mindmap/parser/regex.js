@@ -1,7 +1,7 @@
 /*
  * Extract text from the inner HTML of a node.
  */
-const getText = (html) => {
+export const getText = (html) => {
   const res = [];
 
   // Match all text inside A tags. If there's no A tags,
@@ -20,7 +20,7 @@ const getText = (html) => {
 /*
  * Extract HREF content from the first link on a node.
  */
-const getURL = (html) => {
+export const getURL = (html) => {
   // Match HREF content inside A tags.
   const matchURL = /<a[^>]*href="([^"]*)"[^>]*>[^<]*<\/a>/;
   const match = matchURL.exec(html);
@@ -30,9 +30,4 @@ const getURL = (html) => {
   }
 
   return "";
-};
-
-module.exports = {
-  getText,
-  getURL,
 };

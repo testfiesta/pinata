@@ -4,7 +4,7 @@
       <div class="col col-3 pr-0" v-if="!quickTest" v-show="sidebarActive">
         <div
           class="app-height-global rounded-lg card pa-6"
-          :style="{ backgroundColor: mainBg }"
+          :style="{ backgroundColor: $theme.mainBg }"
         >
           <div class="fs-16 font-weight-semibold mb-8">
             {{ $tc("caption.detail", 1) }}
@@ -27,7 +27,7 @@
               flat
               solo
               height="40px"
-              :background-color="inputBg"
+              :background-color="$theme.inputBg"
               :value="fullCase.charter.text"
               disabled
             />
@@ -42,7 +42,7 @@
               flat
               disabled
               solo
-              :background-color="inputBg"
+              :background-color="$theme.inputBg"
               :value="fullCase.preconditions.text"
             />
           </div>
@@ -57,7 +57,7 @@
       >
         <div
           class="app-height-global rounded-lg card pa-6"
-          :style="{ backgroundColor: mainBg }"
+          :style="{ backgroundColor: $theme.mainBg }"
         >
           <div class="fs-16 font-weight-bold" v-if="!isItemsExist">
             {{ $tc("caption.session_started", 1) }}
@@ -69,7 +69,7 @@
               'align-start': isItemsExist,
               'align-center': !isItemsExist,
             }"
-            :style="{ backgroundColor: mainBg }"
+            :style="{ backgroundColor: $theme.mainBg }"
           >
             <img
               :src="localSourceThumbnail"
@@ -94,7 +94,7 @@
           :style="{ left: sidebarActive ? '-0.75rem' : '0.075rem' }"
         >
           <img
-            :src="require('../assets/icon/double-arrow.svg')"
+            :src="require('@/assets/icon/double-arrow.svg?url')"
             width="20"
             height="20"
             :class="{ 'reverse-img': !sidebarActive }"
@@ -110,11 +110,15 @@
       >
         <div
           class="app-height-global rounded-lg card pa-6 position-relative"
-          :style="{ backgroundColor: mainBg }"
+          :style="{ backgroundColor: $theme.mainBg }"
         >
+          <slot name="controlPanel"></slot>
           <SearchWrapper class="mt-16" />
           <div class="toggle-wrapper mt-5">
-            <div class="toggle-container" :style="{ backgroundColor: inputBg }">
+            <div
+              class="toggle-container"
+              :style="{ backgroundColor: $theme.inputBg }"
+            >
               <div
                 class="toggle-option"
                 :class="{ active: currentTab === 'timeline' }"
@@ -183,8 +187,8 @@
                           depressed
                           height="40px"
                           block
-                          :color="currentTheme.primary"
-                          :style="{ color: currentTheme.black }"
+                          :color="$theme.primary"
+                          :style="{ color: $theme.black }"
                           v-on="{
                             ...evidenceExportDestinationMenu,
                             ...onTooltip,
@@ -192,7 +196,7 @@
                         >
                           {{ $tc("caption.export", 1) }}
                           <img
-                            :src="require('../assets/icon/download-white.svg')"
+                            :src="require('@/assets/icon/download-white.svg?url')"
                             width="20"
                             height="20"
                             class="ml-2"
@@ -294,7 +298,7 @@
         <v-tab
           class="tree-tab"
           @click="currentTab = 'tree'"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           Test Tree
         </v-tab>
@@ -302,14 +306,14 @@
         <v-tab
           class="timeline-tab"
           @click="currentTab = 'timeline'"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           Timeline
         </v-tab>
         <v-tab
           class="notes-tab"
           @click="currentTab = 'notes'"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           Notes
         </v-tab>
@@ -354,7 +358,6 @@
 import { mapGetters } from "vuex";
 import NotesWrapper from "./NotesWrapper.vue";
 import TimelineWrapper from "./TimelineWrapper.vue";
-import theme from "../mixins/theme";
 import SearchWrapper from "./SearchWrapper.vue";
 import EvidenceWrapper from "./EvidenceWrapper.vue";
 import JiraExportSession from "./jira/JiraExportSession";
@@ -413,7 +416,6 @@ export default {
       this.eventName = newValue;
     },
   },
-  mixins: [theme],
   data() {
     return {
       selected: this.selectedItems,
@@ -438,13 +440,6 @@ export default {
     },
     isItemsExist() {
       return this.items.length > 0;
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
     isSelectedEvidenceNotEmpty() {
       return Object.keys(this.selectedEvidence).length > 0;

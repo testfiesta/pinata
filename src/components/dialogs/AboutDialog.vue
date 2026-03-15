@@ -8,11 +8,8 @@
     eager
   >
     <v-sheet outlined rounded>
-      <v-card :style="{ backgroundColor: currentTheme.background }">
-        <v-card-title
-          class="dialog-title"
-          :style="{ color: currentTheme.secondary }"
-        >
+      <v-card :style="{ backgroundColor: $theme.background }">
+        <v-card-title :style="{ color: $theme.secondary }" class="dialog-title">
           {{ $tc("caption.about_pinata", 1) }}
         </v-card-title>
         <v-divider></v-divider>
@@ -35,8 +32,8 @@
                 class="btn"
                 small
                 block
-                :color="currentTheme.primary"
-                :style="{ color: currentTheme.white }"
+                :color="$theme.primary"
+                :style="{ color: $theme.white }"
                 v-shortkey="closeHotkey"
                 @shortkey="handleClose()"
                 @click="handleClose()"
@@ -71,13 +68,6 @@ export default {
         "general.cancel",
         this.$store.getters["config/hotkeys"]
       );
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

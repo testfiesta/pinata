@@ -1,20 +1,20 @@
 import Vue from "vue";
-import App from "./App.vue";
-import vuetify from "./plugins/vuetify";
-import VTiptap from "@yatt-ai/vuetify-tiptap";
-import router from "./router";
-import store from "./store";
-import integrationHelpers from "./integrations/IntegrationHelpers";
-import hotkeyHelpers from "./helpers/HotkeyHelpers";
+import App from "@/App.vue";
+import vuetify from "@/plugins/vuetify";
+import router from "@/router";
+import store from "@/store";
+import integrationHelpers from "@/integrations/IntegrationHelpers";
+import hotkeyHelpers from "@/helpers/HotkeyHelpers";
+import '@/assets/scss/variables.scss'
 
-import DefaultLayout from "./layouts/Default.vue";
-import MinimizeLayout from "./layouts/Minimize.vue";
+import DefaultLayout from "@/layouts/Default.vue";
+import MinimizeLayout from "@/layouts/Minimize.vue";
 
 import VueShortkey from "vue-shortkey";
 
 import VueMask from "v-mask";
-import i18n from "./i18n";
-import StorageService from "./services/storageService";
+import i18n from "@/i18n";
+import StorageService from "@/services/storageService";
 import ElectronService from "@/services/electronService";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -28,6 +28,9 @@ import { faBookmark } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
 
+import ThemePlugin from "@/plugins/theme";
+import axios from "axios";
+
 library.add(faComment);
 library.add(faTriangleExclamation);
 library.add(faClipboard);
@@ -38,7 +41,6 @@ library.add(faPlus);
 library.add(faTableList);
 
 Vue.use(VueShortkey);
-Vue.use(VTiptap);
 Vue.use(VueMask);
 
 Vue.component("default-layout", DefaultLayout);
@@ -60,14 +62,18 @@ const plugins = {
     if (isElectronApp) {
       Vue.prototype.$electronService = new ElectronService();
     }
+    Vue.prototype.$api = axios.create({
+      baseURL: import.meta.env.VITE_APP_SERVER_INTERNALURL,
+      withCredentials: true,
+    });
   },
 };
 Vue.use(plugins);
-
+Vue.use(ThemePlugin);
+Vue.use(i18n);
 new Vue({
   vuetify,
   router,
   store,
-  i18n,
   render: (h) => h(App),
 }).$mount("#app");

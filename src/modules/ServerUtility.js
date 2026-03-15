@@ -1,10 +1,10 @@
-const { fork } = require("child_process");
-const path = require("path");
-const browserUtility = require("./BrowserWindowUtility");
+import { fork } from "child_process";
+import { resolve as _resolve } from "path";
+import { getBrowserWindow } from "./BrowserWindowUtility";
 
 let serverProcess = null;
 
-module.exports.startServer = async (vars) => {
+export async function startServer(vars) {
   if (Object.keys(vars) < 1) {
     vars = {};
   }
@@ -12,14 +12,14 @@ module.exports.startServer = async (vars) => {
   const isDevelopment = process.env.NODE_ENV !== "production";
   serverProcess = fork(
     isDevelopment
-      ? path.resolve(__dirname, "../server/server.js")
-      : path.resolve(process.resourcesPath, "./server/server.js"),
+      ? _resolve(__dirname, "../server/server.js")
+      : _resolve(process.resourcesPath, "./server/server.js"),
     {
       env: vars,
     }
   );
 
-  const browserWindow = browserUtility.getBrowserWindow();
+  const browserWindow = getBrowserWindow();
 
   serverProcess.on("message", (data) => {
     switch (data.type) {
@@ -34,10 +34,10 @@ module.exports.startServer = async (vars) => {
   // TODO: The above line is not ideal, but the express server doesn't seem to
   //       send a 'spawn' event, so the below line doesn't work.
   //await once(serverProcess, 'spawn');
-};
+}
 
-module.exports.stopServer = () => {
+export function stopServer() {
   if (serverProcess) {
     serverProcess.kill();
   }
-};
+}

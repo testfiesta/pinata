@@ -6,7 +6,7 @@
           <img
             width="24"
             height="24"
-            :src="require('../../assets/icon/edit.svg')"
+            :src="require('@/assets/icon/edit.svg?url')"
           />
         </div>
       </template>
@@ -18,7 +18,7 @@
           <img
             width="24"
             height="24"
-            :src="require('../../assets/icon/highlight.svg')"
+            :src="require('@/assets/icon/highlight.svg?url')"
           />
         </div>
       </template>
@@ -30,7 +30,7 @@
           <img
             width="24"
             height="24"
-            :src="require('../../assets/icon/thin.svg')"
+            :src="require('@/assets/icon/thin.svg?url')"
           />
         </div>
       </template>
@@ -42,7 +42,7 @@
           <img
             width="24"
             height="24"
-            :src="require('../../assets/icon/thick.svg')"
+            :src="require('@/assets/icon/thick.svg?url')"
           />
         </div>
       </template>

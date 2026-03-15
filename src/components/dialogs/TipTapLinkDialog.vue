@@ -15,7 +15,7 @@
             autofocus
             class="rounded-lg mb-5"
             hide-details
-            :background-color="inputBg"
+            :background-color="$theme.inputBg"
             dense
             height="40px"
             flat
@@ -27,7 +27,7 @@
           <div class="row">
             <v-col cols="6">
               <v-btn
-                :color="btnBg"
+                :color="$theme.btnBg"
                 depressed
                 class="text-capitalize rounded-lg"
                 @click="close(null)"
@@ -40,7 +40,7 @@
             <v-col cols="6">
               <v-btn
                 ref="confirmBtn"
-                :color="currentTheme.primary"
+                :color="$theme.primary"
                 depressed
                 class="text-capitalize rounded-lg white--text"
                 @click="close(input)"
@@ -58,15 +58,12 @@
 </template>
 
 <script>
-import theme from "../../mixins/theme";
-
 export default {
   props: {
     placeholder: {
       type: String,
     },
   },
-  mixins: [theme],
   data() {
     return {
       dialog: false,

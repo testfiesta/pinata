@@ -54,13 +54,6 @@ export default {
       const currentBindings = [...this.modifierKeys, this.characterKey];
       return this.$hotkeyHelper.printBindings(currentBindings, this.hotkeys);
     },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   mounted() {
     if (this.$el && this.$el.getAttribute("keydown-listener") !== "true") {

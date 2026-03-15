@@ -5,7 +5,7 @@
         <div>
           <div
             class="d-flex fs-14 mb-1 font-weight-medium"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
             v-shortkey="titleHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'titleTextField')"
           >
@@ -15,12 +15,12 @@
             :placeholder="$tc('caption.session_name', 1)"
             autofocus
             class="rounded-lg"
-            :background-color="inputBg"
+            :background-color="$theme.inputBg"
             dense
             height="40px"
             flat
             solo
-            :color="currentTheme.secondary"
+            :color="$theme.secondary"
             :loading="titleLoading"
             :append-icon="
               isAiAssistEnabled
@@ -37,7 +37,7 @@
           >
             <template v-slot:progress>
               <v-progress-linear
-                :color="currentTheme.primary"
+                :color="$theme.primary"
                 absolute
                 height="5"
                 indeterminate
@@ -48,7 +48,7 @@
         <div class="mt-4">
           <div
             class="d-flex fs-14 mb-1 font-weight-medium"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
             v-shortkey="charterHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'charter')"
             v-if="!isMindmap"
@@ -58,7 +58,7 @@
           <div v-if="!isMindmap">
             <v-card v-if="charterLoading" class="loading-wrapper" outlined flat>
               <v-progress-circular
-                :color="currentTheme.primary"
+                :color="$theme.primary"
                 size="70"
                 absolute
                 indeterminate
@@ -87,8 +87,8 @@
                 <v-select
                   v-model="selectedHeading"
                   :items="headingOptions"
-                  :background-color="inputBg"
-                  :color="currentTheme.secondary"
+                  :background-color="$theme.inputBg"
+                  :color="$theme.secondary"
                   class="rounded-lg custom-select"
                   item-text="text"
                   item-value="level"
@@ -200,7 +200,7 @@
         <div class="mt-4 pre-cond">
           <div
             class="d-flex fs-14 mb-1 font-weight-medium"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
             v-shortkey="preconditionsHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'preconditions')"
           >
@@ -213,7 +213,7 @@
             flat
           >
             <v-progress-circular
-              :color="currentTheme.primary"
+              :color="$theme.primary"
               size="70"
               absolute
               indeterminate
@@ -242,8 +242,8 @@
               <v-select
                 v-model="selectedHeading"
                 :items="headingOptions"
-                :background-color="inputBg"
-                :color="currentTheme.secondary"
+                :background-color="$theme.inputBg"
+                :color="$theme.secondary"
                 class="rounded-lg custom-select"
                 item-text="text"
                 item-value="level"
@@ -345,7 +345,7 @@
         <div class="mt-4">
           <div
             class="d-flex fs-14 mb-1 font-weight-medium"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
           >
             {{ $tc("caption.privacy", 1) }}
           </div>
@@ -354,8 +354,8 @@
             style="width: 50%"
             v-model="privacy"
             :placeholder="$tc('caption.comment_type')"
-            :background-color="inputBg"
-            :color="currentTheme.secondary"
+            :background-color="$theme.inputBg"
+            :color="$theme.secondary"
             class="rounded-lg custom-select"
             item-text="text"
             item-value="level"
@@ -371,7 +371,7 @@
         <div class="mt-4 timelimit">
           <div
             class="d-flex fs-14 mb-1 font-weight-medium"
-            :style="{ color: currentTheme.secondary }"
+            :style="{ color: $theme.secondary }"
             v-shortkey="timeLimitHotkey"
             @shortkey="$hotkeyHelpers.focusField($refs, 'timeLimitTextField')"
           >
@@ -386,12 +386,12 @@
               v-mask="'##:##'"
               autofocus
               class="rounded-lg"
-              :background-color="inputBg"
+              :background-color="$theme.inputBg"
               dense
               height="40px"
               flat
               solo
-              :color="currentTheme.secondary"
+              :color="$theme.secondary"
               v-model="duration"
               @change="handleDuration()"
               hide-details="true"
@@ -415,7 +415,6 @@
 import { VTextField } from "vuetify/lib/components";
 import NewMindmapEditor from "./NewMindmapEditor.vue";
 import { debounce } from "lodash";
-import theme from "../mixins/theme";
 import TipTapLinkDialog from "./dialogs/TipTapLinkDialog.vue";
 
 import {
@@ -440,7 +439,6 @@ export default {
       default: () => false,
     },
   },
-  mixins: [theme],
   data() {
     return {
       title: this.$store.state.case.title,
@@ -516,13 +514,6 @@ export default {
         "sessionPlanning.checklist",
         this.hotkeys
       );
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   watch: {

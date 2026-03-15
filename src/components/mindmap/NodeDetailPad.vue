@@ -21,7 +21,7 @@
         <template v-slot:selection="{ attr, on, item }">
           <div v-bind="attr" v-on="on" style="line-height: 0">
             <img
-              :src="require('../../assets/icon/' + item + '.svg')"
+              :src="require('@/assets/icon/' + item + '.svg?url')"
               width="30"
               alt="avatar"
             />
@@ -30,7 +30,7 @@
         <template v-slot:item="{ item }">
           <div style="line-height: 0">
             <img
-              :src="require('../../assets/icon/' + item + '.svg')"
+              :src="require('@/assets/icon/' + item + '.svg?url')"
               width="30"
               alt="avatar"
             />

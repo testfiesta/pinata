@@ -3,7 +3,7 @@
     <v-list-item-icon class="mr-4">
       <v-avatar width="16" size="24" rounded tile>
         <img
-          :src="require('../../assets/icon/zephyr-squad.png')"
+          :src="require('@/assets/icon/zephyr-squad.png?url')"
           width="16"
           alt="avatar"
         />
@@ -256,13 +256,6 @@ export default {
     };
   },
   computed: {
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     ...mapGetters({
       credentials: "auth/credentials",
     }),

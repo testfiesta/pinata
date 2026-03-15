@@ -14,7 +14,7 @@
               <template v-slot:icon>
                 <div class="start-end-wrapper">
                   <img
-                    src="../assets/icon/timeline-icon/play.svg"
+                    :src="require('@/assets/icon/timeline-icon/play.svg?url')"
                     alt="play"
                     class="icon"
                     draggable="false"
@@ -24,7 +24,7 @@
               <div class="duration-text mb-3 py-2">
                 <div
                   class="d-flex fs-14 mb-1 font-weight-semibold"
-                  :style="{ color: currentTheme.secondary }"
+                  :style="{ color: $theme.secondary }"
                 >
                   {{ $tc("caption.session_started", 1) }}
                 </div>
@@ -37,13 +37,13 @@
               </div>
               <div class="d-flex justify-start align-center">
                 <img
-                  src="../assets/icon/timeline-icon/message.svg"
+                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                   alt="message"
                   class="icon"
                   draggable="false"
                 />
                 <img
-                  src="../assets/icon/timeline-icon/face-smile.svg"
+                  :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                   alt="emoticon"
                   class="icon mx-2"
                   draggable="false"
@@ -77,8 +77,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/camera-blue.svg')
-                            : require('@/assets/icon/timeline-icon/camera-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/camera-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/camera-gray.svg?url')
                         "
                         alt="camera"
                         class="icon"
@@ -93,7 +93,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.screenshot", 1) }} •
                           {{ item?.comment?.type }}
@@ -157,7 +157,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -193,7 +193,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -262,8 +262,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/video-blue.svg')
-                            : require('@/assets/icon/timeline-icon/video-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/video-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/video-gray.svg?url')
                         "
                         alt="video"
                         class="icon"
@@ -278,7 +278,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.video_record", 1) }} •
                           {{ item?.comment?.type }}
@@ -346,7 +346,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -381,7 +381,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -450,8 +450,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/microphone-blue.svg')
-                            : require('@/assets/icon/timeline-icon/microphone-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/microphone-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/microphone-gray.svg?url')
                         "
                         alt="microphone"
                         class="icon"
@@ -466,7 +466,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.audio", 1) }} •
                           {{ item?.comment?.type }}
@@ -524,7 +524,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -559,7 +559,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -631,8 +631,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/message-blue.svg')
-                            : require('@/assets/icon/timeline-icon/message-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/message-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/message-gray.svg?url')
                         "
                         alt="message"
                         class="icon"
@@ -647,7 +647,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.your_details", 1) }} •
                           {{ item?.comment?.type }}
@@ -710,7 +710,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -745,7 +745,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -813,8 +813,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/mindmap-blue.svg')
-                            : require('@/assets/icon/timeline-icon/mindmap-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/mindmap-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/mindmap-gray.svg?url')
                         "
                         alt="mindmap"
                         class="icon"
@@ -827,7 +827,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.mind_map", 1) }} •
                           {{ item?.comment?.type }}
@@ -899,7 +899,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -934,7 +934,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                     />
@@ -1001,8 +1001,8 @@
                       <img
                         :src="
                           selectedEvidenceStepId === item.stepID
-                            ? require('@/assets/icon/timeline-icon/message-blue.svg')
-                            : require('@/assets/icon/timeline-icon/message-gray.svg')
+                            ? require('@/assets/icon/timeline-icon/message-blue.svg?url')
+                            : require('@/assets/icon/timeline-icon/message-gray.svg?url')
                         "
                         alt="message"
                         class="icon"
@@ -1017,7 +1017,7 @@
                       <div class="duration-text">
                         <div
                           class="d-flex fs-14 mb-1 font-weight-semibold"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $tc("caption.your_details", 1) }} •
                           {{ item?.comment?.type }}
@@ -1080,7 +1080,7 @@
                                 }"
                               >
                                 <img
-                                  src="../assets/icon/timeline-icon/message.svg"
+                                  :src="require('@/assets/icon/timeline-icon/message.svg?url')"
                                   width="20"
                                   height="20"
                                   draggable="false"
@@ -1115,7 +1115,7 @@
                                     @click="handleSelectedItem(item.stepID)"
                                   >
                                     <img
-                                      src="../assets/icon/timeline-icon/face-smile.svg"
+                                      :src="require('@/assets/icon/timeline-icon/face-smile.svg?url')"
                                       width="20"
                                       height="20"
                                       draggable="false"
@@ -1180,7 +1180,7 @@
       v-if="status !== 'pending' && status !== 'pause'"
     >
       <p>
-        <img :src="require('../assets/icon/plus.svg')" width="24" height="24" />
+        <img :src="require('@/assets/icon/plus.svg?url')" width="24" height="24" />
       </p>
     </v-row>
     <AddEvidenceDialog
@@ -1239,7 +1239,6 @@ import {
   select,
 } from "d3";
 import { mapGetters } from "vuex";
-import theme from "../mixins/theme";
 
 export default {
   name: "TimelineWrapper",
@@ -1288,7 +1287,6 @@ export default {
       this.eventName = newValue;
     },
   },
-  mixins: [theme],
   data() {
     return {
       itemLists: [],
@@ -1324,13 +1322,6 @@ export default {
     current() {
       return dayjs().format("MM-DD-YYYY");
     },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     filteredItemLists() {
       return Array.from(
         (this.itemLists || [])
@@ -1354,6 +1345,7 @@ export default {
     this.$root.$on("set-selected-evidence", (selected) => {
       this.selectedEvidence = selected;
     });
+    this.$root.$on("submit-search", this.handleSearch);
     // this.renderAllMaps();
   },
   methods: {
@@ -1384,6 +1376,7 @@ export default {
     },
     dropItem(event, dropIndex) {
       event.preventDefault();
+      event.stopPropagation();
       const dragIndex = this.draggingIndex;
 
       if (dragIndex !== null && dragIndex !== dropIndex) {
@@ -1396,6 +1389,7 @@ export default {
 
       // Reset dragging state
       this.draggingIndex = null;
+      this.isDragging = false;
     },
     dragEnd() {
       this.draggingIndex = null;
@@ -1514,10 +1508,14 @@ export default {
       this.editEvidenceDialog = true;
     },
     async dragItem(event, item) {
+      if (!item.filePath) return;
+      
       event.preventDefault();
 
       let modifiedItem = { ...item };
-      modifiedItem.filePath = modifiedItem.filePath.split("?")[0];
+      if(modifiedItem.filePath){
+        modifiedItem.filePath = modifiedItem.filePath.split("?")[0];
+      }
 
       if (this.$isElectron) {
         // todo make dragging work in the web app
@@ -1638,6 +1636,25 @@ export default {
           console.error("Error with WaveSurfer:", error);
           reject(error);
         });
+      });
+    },
+    handleSearch(searchTerm) {
+      if (!searchTerm) {
+        this.itemLists = this.items;
+        return;
+      }
+
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+      this.itemLists = this.items.filter((item) => {
+        const commentText = item.comment?.text?.toLowerCase() || "";
+        const tagsText = item.tags
+          ?.map((tag) => tag.text.toLowerCase())
+          .join(" ") || "";
+        return (
+          commentText.includes(lowerCaseSearchTerm) ||
+          tagsText.includes(lowerCaseSearchTerm)
+        );
       });
     },
   },

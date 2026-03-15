@@ -19,8 +19,8 @@
             height="40px"
             :menu-props="{ offsetY: true }"
             elevation="0"
-            :background-color="inputBg"
-            :color="currentTheme.secondary"
+            :background-color="$theme.inputBg"
+            :color="$theme.secondary"
             class="rounded-lg select-comment-type"
             hide-details="true"
           ></v-select>
@@ -38,7 +38,7 @@
     />
     <v-card v-if="commentLoading" class="loading-wrapper mb-3" outlined flat>
       <v-progress-circular
-        :color="currentTheme.primary"
+        :color="$theme.primary"
         size="70"
         absolute
         indeterminate
@@ -52,7 +52,7 @@
     >
       <div
         class="d-flex fs-14 mb-1 font-weight-medium"
-        :style="{ color: currentTheme.secondary }"
+        :style="{ color: $theme.secondary }"
       >
         {{ $tc("caption.comment", 1) }}
       </div>
@@ -78,8 +78,8 @@
           <v-select
             v-model="selectedHeading"
             :items="headingOptions"
-            :background-color="inputBg"
-            :color="currentTheme.secondary"
+            :background-color="$theme.inputBg"
+            :color="$theme.secondary"
             class="rounded-lg custom-select"
             item-text="text"
             item-value="level"
@@ -199,7 +199,6 @@ import {
 import openAIIntegrationHelper from "../integrations/OpenAIIntegrationHelpers";
 import { mapGetters } from "vuex";
 import jiraIntegrationHelper from "@/integrations/JiraIntegrationHelpers";
-import theme from "../mixins/theme";
 
 export default {
   name: "EvidenceWrapper",
@@ -217,7 +216,6 @@ export default {
       default: () => [],
     },
   },
-  mixins: [theme],
   data() {
     return {
       createJiraTicket: false,
@@ -310,13 +308,6 @@ export default {
       }
       return splitName.length > 1 ? "." + splitName[splitName.length - 1] : "";
     },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   mounted() {
     this.getAllTags();
@@ -398,7 +389,7 @@ export default {
     },
     async activeSession() {
       // set theme mode
-      const isDarkMode = this.config.theme === "dark";
+      const isDarkMode = this.config.appearance === "dark";
       this.$vuetify.theme.dark = isDarkMode;
       localStorage.setItem("isDarkMode", isDarkMode);
 

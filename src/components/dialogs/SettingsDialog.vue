@@ -4,10 +4,17 @@
     v-on="$listeners"
     persistent
     width="100%"
-    max-width="700px"
+    max-width="850px"
     eager
+    transparent
   >
-    <v-sheet outlined rounded>
+    <v-sheet
+      outlined
+      rounded
+      :style="{
+        backgroundColor: $theme.mainBg,
+      }"
+    >
       <SettingView />
       <div class="footer mr-4 mb-4 d-flex justify-end">
         <v-btn
@@ -15,7 +22,7 @@
           fill
           small
           color="white"
-          :style="{ color: currentTheme.black }"
+          :style="{ color: $theme.black }"
           @click="handleClose()"
         >
           {{ $tc("caption.close", 1) }}
@@ -37,15 +44,7 @@ export default {
   data() {
     return {};
   },
-  computed: {
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
-  },
+  computed: {},
   methods: {
     handleClose() {
       this.$emit("close");

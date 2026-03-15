@@ -1,9 +1,12 @@
-const axios = require("axios");
-const open = require("open");
-const https = require("https");
-const path = require("path");
-const port = process.env.VUE_APP_SERVER_PORT || 64064;
+import axios from "axios";
+import https from "https";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const port = import.meta.env.VITE_APP_SERVER_PORT || 64064;
 
 const clientId = process.env.clientId;
 const clientSecret = process.env.clientSecret;
@@ -13,7 +16,7 @@ const codeChallenge = process.env.codeChallenge;
 const scopes = "WRITE";
 const redirectURL = `http://localhost:${port}/oauth2/atlassian/callback`;
 
-module.exports = (app) => {
+export default (app) => {
   app.use((req, res, next) => {
     res.header(
       "Access-Control-Allow-Headers",
@@ -66,7 +69,7 @@ module.exports = (app) => {
             jira: responseData,
           },
         });
-        return res.sendFile(path.join(__dirname, "../jira_success.html"));
+        return res.sendFile(path.join(__dirname, "./../jira_success.html"));
       })
       .catch((error) => {
         console.log(`Connection error: ${JSON.stringify(error)}`);

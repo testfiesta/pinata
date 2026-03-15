@@ -1,17 +1,18 @@
-const { app, remote, dialog, shell, BrowserWindow } = require("electron");
-const path = require("path");
-const fs = require("fs");
-const AdmZip = require("adm-zip");
-const extract = require("extract-zip");
-const dayjs = require("dayjs");
-const uuidv4 = require("uuid");
+import { app, remote, dialog, shell, BrowserWindow } from "electron";
+import { join } from "path";
+import { existsSync, mkdirSync, writeFile, unlinkSync, readFileSync, rmSync, renameSync, lstatSync, readdirSync, rmdirSync, readdir, stat, readFile } from "fs";
+import AdmZip from "adm-zip";
+import extract from "extract-zip";
+import dayjs from "dayjs";
+import uuidv4 from "uuid";
+import logo from '@/assets/icon/logo.png'
 
 const configDir = (app || remote.app).getPath("userData");
 
-const persistenceUtility = require("./PersistenceUtility");
-const { STATUSES, FILE_TYPES } = require("./constants");
+import { getItemById, createNewSession as _createNewSession, getItems, updateMetadata, updateItems, getSessionID, getMetadata, getConfig } from "./PersistenceUtility";
+import { STATUSES, FILE_TYPES } from "@/modules/constants";
 
-module.exports.exportItems = async (ids) => {
+export async function exportItems(ids) {
   const fileName =
     "pinata-export-" + dayjs().format("YYYY-MM-DD_HH-mm-ss-ms") + ".zip";
 
@@ -31,7 +32,7 @@ module.exports.exportItems = async (ids) => {
       const zip = new AdmZip();
 
       ids.map((id) => {
-        const item = persistenceUtility.getItemById(id);
+        const item = getItemById(id);
 
         if (item.filePath) {
           const sanitizedPath =
@@ -57,19 +58,19 @@ module.exports.exportItems = async (ids) => {
       resolve({ status: STATUSES.ERROR, message: error.message });
     }
   });
-};
+}
 
-module.exports.createNewSession = async (state) => {
+export async function createNewSession(state) {
   state.session.sessionID = uuidv4();
   state.case.caseID = uuidv4();
-  const dataFolder = path.join(configDir, "sessions", state.session.sessionID);
-  if (!fs.existsSync(dataFolder)) {
-    fs.mkdirSync(dataFolder, { recursive: true });
+  const dataFolder = join(configDir, "sessions", state.session.sessionID);
+  if (!existsSync(dataFolder)) {
+    mkdirSync(dataFolder, { recursive: true });
   }
-  persistenceUtility.createNewSession(state);
-};
+  _createNewSession(state);
+}
 
-module.exports.saveSession = async (data) => {
+export async function saveSession(data) {
   const fileName = "TestSession.test";
   const { filePath } = await dialog.showSaveDialog({
     title: "Save Session",
@@ -86,13 +87,13 @@ module.exports.saveSession = async (data) => {
   }
 
   return new Promise(function (resolve) {
-    const items = persistenceUtility.getItems();
+    const items = getItems();
     data.session.items = items;
-    const metaPath = path.join(configDir, "metadata.txt");
+    const metaPath = join(configDir, "metadata.txt");
     const jsonStr = JSON.stringify(data);
     const encodedStr = Buffer.from(jsonStr).toString("hex");
 
-    fs.writeFile(metaPath, encodedStr, function (error) {
+    writeFile(metaPath, encodedStr, function (error) {
       if (error) {
         return resolve({
           status: STATUSES.ERROR,
@@ -102,7 +103,7 @@ module.exports.saveSession = async (data) => {
       try {
         const zip = new AdmZip();
         zip.addLocalFile(metaPath);
-        fs.unlinkSync(metaPath);
+        unlinkSync(metaPath);
         items.map((item) => {
           if (item.filePath) {
             const sanitizedPath =
@@ -131,9 +132,9 @@ module.exports.saveSession = async (data) => {
       }
     });
   });
-};
+}
 
-module.exports.openSession = async () => {
+export async function openSession() {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ["openFile"],
     filters: [{ name: "Test File", extensions: ["test"] }],
@@ -147,29 +148,29 @@ module.exports.openSession = async () => {
   }
 
   const filePath = filePaths[0];
-  const target = path.join(configDir, "sessions", "temp");
-  if (!fs.existsSync(target)) {
-    fs.mkdirSync(target, { recursive: true });
+  const target = join(configDir, "sessions", "temp");
+  if (!existsSync(target)) {
+    mkdirSync(target, { recursive: true });
   }
   try {
     await extract(filePath, { dir: target });
-    const metaPath = path.join(target, "metadata.txt");
-    const encoded = fs.readFileSync(metaPath, "utf8");
+    const metaPath = join(target, "metadata.txt");
+    const encoded = readFileSync(metaPath, "utf8");
     const state = JSON.parse(Buffer.from(encoded, "hex").toString());
 
     const id = state.id || uuidv4();
-    const dataFolder = path.join(configDir, "sessions", id);
-    if (fs.existsSync(dataFolder)) {
-      fs.rmSync(dataFolder, { recursive: true });
+    const dataFolder = join(configDir, "sessions", id);
+    if (existsSync(dataFolder)) {
+      rmSync(dataFolder, { recursive: true });
     }
-    fs.renameSync(target, dataFolder);
+    renameSync(target, dataFolder);
 
-    const sessionDataPath = path.join(dataFolder, "sessionData.json");
-    persistenceUtility.updateMetadata({ sessionDataPath });
+    const sessionDataPath = join(dataFolder, "sessionData.json");
+    updateMetadata({ sessionDataPath });
 
     // TODO - Should we restore state here or in Main and Default?
 
-    persistenceUtility.updateItems(state.session.items);
+    updateItems(state.session.items);
     // delete state.sessions;
 
     return Promise.resolve({
@@ -183,11 +184,11 @@ module.exports.openSession = async () => {
       message: "Session extract failed",
     });
   }
-};
+}
 
-module.exports.exportSession = async (params) => {
+export async function exportSession(params) {
   const timestamp = dayjs().format("YYYY-MM-DD_HH-mm-ss-ms");
-  const id = persistenceUtility.getSessionID();
+  const id = getSessionID();
   // show save dialog
   const fileName =
     params.type === "pdf"
@@ -212,13 +213,13 @@ module.exports.exportSession = async (params) => {
   const pdfWin = new BrowserWindow({
     show: false,
     // eslint-disable-next-line no-undef
-    icon: path.join(__static, "./logo.png"),
+    icon: join(app.getAppPath(), "assets/icon/logo.png"),
     webPreferences: {
       devTools: true,
       nodeIntegration: true,
       webSecurity: false,
       enableRemoteModule: true,
-      preload: path.join(app.getAppPath(), "preload.js"),
+      preload: join(__dirname, "preload.js"),
     },
   });
 
@@ -236,9 +237,9 @@ module.exports.exportSession = async (params) => {
         .printToPDF({})
         .then((data) => {
           const pdfName = "pinata-session-" + timestamp + "-report.pdf";
-          const pdfPath = path.join(configDir, "sessions", id, pdfName);
+          const pdfPath = join(configDir, "sessions", id, pdfName);
           if (params.type === "pdf") {
-            fs.writeFile(filePath, data, (error) => {
+            writeFile(filePath, data, (error) => {
               if (error) {
                 return Promise.resolve({
                   status: STATUSES.ERROR,
@@ -247,7 +248,7 @@ module.exports.exportSession = async (params) => {
               }
             });
           } else {
-            fs.writeFile(pdfPath, data, (error) => {
+            writeFile(pdfPath, data, (error) => {
               if (error) {
                 return Promise.resolve({
                   status: STATUSES.ERROR,
@@ -257,7 +258,7 @@ module.exports.exportSession = async (params) => {
               try {
                 const zip = new AdmZip();
 
-                const items = persistenceUtility.getItems();
+                const items = getItems();
                 items.map((item) => {
                   if (item.filePath) {
                     const sanitizedPath =
@@ -301,19 +302,19 @@ module.exports.exportSession = async (params) => {
         });
     }, 4000);
   });
-};
+}
 
 const deleteFolder = function (folderPath) {
-  if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
-    fs.readdirSync(folderPath).forEach((file) => {
-      const curPath = path.join(folderPath, file);
-      if (fs.lstatSync(curPath).isDirectory()) {
+  if (existsSync(folderPath) && lstatSync(folderPath).isDirectory()) {
+    readdirSync(folderPath).forEach((file) => {
+      const curPath = join(folderPath, file);
+      if (lstatSync(curPath).isDirectory()) {
         deleteFolder(curPath);
       } else {
-        fs.unlinkSync(curPath);
+        unlinkSync(curPath);
       }
     });
-    fs.rmdirSync(folderPath);
+    rmdirSync(folderPath);
     return true;
   } else {
     return false;
@@ -321,16 +322,16 @@ const deleteFolder = function (folderPath) {
 };
 
 const deleteOldFiles = (directoryPath, retentionPeriod) => {
-  fs.readdir(directoryPath, (err, files) => {
+  readdir(directoryPath, (err, files) => {
     if (err) {
       console.error("Error reading directory:", err);
       return false;
     }
 
     files.forEach((file) => {
-      const filePath = path.join(directoryPath, file);
+      const filePath = join(directoryPath, file);
 
-      fs.stat(filePath, (err, stats) => {
+      stat(filePath, (err, stats) => {
         if (err) {
           console.error("Error getting file stats:", err);
           return false;
@@ -351,12 +352,12 @@ const deleteOldFiles = (directoryPath, retentionPeriod) => {
   return true;
 };
 
-module.exports.deleteSession = async (type) => {
+export async function deleteSession(type) {
   let status;
-  const metadata = persistenceUtility.getMetadata();
+  const metadata = getMetadata();
   if (type === "all") status = deleteFolder(metadata.sessionPath);
   else {
-    let config = persistenceUtility.getConfig();
+    let config = getConfig();
     status = deleteOldFiles(metadata.sessionPath, config.cache.retentionPeriod);
   }
   if (status)
@@ -368,9 +369,9 @@ module.exports.deleteSession = async (type) => {
     status: STATUSES.ERROR,
     message: "Session deleted failed", // TODO i18n
   });
-};
+}
 
-module.exports.openConfigFile = async () => {
+export async function openConfigFile() {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ["openFile"],
     filters: [{ name: "Config File", extensions: ["json"] }],
@@ -385,16 +386,16 @@ module.exports.openConfigFile = async () => {
 
   const filePath = filePaths[0];
   try {
-    fs.readFile(filePath, "utf8", (err) => {
+    readFile(filePath, "utf8", (err) => {
       if (err) {
         console.log("File read failed:", err);
         return;
       }
     });
 
-    const metadata = persistenceUtility.getMetadata();
+    const metadata = getMetadata();
     metadata.configPath = filePath;
-    persistenceUtility.updateMetadata(metadata);
+    updateMetadata(metadata);
     return Promise.resolve({
       status: STATUSES.SUCCESS,
       message: "Config file imported successfully",
@@ -405,9 +406,9 @@ module.exports.openConfigFile = async () => {
       message: "Config file imported failed",
     });
   }
-};
+}
 
-module.exports.openCredentialsFile = async () => {
+export async function openCredentialsFile() {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ["openFile"],
     filters: [{ name: "Credentials File", extensions: ["json"] }],
@@ -422,16 +423,16 @@ module.exports.openCredentialsFile = async () => {
 
   const filePath = filePaths[0];
   try {
-    fs.readFile(filePath, "utf8", (err) => {
+    readFile(filePath, "utf8", (err) => {
       if (err) {
         console.log("File read failed:", err);
         return;
       }
     });
 
-    const metadata = persistenceUtility.getMetadata();
+    const metadata = getMetadata();
     metadata.credentialsPath = filePath;
-    persistenceUtility.updateMetadata(metadata);
+    updateMetadata(metadata);
     return Promise.resolve({
       status: STATUSES.SUCCESS,
       message: "Credentials file imported successfully",
@@ -442,18 +443,18 @@ module.exports.openCredentialsFile = async () => {
       message: "Credentials file imported failed",
     });
   }
-};
+}
 
-module.exports.dragItem = (event, data) => {
+export function dragItem(event, data) {
   // eslint-disable-next-line no-undef
-  const iconPath = path.join(__static, "./drag-drop.png");
+  const iconPath = join(app.getAppPath(), "src/assets/icon/drag-drop.png");
   event.sender.startDrag({
     file: data.filePath,
     icon: iconPath,
   });
-};
+}
 
-module.exports.openExternalLink = async (url = "") => {
+export async function openExternalLink(url = "") {
   if (url === "") return;
   return shell.openExternal(url);
-};
+}

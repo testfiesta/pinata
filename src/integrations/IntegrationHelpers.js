@@ -123,7 +123,7 @@ export default {
     let tokenURL;
     if (provider === "jira") {
       if (!credential.url) {
-        tokenURL = `${process.env.VUE_APP_TESTFIESTA_API_URL}/app/oauth/jira/token/${credential.testfiestaOauthTokenId}`;
+        tokenURL = `${import.meta.env.VITE_APP_TESTFIESTA_API_URL}/app/oauth/jira/token/${credential.testfiestaOauthTokenId}`;
         let testfiestaToken = this.getTestFiestaCredentialForOauthToken(
           credentials,
           credential.testfiestaOauthTokenId

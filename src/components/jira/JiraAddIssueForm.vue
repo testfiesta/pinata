@@ -65,7 +65,7 @@
                       class="issue-item"
                       v-bind="attr"
                       v-on="on"
-                      :style="{ color: currentTheme.secondary }"
+                      :style="{ color: $theme.secondary }"
                     >
                       <v-avatar size="20">
                         <img :src="item.iconUrl" width="24" alt="avatar" />
@@ -76,7 +76,7 @@
                   <template v-slot:item="{ item }">
                     <div
                       class="issue-item"
-                      :style="{ color: currentTheme.secondary }"
+                      :style="{ color: $theme.secondary }"
                     >
                       <v-avatar size="24">
                         <img :src="item.iconUrl" width="24" alt="avatar" />
@@ -98,7 +98,7 @@
                     <div v-if="fieldMappings?.[item.key]?.type === 'text'">
                       <div
                         class="subtitle-2 label-text"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                       >
                         {{ item.name }}
                       </div>
@@ -130,7 +130,7 @@
                     <div v-else-if="item.schema.type === 'string'">
                       <div
                         class="subtitle-2 label-text"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                       >
                         {{ item.name }}
                       </div>
@@ -146,7 +146,7 @@
                     <div v-else-if="item.schema.type === 'number'">
                       <div
                         class="subtitle-2 label-text"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                       >
                         {{ item.name }}
                       </div>
@@ -163,7 +163,7 @@
                     <div v-else-if="item.schema.type === 'option'">
                       <div
                         class="subtitle-2 label-text"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                       >
                         {{ item.name }}
                       </div>
@@ -190,7 +190,7 @@
                       <!-- TODO - add autocomplete & labels support -->
                       <div
                         class="subtitle-2 label-text"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                       >
                         {{ item.name }}
                       </div>
@@ -198,7 +198,7 @@
                         <div
                           v-if="item.allowedValues.length < 1"
                           class="subtitle-3 label-text mt-3"
-                          :style="{ color: currentTheme.secondary }"
+                          :style="{ color: $theme.secondary }"
                         >
                           {{ $t("caption.no_values_found") }}
                         </div>
@@ -223,7 +223,7 @@
                     >
                       <div
                         class="subtitle-2 label-text"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                       >
                         {{ item.name }}
                       </div>
@@ -270,7 +270,7 @@
                     <div v-else-if="item.schema.type === 'priority'">
                       <div
                         class="subtitle-2 label-text"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                       >
                         {{ item.name }}
                       </div>
@@ -313,7 +313,7 @@
                     <div v-else-if="item.schema.type === 'issuelink'">
                       <div
                         class="subtitle-2 label-text"
-                        :style="{ color: currentTheme.secondary }"
+                        :style="{ color: $theme.secondary }"
                       >
                         {{ item.name }}
                       </div>
@@ -407,13 +407,6 @@ export default {
       credentials: "auth/credentials",
       itemLists: "sessionItems",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   mounted() {
     this.showDialog();

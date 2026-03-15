@@ -1,12 +1,12 @@
 <template>
   <v-dialog v-bind="$attrs" v-on="$listeners" persistent width="350">
     <v-sheet outlined rounded>
-      <v-card :style="{ backgroundColor: currentTheme.background }">
-        <v-card-text class="text" :style="{ color: currentTheme.secondary }">
+      <v-card :style="{ backgroundColor: $theme.background }">
+        <v-card-text class="text" :style="{ color: $theme.secondary }">
           <div class="d-flex justify-space-between align-start">
             <p
               class="font-weight-medium fs-14 text-start"
-              :style="{ color: currentTheme.secondary }"
+              :style="{ color: $theme.secondary }"
             >
               {{ text }}
             </p>
@@ -23,9 +23,9 @@
                 depressed
                 height="40px"
                 width="100%"
-                :color="currentTheme.primary"
+                :color="$theme.primary"
                 class="text-capitalize btn rounded-lg"
-                :style="{ color: currentTheme.white }"
+                :style="{ color: $theme.white }"
                 v-shortkey="confirmHotkey"
                 @shortkey="$emit('save')"
                 @click="$emit('save')"
@@ -38,9 +38,9 @@
                 depressed
                 height="40px"
                 width="100%"
-                :color="btnBg"
+                :color="$theme.btnBg"
                 class="text-capitalize btn rounded-lg"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
                 v-shortkey="cancelHotkey"
                 @shortkey="$emit('discard')"
                 @click="$emit('discard')"
@@ -56,14 +56,12 @@
 </template>
 <script>
 import { mapGetters } from "vuex";
-import theme from "../../mixins/theme";
 export default {
   name: "NewSessionDialog",
   props: {
     title: String,
     text: String,
   },
-  mixins: [theme],
   data() {
     return {};
   },
@@ -76,13 +74,6 @@ export default {
     },
     cancelHotkey() {
       return this.$hotkeyHelpers.findBinding("general.cancel", this.hotkeys);
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {},

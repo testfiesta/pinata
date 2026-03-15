@@ -8,7 +8,7 @@
       max-width="900px"
       eager
     >
-      <v-sheet outlined rounded :style="{ backgroundColor: mainBg }">
+      <v-sheet outlined rounded :style="{ backgroundColor: $theme.mainBg }">
         <div class="content">
           <div class="content-top">
             <ReviewWrapper
@@ -65,7 +65,7 @@
                         :disabled="processing"
                       >
                         <img
-                          :src="require('../../assets/icon/add-emoticon.svg')"
+                          :src="require('@/assets/icon/add-emoticon.svg?url')"
                           width="24"
                           height="24"
                         />
@@ -98,11 +98,9 @@
                 on-icon="icon-checkbox-on"
               >
                 <template v-slot:label>
-                  <span
-                    class="fs-14"
-                    :style="{ color: currentTheme.secondary }"
-                    >{{ $tc("caption.required_follow_up", 1) }}</span
-                  >
+                  <span class="fs-14" :style="{ color: $theme.secondary }">{{
+                    $tc("caption.required_follow_up", 1)
+                  }}</span>
                 </template>
               </v-checkbox>
             </div>
@@ -112,7 +110,7 @@
             >
               <div
                 class="d-flex fs-14 mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.filename", 1) }}
               </div>
@@ -121,7 +119,7 @@
                 flat
                 solo
                 height="40px"
-                :background-color="inputBg"
+                :background-color="$theme.inputBg"
                 v-model="name"
                 :suffix="fileSuffix"
                 :disabled="processing"
@@ -131,7 +129,7 @@
             </div>
             <v-card v-if="commentLoading" class="loading-wrapper" outlined flat>
               <v-progress-circular
-                :color="currentTheme.primary"
+                :color="$theme.primary"
                 size="70"
                 absolute
                 indeterminate
@@ -144,7 +142,7 @@
             >
               <div
                 class="d-flex fs-14 mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.comment", 1) }}
               </div>
@@ -170,8 +168,8 @@
                   <v-select
                     v-model="selectedHeading"
                     :items="headingOptions"
-                    :background-color="inputBg"
-                    :color="currentTheme.secondary"
+                    :background-color="$theme.inputBg"
+                    :color="$theme.secondary"
                     class="rounded-lg custom-select"
                     item-text="text"
                     item-value="level"
@@ -276,7 +274,7 @@
             >
               <div
                 class="d-flex fs-14 mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.tags_tab", 1) }}
               </div>
@@ -302,7 +300,7 @@
             <div class="flex flex-column">
               <div
                 class="d-flex fs-14 mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
               >
                 {{ $tc("caption.create_new_issue", 1) }}
               </div>
@@ -327,13 +325,13 @@
                       >
                         <img
                           v-if="$vuetify.theme.dark === false"
-                          :src="require('../../assets/icon/bug.svg')"
+                          :src="require('@/assets/icon/bug.svg?url')"
                           width="24"
                           height="24"
                         />
                         <img
                           v-else
-                          :src="require('../../assets/icon/bug-gray.svg')"
+                          :src="require('@/assets/icon/bug-gray.svg?url')"
                           width="24"
                           height="24"
                         />
@@ -354,7 +352,7 @@
                       <v-list-item-icon class="mr-4">
                         <v-avatar size="24">
                           <img
-                            :src="require('../../assets/icon/jira.png')"
+                            :src="require('@/assets/icon/jira.png?url')"
                             width="24"
                             alt="avatar"
                           />
@@ -387,7 +385,7 @@
             <div class="comment-type">
               <div
                 class="d-flex fs-14 text-theme-label mb-1 font-weight-medium"
-                :style="{ color: currentTheme.secondary }"
+                :style="{ color: $theme.secondary }"
                 v-shortkey="typeHotkey"
                 @shortkey="openCommentType()"
               >
@@ -405,8 +403,8 @@
                 height="40px"
                 :menu-props="{ offsetY: true }"
                 elevation="0"
-                :background-color="inputBg"
-                :color="currentTheme.secondary"
+                :background-color="$theme.inputBg"
+                :color="$theme.secondary"
                 class="rounded-lg custom-select"
                 hide-details="true"
               ></v-select>
@@ -417,7 +415,7 @@
           <v-btn
             fill
             height="40px"
-            :color="btnBg"
+            :color="$theme.btnBg"
             class="text-capitalize rounded-lg"
             depressed
             @click="handleClear"
@@ -428,7 +426,7 @@
             <v-btn
               fill
               height="40px"
-              :color="btnBg"
+              :color="$theme.btnBg"
               depressed
               class="text-capitalize mr-2 rounded-lg"
               :disabled="processing"
@@ -479,7 +477,6 @@ import openAIIntegrationHelper from "../../integrations/OpenAIIntegrationHelpers
 import { mapGetters } from "vuex";
 import jiraIntegrationHelper from "@/integrations/JiraIntegrationHelpers";
 import JiraAddIssueForm from "@/components/jira/JiraAddIssueForm.vue";
-import theme from "../../mixins/theme";
 
 export default {
   name: "AddEvidenceDialog",
@@ -500,7 +497,6 @@ export default {
       default: () => [],
     },
   },
-  mixins: [theme],
   data() {
     return {
       createJiraTicket: false,
@@ -592,13 +588,6 @@ export default {
       }
       return splitName.length > 1 ? "." + splitName[splitName.length - 1] : "";
     },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   mounted() {
     this.getAllTags();
@@ -674,7 +663,7 @@ export default {
     },
     async activeSession() {
       // set theme mode
-      const isDarkMode = this.config.theme === "dark";
+      const isDarkMode = this.config.appearance === "dark";
       this.$vuetify.theme.dark = isDarkMode;
       localStorage.setItem("isDarkMode", isDarkMode);
 

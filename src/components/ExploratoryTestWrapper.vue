@@ -1,10 +1,14 @@
 <template>
-  <div class="pa-6" style="height: 100%" :style="{ backgroundColor: mainBg }">
+  <div
+    class="pa-6"
+    style="height: 100%"
+    :style="{ backgroundColor: $theme.mainBg }"
+  >
     <div class="top">
       <v-btn
         class="text-capitalize pa-0 back-btn"
         plain
-        :color="btnColor"
+        :color="$theme.btnColor"
         solid
         v-shortkey="backHotkey"
         @shortkey="handleResetConfirmDialog"
@@ -49,7 +53,7 @@
                 color="#0C2FF3"
                 depressed
                 height="40px"
-                :style="{ color: currentTheme.white }"
+                :style="{ color: $theme.white }"
                 max-width="94px"
                 @click="startNewSession"
               >
@@ -66,7 +70,7 @@
                 color="#0C2FF3"
                 depressed
                 height="40px"
-                :style="{ color: currentTheme.white }"
+                :style="{ color: $theme.white }"
                 @click="startNewSession"
               >
                 {{ $tc("caption.start_session", 1) }}
@@ -90,7 +94,6 @@
 import TestSettingWrapper from "./TestSettingWrapper.vue";
 import { mapGetters } from "vuex";
 import ResetConfirmDialog from "./dialogs/ResetConfirmDialog.vue";
-import theme from "../mixins/theme";
 
 export default {
   name: "ExploratoryTestWrapper",
@@ -98,7 +101,6 @@ export default {
     ResetConfirmDialog,
     TestSettingWrapper,
   },
-  mixins: [theme],
   data() {
     return {
       resetConfirmDialog: false,
@@ -116,21 +118,13 @@ export default {
     backHotkey() {
       return this.$hotkeyHelpers.findBinding("workspace.back", this.hotkeys);
     },
-
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   methods: {
     continueToMindMap() {
       this.activeTab = "mindMap";
     },
     startNewSession() {
-      this.$root.$emit("start-new-exploratory-session");
+      this.$emit('start-session')
     },
 
     async back() {

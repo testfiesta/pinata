@@ -21,7 +21,7 @@
       <v-row>
         <v-col cols="12">
           <v-btn class="mb-4 outline-btn pinata" block outlined color="white">
-            <img :src="require('../../assets/icon/pinata.png')" />
+            <img :src="require('@/assets/icon/pinata.png?url')" />
             <div class="btn-text">{{ $tc("caption.signup_pinata", 1) }}</div>
           </v-btn>
           <v-btn
@@ -31,22 +31,22 @@
             color="white"
             @click="callJiraAPI"
           >
-            <img :src="require('../../assets/icon/jira.png')" />
+            <img :src="require('@/assets/icon/jira.png?url')" />
             <div class="btn-text">{{ $tc("caption.signup_jira", 1) }}</div>
           </v-btn>
           <v-btn class="mb-4 outline-btn testrail" block outlined color="white">
-            <img :src="require('../../assets/icon/testrail.png')" />
+            <img :src="require('@/assets/icon/testrail.png?url')" />
             <div class="btn-text">{{ $tc("caption.signup_testrail", 1) }}</div>
           </v-btn>
           <v-btn class="mb-4 outline-btn testrail" block outlined color="white">
-            <img :src="require('../../assets/icon/xray-logo.png')" width="12" />
+            <img :src="require('@/assets/icon/xray-logo.png?url')" width="12" />
             <div class="btn-text">
               {{ $tc("caption.signup_xray", 1) }}
             </div>
           </v-btn>
           <v-btn class="mb-4 outline-btn testrail" block outlined color="white">
             <img
-              :src="require('../../assets/icon/zephyr-squad.png')"
+              :src="require('@/assets/icon/zephyr-squad.png?url')"
               width="16"
             />
             <div class="btn-text">
@@ -55,7 +55,7 @@
           </v-btn>
           <v-btn class="mb-4 outline-btn testrail" block outlined color="white">
             <img
-              :src="require('../../assets/icon/zephyr-scale.png')"
+              :src="require('@/assets/icon/zephyr-scale.png?url')"
               width="16"
             />
             <div class="btn-text">
@@ -63,11 +63,11 @@
             </div>
           </v-btn>
           <v-btn class="mb-4 outline-btn qtest" block outlined color="white">
-            <img :src="require('../../assets/icon/qtest.png')" />
+            <img :src="require('@/assets/icon/qtest.png?url')" />
             <div class="btn-text">{{ $tc("caption.signup_qtest", 1) }}</div>
           </v-btn>
           <v-btn class="outline-btn practitest" block outlined color="white">
-            <img :src="require('../../assets/icon/practitest.png')" />
+            <img :src="require('@/assets/icon/practitest.png?url')" />
             <div class="btn-text">
               {{ $tc("caption.signup_practitest", 1) }}
             </div>
@@ -187,7 +187,7 @@ export default {
     async callJiraAPI() {
       this.loading = true;
       this.$root.$emit("overlay", true);
-      const url = `http://localhost:${process.env.VUE_APP_SERVER_PORT}/oauth2/atlassian`;
+      const url = `http://localhost:${import.meta.env.VITE_APP_SERVER_PORT}/oauth2/atlassian`;
       await axios
         .get(url)
         .then((response) => {

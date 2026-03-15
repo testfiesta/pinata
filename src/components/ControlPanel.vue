@@ -24,7 +24,7 @@
     >
       <v-row
         class="text-center control-btn-wrapper rounded-12px"
-        :style="{ backgroundColor: mainBgReverse }"
+        :style="{ backgroundColor: $theme.mainBgReverse }"
         v-if="status === 'end'"
       >
         <v-col cols="12" class="d-flex justify-center px-0">
@@ -114,7 +114,7 @@
       <v-row
         class="text-center control-btn-wrapper control-btn-shadow control-panel rounded-12px"
         :style="{
-          backgroundColor: mainBgReverse,
+          backgroundColor: $theme.mainBgReverse,
           right: quickTest ? '8%' : '5%',
         }"
         v-if="status !== 'pending' && status !== 'end'"
@@ -136,14 +136,14 @@
               >
                 <img
                   v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/pause.svg')"
+                  :src="require('@/assets/icon/pause.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
                 />
                 <img
                   v-else
-                  :src="require('../assets/icon/pause-gray.svg')"
+                  :src="require('@/assets/icon/pause-gray.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -168,14 +168,14 @@
               >
                 <img
                   v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/play.svg')"
+                  :src="require('@/assets/icon/play.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
                 />
                 <img
                   v-else
-                  :src="require('../assets/icon/play-gray.svg')"
+                  :src="require('@/assets/icon/play-gray.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -200,14 +200,14 @@
               >
                 <img
                   v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/stop.svg')"
+                  :src="require('@/assets/icon/stop.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
                 />
                 <img
                   v-else
-                  :src="require('../assets/icon/stop-gray.svg')"
+                  :src="require('@/assets/icon/stop-gray.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -232,7 +232,7 @@
                 @click="onSelectScreenshot()"
               >
                 <img
-                  :src="require('../assets/icon/control-panel-icon/camera.svg')"
+                  :src="require('@/assets/icon/control-panel-icon/camera.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -257,7 +257,7 @@
                 @click="onSelectRecordVideo()"
               >
                 <img
-                  :src="require('../assets/icon/control-panel-icon/video.svg')"
+                  :src="require('@/assets/icon/control-panel-icon/video.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -281,7 +281,7 @@
                 @click="stopRecordVideo()"
               >
                 <img
-                  :src="require('../assets/icon/control-panel-icon/video.svg')"
+                  :src="require('@/assets/icon/control-panel-icon/video.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -306,9 +306,7 @@
                 @click="startRecordAudio()"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/microphone.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/microphone.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -334,9 +332,7 @@
                 @click="stopRecordAudio()"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/microphone.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/microphone.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -361,9 +357,7 @@
                 @click="showNoteDialog()"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/notification.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/notification.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -387,9 +381,7 @@
                 @click="addMindmap()"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/mindmap.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/mindmap.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -411,9 +403,7 @@
                 @click="uploadEvidence"
               >
                 <img
-                  :src="
-                    require('../assets/icon/control-panel-icon/evidence.svg')
-                  "
+                  :src="require('@/assets/icon/control-panel-icon/evidence.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -436,14 +426,14 @@
               >
                 <img
                   v-if="$vuetify.theme.dark === false"
-                  :src="require('../assets/icon/union.svg')"
+                  :src="require('@/assets/icon/union.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
                 />
                 <img
                   v-else
-                  :src="require('../assets/icon/union-gray.svg')"
+                  :src="require('@/assets/icon/union-gray.svg?url')"
                   width="24"
                   height="24"
                   draggable="false"
@@ -523,9 +513,7 @@
                     v-on="{ ...issueCreateDestinationMenu, ...onTooltip }"
                   >
                     <img
-                      :src="
-                        require('../assets/icon/control-panel-icon/bug.svg')
-                      "
+                      :src="require('@/assets/icon/control-panel-icon/bug.svg?url')"
                       width="24"
                       height="24"
                       draggable="false"
@@ -653,22 +641,21 @@
 import { VBtn, VCol, VContainer, VIcon, VRow } from "vuetify/lib/components";
 import uuidv4 from "uuid";
 
-import testfiestaIntegrationHelper from "../integrations/TestfiestaIntegrationHelpers";
-import SourcePickerDialog from "./dialogs/SourcePickerDialog.vue";
-import ChangeSourceTargetDialog from "./dialogs/ChangeSourceTargetDialog.vue";
-import ShareSessionDialog from "./dialogs/ShareSessionDialog.vue";
-import NoteDialog from "./dialogs/NoteDialog.vue";
-import SummaryDialog from "./dialogs/SummaryDialog.vue";
-import DeleteConfirmDialog from "./dialogs/DeleteConfirmDialog.vue";
-import ResetConfirmDialog from "./dialogs/ResetConfirmDialog.vue";
-import SaveConfirmDialog from "./dialogs/SaveConfirmDialog.vue";
-import NewSessionDialog from "./dialogs/NewSessionDialog.vue";
-import DurationConfirmDialog from "./dialogs/DurationConfirmDialog.vue";
-import AudioErrorDialog from "./dialogs/AudioErrorDialog.vue";
-import EndSessionDialog from "./dialogs/EndSessionDialog.vue";
-import LowProfileControlWrapper from "../components/LowProfileControlWrapper.vue";
+import testfiestaIntegrationHelper from "@/integrations/TestfiestaIntegrationHelpers";
+import SourcePickerDialog from "@/components/dialogs/SourcePickerDialog.vue";
+import ChangeSourceTargetDialog from "@/components/dialogs/ChangeSourceTargetDialog.vue";
+import ShareSessionDialog from "@/components/dialogs/ShareSessionDialog.vue";
+import NoteDialog from "@/components/dialogs/NoteDialog.vue";
+import SummaryDialog from "@/components/dialogs/SummaryDialog.vue";
+import DeleteConfirmDialog from "@/components/dialogs/DeleteConfirmDialog.vue";
+import ResetConfirmDialog from "@/components/dialogs/ResetConfirmDialog.vue";
+import SaveConfirmDialog from "@/components/dialogs/SaveConfirmDialog.vue";
+import NewSessionDialog from "@/components/dialogs/NewSessionDialog.vue";
+import DurationConfirmDialog from "@/components/dialogs/DurationConfirmDialog.vue";
+import AudioErrorDialog from "@/components/dialogs/AudioErrorDialog.vue";
+import EndSessionDialog from "@/components/dialogs/EndSessionDialog.vue";
+import LowProfileControlWrapper from "@/components/LowProfileControlWrapper.vue";
 import AddEvidenceDialog from "@/components/dialogs/AddEvidenceDialog.vue";
-import theme from "../mixins/theme";
 
 import {
   DEFAULT_MAP_CONNECTIONS,
@@ -738,7 +725,6 @@ export default {
       console.log(e);
     }
   },
-  mixins: [theme],
   watch: {
     selectedItems: function (newValue) {
       this.selected = newValue;
@@ -861,13 +847,6 @@ export default {
       date.setSeconds(timer);
       return date.toISOString().substr(11, 8);
     },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     summary() {
       let summary = {};
       this.items.map((item) => {
@@ -954,7 +933,6 @@ export default {
       if (this.$store.state.session.status === SESSION_STATUSES.START) {
         this.startSession(this.sourceId);
       }
-      this.startInterval();
     }
   },
   beforeDestroy() {
@@ -1196,9 +1174,9 @@ export default {
       }
 
       if (this.viewMode === "normal") {
-        const currentPath = this.$router.history.current.path;
-        if (currentPath !== "/main/workspace") {
-          await this.$router.push({ path: "/main/workspace" });
+        const currentPath = this.$router.history.current.name;
+        if (currentPath !== "workspace") {
+          await this.$router.push({ name: "workspace" });
         }
       }
     },

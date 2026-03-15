@@ -2,7 +2,7 @@
   <v-container class="wrapper">
     <div
       class="d-flex justify-center align-center flex-column pa-6 rounded-lg login-wrapper mt-16"
-      :style="{ backgroundColor: mainBg }"
+      :style="{ backgroundColor: $theme.mainBg }"
     >
       <div class="d-flex justify-space-between align-center w-full">
         <v-btn class="text-capitalize pa-0 back-btn" plain @click="back()">
@@ -10,7 +10,7 @@
           {{ $tc("caption.back", 1) }}
         </v-btn>
         <img
-          :src="require('../../assets/icon/testrail.svg')"
+          :src="require('@/assets/icon/testrail.svg?url')"
           alt="testrail"
           width="42"
         />
@@ -35,7 +35,7 @@
                 <v-text-field
                   placeholder="test@example.com"
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -56,7 +56,7 @@
                 <v-text-field
                   :append-icon="showEye ? 'mdi-eye' : 'mdi-eye-off'"
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -78,7 +78,7 @@
               <div class="timer-box-wrapper">
                 <v-text-field
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -184,22 +184,6 @@ export default {
     ...mapGetters({
       credentials: "auth/credentials",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
-    btnBg() {
-      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
-    },
-    inputBg() {
-      return this.$vuetify.theme.dark ? "#4B5563" : "#F9F9FB";
-    },
   },
   methods: {
     back() {

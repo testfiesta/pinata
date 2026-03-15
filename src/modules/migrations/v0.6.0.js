@@ -1,4 +1,4 @@
-export const migrationStruct = {
+const migrationStruct = {
   up: {
     meta: {
       credentialPath: "credentialsPath",
@@ -10,3 +10,5 @@ export const migrationStruct = {
     },
   },
 };
+
+module.exports = { migrationStruct };

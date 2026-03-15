@@ -97,22 +97,22 @@
         </v-tooltip>
       </v-card>
     </template>
-    <SettingsDialog
+    <!-- <SettingsDialog
       v-model="settingsDialog"
       ref="settingsDialog"
       @close="settingsDialog = false"
-    />
+    /> -->
   </div>
 </template>
 <script>
 import uuidv4 from "uuid";
 import { mapGetters } from "vuex";
-import SettingsDialog from "@/components/dialogs/SettingsDialog.vue";
+// import SettingsDialog from "@/components/dialogs/SettingsDialog.vue";
 
 export default {
   name: "ConnectionPanel",
   components: {
-    SettingsDialog,
+    // SettingsDialog,
   },
   props: {
     connectionType: {

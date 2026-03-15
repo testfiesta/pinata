@@ -1,33 +1,30 @@
-const { app, remote, dialog, desktopCapturer } = require("electron");
-const path = require("path");
-const fs = require("fs");
-const dayjs = require("dayjs");
-const detect = require("detect-file-type");
-const uuidv4 = require("uuid");
-const crypto = require("crypto");
+import { app, remote, dialog, desktopCapturer } from "electron";
+import { join, basename } from "path";
+import { writeFileSync, statSync, existsSync, unlinkSync, readFileSync, rename, renameSync, copyFileSync } from "fs";
+import dayjs from "dayjs";
+import { fromFile } from "detect-file-type";
+import uuidv4 from "uuid";
+import { createHash } from "crypto";
 
-const ffmpeg = require("fluent-ffmpeg");
+import ffmpeg, { setFfmpegPath, setFfprobePath } from "fluent-ffmpeg";
 
-const ffmpegPath = require("ffmpeg-static").replace(
-  "app.asar",
-  "app.asar.unpacked"
-);
-const ffprobePath = require("ffprobe-static").path.replace(
-  "app.asar",
-  "app.asar.unpacked"
-);
+import ffmpegStatic from "ffmpeg-static";
+import ffprobeStatic from "ffprobe-static";
 
-ffmpeg.setFfmpegPath(ffmpegPath);
-ffmpeg.setFfprobePath(ffprobePath.path);
+const ffmpegPath = ffmpegStatic.replace("app.asar", "app.asar.unpacked");
+const ffprobePath = ffprobeStatic.path.replace("app.asar", "app.asar.unpacked");
 
-const browserUtility = require("./BrowserWindowUtility");
-const persistenceUtility = require("./PersistenceUtility");
+setFfmpegPath(ffmpegPath);
+setFfprobePath(ffprobePath.path);
 
-const { STATUSES, DEFAULT_FILE_TYPES } = require("./constants");
+import { getBrowserWindow } from "./BrowserWindowUtility";
+import { getSessionID } from "./PersistenceUtility";
+
+import { STATUSES, DEFAULT_FILE_TYPES } from "./constants";
 
 const configDir = (app || remote.app).getPath("userData");
 
-module.exports.getMediaSource = async () => {
+export async function getMediaSource() {
   const sources = await desktopCapturer.getSources({
     thumbnailSize: {
       width: 600,
@@ -43,20 +40,20 @@ module.exports.getMediaSource = async () => {
       thumbnail: source.thumbnail.toDataURL(),
     };
   });
-};
+}
 
-module.exports.createImage = ({ url, isPoster }) => {
+export function createImage({ url, isPoster }) {
   const fileType = DEFAULT_FILE_TYPES["image"].type;
   const imageType = isPoster ? "poster" : "image";
   const { stepID, attachmentID, fileName } = generateIDAndName(imageType);
-  const filePath = path.join(
+  const filePath = join(
     configDir,
     "sessions",
-    persistenceUtility.getSessionID(),
+    getSessionID(),
     fileName
   );
   const base64Data = url.replace(/^data:image\/png;base64,/, "");
-  fs.writeFileSync(filePath, base64Data, "base64", function (err) {
+  writeFileSync(filePath, base64Data, "base64", function (err) {
     if (err) {
       console.log(err);
       return {
@@ -66,9 +63,8 @@ module.exports.createImage = ({ url, isPoster }) => {
     }
   });
 
-  const fileSize = fs.statSync(filePath).size;
-  const fileChecksum = crypto
-    .createHash("md5")
+  const fileSize = statSync(filePath).size;
+  const fileChecksum = createHash("md5")
     .update(base64Data, "utf8")
     .digest("hex");
   return {
@@ -83,28 +79,27 @@ module.exports.createImage = ({ url, isPoster }) => {
       fileType,
     },
   };
-};
+}
 
-module.exports.updateImage = ({ item, url }) => {
-  if (item.filePath && fs.existsSync(item.filePath)) {
-    fs.unlinkSync(item.filePath);
+export function updateImage({ item, url }) {
+  if (item.filePath && existsSync(item.filePath)) {
+    unlinkSync(item.filePath);
   }
   const { fileName } = item.fileName
     ? { fileName: item.fileName }
     : generateIDAndName("image", item.attachmentID);
 
-  const filePath = path.join(
+  const filePath = join(
     configDir,
     "sessions",
-    persistenceUtility.getSessionID(),
+    getSessionID(),
     fileName
   );
   const base64Data = url.replace(/^data:image\/png;base64,/, "");
-  fs.writeFileSync(filePath, base64Data, "base64");
+  writeFileSync(filePath, base64Data, "base64");
 
-  const fileSize = fs.statSync(filePath).size;
-  const fileChecksum = crypto
-    .createHash("md5")
+  const fileSize = statSync(filePath).size;
+  const fileChecksum = createHash("md5")
     .update(base64Data, "utf8")
     .digest("hex");
   return {
@@ -116,18 +111,18 @@ module.exports.updateImage = ({ item, url }) => {
       fileChecksum,
     },
   };
-};
+}
 
-module.exports.createVideo = ({ buffer }) => {
+export function createVideo({ buffer }) {
   const fileType = DEFAULT_FILE_TYPES["video"].type;
   const { stepID, attachmentID, fileName } = generateIDAndName("video");
-  const filePath = path.join(
+  const filePath = join(
     configDir,
     "sessions",
-    persistenceUtility.getSessionID(),
+    getSessionID(),
     fileName
   );
-  fs.writeFileSync(filePath, Buffer.from(buffer), function (err) {
+  writeFileSync(filePath, Buffer.from(buffer), function (err) {
     if (err) {
       console.log(err);
       return {
@@ -137,10 +132,9 @@ module.exports.createVideo = ({ buffer }) => {
     }
   });
 
-  const fileSize = fs.statSync(filePath).size;
-  const fileContents = fs.readFileSync(filePath);
-  const fileChecksum = crypto
-    .createHash("md5")
+  const fileSize = statSync(filePath).size;
+  const fileContents = readFileSync(filePath);
+  const fileChecksum = createHash("md5")
     .update(fileContents, "utf8")
     .digest("hex");
   return {
@@ -155,25 +149,26 @@ module.exports.createVideo = ({ buffer }) => {
       fileType,
     },
   };
-};
+}
 
-module.exports.optimizeVideo = ({ filePath }) => {
+export function optimizeVideo({ filePath }) {
   const fileFormat = DEFAULT_FILE_TYPES["video"].suffix;
   const tempName =
     "temp-optimizing-video-" +
     dayjs().format("YYYY-MM-DD_HH-mm-ss-ms") +
     "." +
     fileFormat;
-  const tempPath = path.join(
+  const tempPath = join(
     configDir,
     "sessions",
-    persistenceUtility.getSessionID(),
+    getSessionID(),
     tempName
   );
 
   return new Promise(function (resolve, reject) {
     ffmpeg(filePath)
       .videoCodec("libx264")
+      .addOption("-preset", "veryfast")
       .audioCodec("aac")
       .format(fileFormat)
       .save(tempPath)
@@ -184,19 +179,18 @@ module.exports.optimizeVideo = ({ filePath }) => {
         console.log(progress);
       })
       .on("end", function () {
-        if (filePath && fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
+        if (filePath && existsSync(filePath)) {
+          unlinkSync(filePath);
         }
-        fs.rename(tempPath, filePath, function (err) {
+        rename(tempPath, filePath, function (err) {
           if (err) {
             console.log(err);
             return reject({ status: STATUSES.ERROR, message: err });
           }
 
-          const fileSize = fs.statSync(filePath).size;
-          const fileContents = fs.readFileSync(filePath);
-          const fileChecksum = crypto
-            .createHash("md5")
+          const fileSize = statSync(filePath).size;
+          const fileContents = readFileSync(filePath);
+          const fileChecksum = createHash("md5")
             .update(fileContents, "utf8")
             .digest("hex");
           return resolve({
@@ -211,19 +205,19 @@ module.exports.optimizeVideo = ({ filePath }) => {
         return reject({ status: STATUSES.ERROR, message: err });
       });
   });
-};
+}
 
-module.exports.updateVideo = ({ item, start, end, previousDuration }) => {
+export function updateVideo({ item, start, end, previousDuration }) {
   const fileFormat = "mp4";
   const tempName =
     "temp-optimizing-video-" +
     dayjs().format("YYYY-MM-DD_HH-mm-ss-ms") +
     "." +
     fileFormat;
-  const tempPath = path.join(
+  const tempPath = join(
     configDir,
     "sessions",
-    persistenceUtility.getSessionID(),
+    getSessionID(),
     tempName
   );
   const duration = parseInt(end - start);
@@ -241,28 +235,27 @@ module.exports.updateVideo = ({ item, start, end, previousDuration }) => {
           console.log(progress);
         })
         .on("end", function () {
-          if (item.filePath && fs.existsSync(item.filePath)) {
-            fs.unlinkSync(item.filePath);
+          if (item.filePath && existsSync(item.filePath)) {
+            unlinkSync(item.filePath);
           }
           const { fileName } = item.fileName
             ? { fileName: item.fileName }
             : generateIDAndName("video", item.attachmentID);
-          const filePath = path.join(
+          const filePath = join(
             configDir,
             "sessions",
-            persistenceUtility.getSessionID(),
+            getSessionID(),
             fileName
           );
-          fs.rename(tempPath, filePath, function (err) {
+          rename(tempPath, filePath, function (err) {
             if (err) {
               console.log(err);
               return reject({ status: STATUSES.ERROR, message: err });
             }
 
-            const fileSize = fs.statSync(filePath).size;
-            const fileContents = fs.readFileSync(filePath);
-            const fileChecksum = crypto
-              .createHash("md5")
+            const fileSize = statSync(filePath).size;
+            const fileContents = readFileSync(filePath);
+            const fileChecksum = createHash("md5")
               .update(fileContents, "utf8")
               .digest("hex");
             return resolve({
@@ -284,20 +277,19 @@ module.exports.updateVideo = ({ item, start, end, previousDuration }) => {
       const { fileName } = item.fileName
         ? { fileName: item.fileName }
         : generateIDAndName("video", item.attachmentID);
-      const filePath = path.join(
+      const filePath = join(
         configDir,
         "sessions",
-        persistenceUtility.getSessionID(),
+        getSessionID(),
         fileName
       );
       if (item.filePath && item.filePath !== filePath) {
-        fs.renameSync(item.filePath, filePath);
+        renameSync(item.filePath, filePath);
       }
 
-      const fileSize = fs.statSync(filePath).size;
-      const fileContents = fs.readFileSync(filePath);
-      const fileChecksum = crypto
-        .createHash("md5")
+      const fileSize = statSync(filePath).size;
+      const fileContents = readFileSync(filePath);
+      const fileChecksum = createHash("md5")
         .update(fileContents, "utf8")
         .digest("hex");
       return resolve({
@@ -311,18 +303,18 @@ module.exports.updateVideo = ({ item, start, end, previousDuration }) => {
       });
     }
   });
-};
+}
 
-module.exports.createAudio = ({ buffer }) => {
+export function createAudio({ buffer }) {
   const fileType = DEFAULT_FILE_TYPES["audio"].type;
   const { stepID, attachmentID, fileName } = generateIDAndName("audio");
-  const filePath = path.join(
+  const filePath = join(
     configDir,
     "sessions",
-    persistenceUtility.getSessionID(),
+    getSessionID(),
     fileName
   );
-  fs.writeFileSync(filePath, Buffer.from(buffer), function (err) {
+  writeFileSync(filePath, Buffer.from(buffer), function (err) {
     if (err) {
       console.log(err);
       return {
@@ -332,9 +324,8 @@ module.exports.createAudio = ({ buffer }) => {
     }
   });
 
-  const fileSize = fs.statSync(filePath).size;
-  const fileChecksum = crypto
-    .createHash("md5")
+  const fileSize = statSync(filePath).size;
+  const fileChecksum = createHash("md5")
     .update(Buffer.from(buffer, "utf-8"))
     .digest("hex");
   return {
@@ -349,27 +340,26 @@ module.exports.createAudio = ({ buffer }) => {
       fileType,
     },
   };
-};
+}
 
-module.exports.updateAudio = ({ item }) => {
+export function updateAudio({ item }) {
   const { fileName } = item.fileName
     ? { fileName: item.fileName }
     : generateIDAndName("audio", item.attachmentID);
-  const filePath = path.join(
+  const filePath = join(
     configDir,
     "sessions",
-    persistenceUtility.getSessionID(),
+    getSessionID(),
     fileName
   );
 
   if (item.filePath && item.filePath !== filePath) {
-    fs.renameSync(item.filePath, filePath);
+    renameSync(item.filePath, filePath);
   }
 
-  const fileSize = fs.statSync(filePath).size;
-  const fileContents = fs.readFileSync(filePath, "utf-8");
-  const fileChecksum = crypto
-    .createHash("md5")
+  const fileSize = statSync(filePath).size;
+  const fileContents = readFileSync(filePath, "utf-8");
+  const fileChecksum = createHash("md5")
     .update(fileContents)
     .digest("hex");
   return {
@@ -381,15 +371,15 @@ module.exports.updateAudio = ({ item }) => {
       fileChecksum,
     },
   };
-};
+}
 
-module.exports.deleteFile = ({ filePath }) => {
-  if (filePath && fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
+export function deleteFile({ filePath }) {
+  if (filePath && existsSync(filePath)) {
+    unlinkSync(filePath);
   }
-};
+}
 
-module.exports.uploadEvidence = async () => {
+export async function uploadEvidence() {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ["openFile"],
   });
@@ -404,19 +394,19 @@ module.exports.uploadEvidence = async () => {
   // TODO - Handle multiple files uploaded
   const stepID = uuidv4();
   const attachmentID = uuidv4();
-  const fileName = path.basename(filePaths[0]);
-  const filePath = path.join(
+  const fileName = basename(filePaths[0]);
+  const filePath = join(
     configDir,
     "sessions",
-    persistenceUtility.getSessionID(),
+    getSessionID(),
     fileName
   );
 
-  fs.copyFileSync(filePaths[0], filePath);
+  copyFileSync(filePaths[0], filePath);
 
   // TODO - move promise building to shared block with dropUpload
   return new Promise(function (resolve) {
-    detect.fromFile(filePath, function (err, result) {
+    fromFile(filePath, function (err, result) {
       if (err) {
         return resolve({
           status: STATUSES.ERROR,
@@ -426,10 +416,9 @@ module.exports.uploadEvidence = async () => {
 
       let fileType = result.mime;
 
-      const fileSize = fs.statSync(filePath).size;
-      const fileContents = fs.readFileSync(filePath, "utf8");
-      const fileChecksum = crypto
-        .createHash("md5")
+      const fileSize = statSync(filePath).size;
+      const fileContents = readFileSync(filePath, "utf8");
+      const fileChecksum = createHash("md5")
         .update(fileContents)
         .digest("hex");
       return resolve({
@@ -446,23 +435,23 @@ module.exports.uploadEvidence = async () => {
       });
     });
   });
-};
+}
 
-module.exports.dropFile = async (data) => {
+export async function dropFile(data) {
   const stepID = uuidv4();
   const attachmentID = uuidv4();
   const fileName = data.name;
-  const filePath = path.join(
+  const filePath = join(
     configDir,
     "sessions",
-    persistenceUtility.getSessionID(),
+    getSessionID(),
     fileName
   );
 
-  fs.copyFileSync(data.path, filePath);
+  copyFileSync(data.path, filePath);
 
   return new Promise(function (resolve) {
-    detect.fromFile(filePath, function (err, result) {
+    fromFile(filePath, function (err, result) {
       if (err) {
         return resolve({
           status: STATUSES.ERROR,
@@ -472,10 +461,9 @@ module.exports.dropFile = async (data) => {
 
       let fileType = result.mime;
 
-      const fileSize = fs.statSync(filePath).size;
-      const fileContents = fs.readFileSync(filePath);
-      const fileChecksum = crypto
-        .createHash("md5")
+      const fileSize = statSync(filePath).size;
+      const fileContents = readFileSync(filePath);
+      const fileChecksum = createHash("md5")
         .update(fileContents, "utf8")
         .digest("hex");
       return resolve({
@@ -493,12 +481,12 @@ module.exports.dropFile = async (data) => {
       });
     });
   });
-};
+}
 
-module.exports.setAppearance = (theme) => {
-  const browserWindow = browserUtility.getBrowserWindow();
+export function setAppearance(theme) {
+  const browserWindow = getBrowserWindow();
   browserWindow.webContents.send("SET_THEME", theme);
-};
+}
 
 const generateIDAndName = (type, uid = undefined) => {
   const stepID = uuidv4();
@@ -521,11 +509,11 @@ const generateIDAndName = (type, uid = undefined) => {
     for (let i = 0; i < idStr.length - 5; i++) {
       fileName = `${type}-${idStr.substring(i, 5)}.${suffix}`;
       if (
-        !fs.existsSync(
-          path.join(
+        !existsSync(
+          join(
             configDir,
             "sessions",
-            persistenceUtility.getSessionID(),
+            getSessionID(),
             fileName
           )
         )

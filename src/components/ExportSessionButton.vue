@@ -16,11 +16,11 @@
               class="rounded-lg text-capitalize px-0"
               v-on="{ ...evidenceExportDestinationMenu, ...onTooltip }"
             >
-              <img
-                :src="require('../assets/icon/download.svg')"
-                width="20"
-                height="20"
-              />
+            <img
+              :src="require('@/assets/icon/download.svg?url')"
+              width="20"
+              height="20"
+            />
             </v-btn>
           </template>
           <span>{{ $tc("caption.export_session_report", 1) }}</span>
@@ -31,7 +31,7 @@
           <v-list-item @click="exportSession('archive')">
             <v-list-item-icon class="mr-4">
               <img
-                :src="require('../assets/icon/download.svg')"
+                :src="require('@/assets/icon/download.svg?url')"
                 width="20"
                 height="20"
               />
@@ -45,7 +45,7 @@
           <v-list-item @click="exportSession('pdf')">
             <v-list-item-icon class="mr-4">
               <img
-                :src="require('../assets/icon/download.svg')"
+                :src="require('@/assets/icon/download.svg?url')"
                 width="20"
                 height="20"
               />
@@ -137,6 +137,7 @@ import XrayExportSession from "./xray/XrayExportSession";
 import ZephyrSquadExportSession from "./zephyr/ZephyrSquadExportSession";
 import ZephyrScaleExportSession from "./zephyr/ZephyrScaleExportSession";
 import { mapGetters } from "vuex";
+import DownloadIcon from '@/assets/icon/download.svg?url'
 
 export default {
   components: {
@@ -145,6 +146,7 @@ export default {
     XrayExportSession,
     ZephyrSquadExportSession,
     ZephyrScaleExportSession,
+    DownloadIcon
   },
   props: {},
 

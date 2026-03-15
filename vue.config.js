@@ -10,6 +10,15 @@ module.exports = {
       },
     },
   },
+  chainWebpack: (config) => {
+    config.module.rule("svg").exclude.add(/\.svg$/);
+
+    config.module
+      .rule("vue-svg")
+      .test(/\.svg$/)
+      .use("vue-svg-loader")
+      .loader("vue-svg-loader");
+  },
   pluginOptions: {
     electronBuilder: {
       externals: ["fluent-ffmpeg", "ffmpeg-static", "ffprobe-static"],

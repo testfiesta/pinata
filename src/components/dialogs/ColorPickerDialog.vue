@@ -8,11 +8,8 @@
     eager
   >
     <v-sheet outlined rounded>
-      <v-card :style="{ backgroundColor: currentTheme.background }">
-        <v-card-title
-          class="dialog-title"
-          :style="{ color: currentTheme.secondary }"
-        >
+      <v-card :style="{ backgroundColor: $theme.background }">
+        <v-card-title class="dialog-title" :style="{ color: $theme.secondary }">
           {{ $tc("caption.color_picker", 1) }}
         </v-card-title>
         <v-divider></v-divider>
@@ -33,7 +30,7 @@
               >
                 <div class="flex flex-row align-center justify-center">
                   <img
-                    :src="require('../../assets/icon/fill.svg')"
+                    :src="require('@/assets/icon/fill.svg?url')"
                     width="24"
                     height="24"
                   />
@@ -54,7 +51,7 @@
               >
                 <div class="flex flex-row align-center justify-center">
                   <img
-                    :src="require('../../assets/icon/transparent.svg')"
+                    :src="require('@/assets/icon/transparent.svg?url')"
                     width="24"
                     height="24"
                   />
@@ -75,7 +72,7 @@
               >
                 <div class="flex flex-row align-center justify-center">
                   <img
-                    :src="require('../../assets/icon/nofill.svg')"
+                    :src="require('@/assets/icon/nofill.svg?url')"
                     width="24"
                     height="24"
                   />
@@ -153,8 +150,8 @@
                 block
                 height="40px"
                 depressed
-                :color="currentTheme.primary"
-                :style="{ color: currentTheme.white }"
+                :color="$theme.primary"
+                :style="{ color: $theme.white }"
                 v-shortkey="saveHotkey"
                 @shortkey="handleSave(activeColor, active)"
                 @click="handleSave(activeColor, active)"
@@ -237,13 +234,6 @@ export default {
         "general.save",
         this.$store.getters["config/hotkeys"]
       );
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   methods: {

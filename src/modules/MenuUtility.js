@@ -1,8 +1,8 @@
-const { Menu } = require("electron");
+import { Menu } from "electron";
 
-const { SESSION_STATUSES } = require("./constants");
+import { SESSION_STATUSES } from "./constants";
 
-module.exports.changeMenuItemStatus = ({ sessionStatus }) => {
+export function changeMenuItemStatus({ sessionStatus }) {
   const mainMenu = Menu.getApplicationMenu();
   const fileMenu = mainMenu.items.find((item) => item.id === "menu_file");
   const fileSubMenus = fileMenu.submenu.items;
@@ -26,4 +26,4 @@ module.exports.changeMenuItemStatus = ({ sessionStatus }) => {
       (item) => item.id === "menu_reset_session"
     ).enabled = true;
   }
-};
+}

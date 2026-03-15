@@ -1,4 +1,4 @@
-export const migrationStruct = {
+const migrationStruct = {
   up: {
     meta: {
       meta: "..",
@@ -14,3 +14,5 @@ export const migrationStruct = {
     },
   },
 };
+
+module.exports = { migrationStruct };

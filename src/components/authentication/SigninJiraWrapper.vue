@@ -2,7 +2,7 @@
   <v-container class="wrapper">
     <div
       class="d-flex justify-center align-center flex-column pa-6 rounded-lg login-wrapper mt-16"
-      :style="{ backgroundColor: mainBg }"
+      :style="{ backgroundColor: $theme.mainBg }"
     >
       <div class="d-flex justify-space-between align-center w-full">
         <v-btn class="text-capitalize pa-0 back-btn" plain @click="back">
@@ -10,7 +10,7 @@
           {{ $tc("caption.back", 1) }}
         </v-btn>
         <img
-          :src="require('../../assets/icon/jira.svg')"
+          :src="require('@/assets/icon/jira.svg?url')"
           alt="jira"
           height="42"
         />
@@ -40,7 +40,7 @@
               <v-btn
                 class="mt-4 mb-4 text-capitalize btn_signup rounded-lg"
                 height="40px"
-                :color="btnBg"
+                :color="$theme.btnBg"
                 block
                 depressed
                 :loading="loading"
@@ -48,7 +48,7 @@
               >
                 <div
                   class="btn-text fs-14 ml-2"
-                  :style="{ color: currentTheme.secondary }"
+                  :style="{ color: $theme.secondary }"
                 >
                   {{ $tc("caption.login_with_jira_datacenter", 1) }}
                 </div>
@@ -56,7 +56,7 @@
               <v-btn
                 class="mt-4 mb-4 text-capitalize btn_signup rounded-lg"
                 height="40px"
-                :color="btnBg"
+                :color="$theme.btnBg"
                 block
                 depressed
                 :loading="loading"
@@ -77,7 +77,7 @@
                 <v-text-field
                   placeholder="test@example.com"
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -97,7 +97,7 @@
               <div class="timer-box-wrapper">
                 <v-text-field
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -117,7 +117,7 @@
               <div class="timer-box-wrapper">
                 <v-text-field
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -179,7 +179,7 @@
               <div class="timer-box-wrapper">
                 <v-text-field
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -199,7 +199,7 @@
               <div class="timer-box-wrapper">
                 <v-text-field
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -219,7 +219,7 @@
               <div class="timer-box-wrapper">
                 <v-text-field
                   class="rounded-lg"
-                  :background-color="inputBg"
+                  :background-color="$theme.inputBg"
                   dense
                   height="40px"
                   flat
@@ -363,22 +363,6 @@ export default {
     ...mapGetters({
       credentials: "auth/credentials",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
-    mainBg() {
-      return this.$vuetify.theme.dark ? "#374151" : this.currentTheme.white;
-    },
-    btnBg() {
-      return this.$vuetify.theme.dark ? "#4B5563" : "#F2F4F7";
-    },
-    inputBg() {
-      return this.$vuetify.theme.dark ? "#4B5563" : "#F9F9FB";
-    },
   },
   methods: {
     async back() {
@@ -433,7 +417,7 @@ export default {
             this.loading = true;
             this.$root.$emit("overlay", true);
 
-            const url = `http://localhost:${process.env.VUE_APP_SERVER_PORT}/oauth2/atlassian`;
+            const url = `http://localhost:${import.meta.env.VITE_APP_SERVER_PORT}/oauth2/atlassian`;
 
             await axios
               .get(url)
@@ -470,10 +454,10 @@ export default {
       if (isValid) {
         this.loading = true;
         this.$root.$emit("overlay", true);
-        const testfiestaURL = `${process.env.VUE_APP_TESTFIESTA_API_URL}`;
+        const testfiestaURL = `${import.meta.env.VITE_APP_TESTFIESTA_API_URL}`;
         const scopes = "read:jira-work write:jira-work read:me offline_access";
         const redirectURL = `${testfiestaURL}/app/oauth/jira`;
-        const clientId = `${process.env.VUE_APP_JIRA_OAUTH_KEY}`;
+        const clientId = `${import.meta.env.VITE_APP_JIRA_OAUTH_KEY}`;
         const serverURL = "https://auth.atlassian.com";
         const tokenId = uuidv4();
         const url = encodeURI(

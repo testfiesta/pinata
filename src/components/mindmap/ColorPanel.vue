@@ -11,7 +11,7 @@
         <img
           v-on="on"
           :style="swatchStyle"
-          :src="require('../../assets/icon/color-panel.svg')"
+          :src="require('@/assets/icon/color-panel.svg?url')"
           width="30"
           height="30"
         />
@@ -66,13 +66,6 @@ export default {
         borderRadius: "50%",
         transition: "border-radius 200ms ease-in-out",
       };
-    },
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
     },
   },
   data() {

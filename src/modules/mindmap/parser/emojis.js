@@ -35,22 +35,22 @@ Object.keys(conversionTable).forEach((key) => {
 /*
  * Return an emoji as a GitHub image.
  */
-const emojiTemplate = (unicode, category) =>
+export const emojiTemplate = (unicode, category) =>
   `<img class="mindmap-emoji" title="${category}" src="https://assets-cdn.github.com/images/icons/emoji/unicode/${unicode}.png">`;
 
-const customEmojiTemplate = (emoji, category) =>
+export const customEmojiTemplate = (emoji, category) =>
   `<img class="mindmap-emoji" title="${category}" src="https://assets-cdn.github.com/images/icons/emoji/${emoji}.png">`;
 
 /*
  * Return the category represented by the given emoji.
  */
-const emojiToCategory = (emoji) => conversionTable[emoji] || "";
+export const emojiToCategory = (emoji) => conversionTable[emoji] || "";
 
 /*
  * Convert all emojis to an IMG tag.
  * The bitwise magic is explained at http://crocodillon.com/blog/parsing-emoji-unicode-in-javascript
  */
-const emojiToIMG = (html) =>
+export const emojiToIMG = (html) =>
   /* eslint-disable no-bitwise */
   html.replace(matchEmojis, (match) => {
     switch (match) {
@@ -84,13 +84,5 @@ const emojiToIMG = (html) =>
  * Inverse of emojiToCategory, but instead of returning an emoji
  * returns an IMG tag corresponding to that emoji.
  */
-const categoryToIMG = (category) =>
+export const categoryToIMG = (category) =>
   emojiToIMG(revConversionTable[category] || "");
-
-module.exports = {
-  matchEmojis,
-  emojiToIMG,
-  emojiTemplate,
-  emojiToCategory,
-  categoryToIMG,
-};

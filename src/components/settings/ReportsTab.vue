@@ -1,16 +1,13 @@
 <template>
   <v-container class="content-wrapper">
     <div>
-      <div class="pa-4" :style="{ color: currentTheme.default }">
+      <div class="pa-4" :style="{ color: $theme.default }">
         <p class="body-1">
           {{ $tc("caption.session_summary", 1) }}
         </p>
         <div class="d-flex align-start">
           <div class="flex-grow-1">
-            <p
-              class="subtitle-1 mb-2"
-              :style="{ color: currentTheme.secondary }"
-            >
+            <p class="subtitle-1 mb-2" :style="{ color: $theme.secondary }">
               {{ $tc("caption.mandatory_session_summary", 1) }}
             </p>
             <p class="caption mb-0">
@@ -30,10 +27,7 @@
         </div>
         <div class="d-flex align-start mt-4">
           <div class="flex-grow-1">
-            <p
-              class="subtitle-1 mb-2"
-              :style="{ color: currentTheme.secondary }"
-            >
+            <p class="subtitle-1 mb-2" :style="{ color: $theme.secondary }">
               {{ $tc("caption.add_org_logo_in_pdf", 1) }}
             </p>
             <p class="caption mb-0">
@@ -63,7 +57,7 @@
         @change="handleConfig"
       ></v-file-input>
       <v-card
-        v-if="localConfig.logo.path && reportLogo"
+        v-if="localConfig.logo?.path && reportLogo"
         class="mx-2 my-2 px-2 py-2 d-flex flex-column align-center selected"
         max-width="250"
         max-height="350"
@@ -95,13 +89,6 @@ export default {
     ...mapGetters({
       config: "config/fullConfig",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   data() {
     return {

@@ -1,7 +1,9 @@
 import Vue from "vue";
+import vuetify from "@/plugins/vuetify";
 export const config = {
   namespaced: true,
   state: () => ({
+    uid: null,
     localOnly: false,
     appearance: "light",
     ai: {
@@ -143,6 +145,11 @@ export const config = {
         task.required = payload.value;
       }
       this._vm.$storageService.updateConfig(state);
+    },
+    updateThemeMode(state) {
+      const isDarkMode = state.appearance === "dark";
+      vuetify.framework.theme.isDark = isDarkMode;
+      localStorage.setItem("isDarkMode", isDarkMode.toString());
     },
   },
   actions: {},

@@ -2,12 +2,12 @@
   <v-container class="content-wrapper">
     <v-row>
       <v-col cols="12" class="border-bottom pa-4 ext-conn-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.external_connection", 1) }}
         </p>
 
         <v-col cols="12">
-          <div class="avatar" v-if="credentials.testrail">
+          <div class="avatar" v-if="credentials?.testrail">
             <ConnectionPanel connectionType="testrail" />
           </div>
           <div v-else>
@@ -18,11 +18,8 @@
               color="white"
               @click="signinTestRail"
             >
-              <img :src="require('../../assets/icon/testrail.png')" />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <img :src="require('@/assets/icon/testrail.png?url')" />
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_testrail") }}
               </div>
             </v-btn>
@@ -30,7 +27,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.xray">
+          <div class="avatar" v-if="credentials?.xray">
             <ConnectionPanel connectionType="xray" />
           </div>
           <div v-else>
@@ -42,13 +39,10 @@
               @click="signinXray"
             >
               <img
-                :src="require('../../assets/icon/xray-logo.png')"
+                :src="require('@/assets/icon/xray-logo.png?url')"
                 width="12"
               />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_xray") }}
               </div>
             </v-btn>
@@ -56,7 +50,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.zephyrSquad">
+          <div class="avatar" v-if="credentials?.zephyrSquad">
             <ConnectionPanel connectionType="zephyrSquad" />
           </div>
           <div v-else>
@@ -68,13 +62,10 @@
               @click="signinZephyrSquad"
             >
               <img
-                :src="require('../../assets/icon/zephyr-squad.png')"
+                :src="require('@/assets/icon/zephyr-squad.png?url')"
                 width="16"
               />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_zephyr_squad") }}
               </div>
             </v-btn>
@@ -82,7 +73,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.zephyrScale">
+          <div class="avatar" v-if="credentials?.zephyrScale">
             <ConnectionPanel connectionType="zephyrScale" />
           </div>
           <div v-else>
@@ -94,13 +85,10 @@
               @click="signinZephyrScale"
             >
               <img
-                :src="require('../../assets/icon/zephyr-scale.png')"
+                :src="require('@/assets/icon/zephyr-scale.png?url')"
                 width="16"
               />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_zephyr_scale") }}
               </div>
             </v-btn>
@@ -108,7 +96,7 @@
 
           <p></p>
 
-          <div class="avatar" v-if="credentials.jira">
+          <div class="avatar" v-if="credentials?.jira">
             <ConnectionPanel connectionType="jira" />
           </div>
           <div v-else>
@@ -119,11 +107,8 @@
               color="white"
               @click="signinJira"
             >
-              <img :src="require('../../assets/icon/jira.png')" />
-              <div
-                class="btn-text ml-4"
-                :style="{ color: currentTheme.secondary }"
-              >
+              <img :src="require('@/assets/icon/jira.png?url')" />
+              <div class="btn-text ml-4" :style="{ color: $theme.secondary }">
                 {{ $t("message.connect_to_jira") }}
               </div>
             </v-btn>
@@ -133,13 +118,10 @@
       <v-col cols="12" class="border-bottom pa-4 app-role-section">
         <div class="d-flex align-start">
           <div class="flex-grow-1">
-            <p
-              class="subtitle-1 mb-2"
-              :style="{ color: currentTheme.secondary }"
-            >
+            <p class="subtitle-1 mb-2" :style="{ color: $theme.secondary }">
               {{ $t("message.use_app_only_local") }}
             </p>
-            <p class="caption mb-0" :style="{ color: currentTheme.default }">
+            <p class="caption mb-0" :style="{ color: $theme.default }">
               {{ $t("message.dont_pull_push_data") }}
             </p>
           </div>
@@ -158,11 +140,11 @@
       <!--<v-col cols="12" class="border-bottom pa-4 color-panel-section">
         <p
           class="subtitle-1 mb-4"
-          :style="{ color: currentTheme.secondary }"
+          :style="{ color: $theme.secondary }"
         >
           {{ $tc("caption.testfiesta", 1) }}
         </p>
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           {{ $tc("caption.add_color", 1) }}
         </p>
         <v-text-field
@@ -193,7 +175,7 @@
         </v-text-field>
       </v-col>
       <v-col cols="12" class="pa-4 cur-org-section">
-        <p class="body-1" :style="{ color: currentTheme.default }">
+        <p class="body-1" :style="{ color: $theme.default }">
           Current Organizations
         </p>
         <div class="d-flex flex-column" style="row-gap: 5px">
@@ -206,10 +188,10 @@
               hide-details="true"
             ></v-text-field>
             <v-btn icon color="primary" class="ml-2">
-              <img :src="require('../../assets/icon/pencil-white.svg')" />
+              <img :src="require('@/assets/icon/pencil-white.svg?url')" />
             </v-btn>
             <v-btn icon color="primary">
-              <img :src="require('../../assets/icon/trash.svg')" />
+              <img :src="require('@/assets/icon/trash.svg?url')" />
             </v-btn>
           </div>
           <div class="d-flex align-center">
@@ -221,10 +203,10 @@
               hide-details="true"
             ></v-text-field>
             <v-btn icon color="primary" class="ml-2">
-              <img :src="require('../../assets/icon/pencil-white.svg')" />
+              <img :src="require('@/assets/icon/pencil-white.svg?url')" />
             </v-btn>
             <v-btn icon color="primary">
-              <img :src="require('../../assets/icon/trash.svg')" />
+              <img :src="require('@/assets/icon/trash.svg?url')" />
             </v-btn>
           </div>
           <div>
@@ -282,13 +264,6 @@ export default {
       config: "config/fullConfig",
       credentials: "auth/credentials",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
   },
   methods: {
     handleConfig() {

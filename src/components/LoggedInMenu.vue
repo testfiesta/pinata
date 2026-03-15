@@ -1,42 +1,21 @@
 <template>
   <div class="d-flex justify-space-between align-center">
     <v-btn
-      v-if="!$isElectron"
+      id="btn__setting"
+      class="mx-1"
       fab
+      icon
       small
-      color="primary"
-      height="32"
-      width="32"
-      class="mr-3"
-      @click="openSettingsDialog"
+      depressed
+      color="default"
+      @click="handleSettingsClick"
     >
       <img
-        :src="require('../../public/icon/gear.svg')"
+        :src="require('@/assets/svg/geard.svg?url')"
         width="20"
         height="20"
       />
     </v-btn>
-    <div class="flex flex-row justify-center mr-5">
-      <v-btn
-        id="btn__setting"
-        class="mx-1"
-        fab
-        icon
-        small
-        depressed
-        color="default"
-        @click="openSettingWindow"
-      >
-        <img
-          :src="require('../../public/icon/gear.svg')"
-          width="20"
-          height="20"
-        />
-      </v-btn>
-      <!-- <v-btn id="btn__bell" class="mx-1" fab outlined small color="default">
-        <img :src="require('../assets/icon/bell.svg')" width="24" height="24" />
-      </v-btn> -->
-    </div>
     <v-menu
       v-model="showMenu"
       :close-on-content-click="false"
@@ -54,17 +33,16 @@
           v-bind="attrs"
           v-on="on"
         >
-          <img
+          <UserAvatar :avatar="user?.avatar" :name="profileName" size="40" />
+          <!-- <img
             style="border-radius: 100%; border: solid 1px #eaecf0"
             :src="profileAvatar"
             width="40"
             alt="avatar"
           />
-          <strong
-            class="ml-3 fs-14"
-            :style="{ color: currentTheme.secondary }"
-            >{{ profileName }}</strong
-          >
+          <strong class="ml-3 fs-14" :style="{ color: $theme.secondary }">{{
+            profileName
+          }}</strong> -->
         </div>
       </template>
 
@@ -129,6 +107,7 @@
       </v-card>
     </v-menu>
     <SettingsDialog
+      v-if="settingsDialog"
       v-model="settingsDialog"
       ref="settingsDialog"
       @close="settingsDialog = false"
@@ -140,16 +119,16 @@ import uuidv4 from "uuid";
 import { VBtn } from "vuetify/lib/components";
 import { mapGetters } from "vuex";
 import SettingsDialog from "@/components/dialogs/SettingsDialog.vue";
-import theme from "../mixins/theme";
+import UserAvatar from "@/components/base/UserAvatar.vue";
 
 export default {
   name: "LoggedInMenu",
   components: {
     VBtn,
     SettingsDialog,
+    UserAvatar,
   },
   props: {},
-  mixins: [theme],
   data() {
     return {
       showMenu: false,
@@ -159,27 +138,33 @@ export default {
   computed: {
     ...mapGetters({
       credentials: "auth/credentials",
+      user: "auth/user",
     }),
     profileName() {
-      for (const cList of Object.values(this.credentials)) {
-        if (cList.length > 0) {
-          if (cList[0].user.name) {
-            return cList[0].user.name;
+      if (!this.$isElectron && this.user?.uid) {
+        return `${this.user.firstName} ${this.user.lastName}`;
+      }
+      if (this.$isElectron && Object.values(this.credentials).length > 0) {
+        for (const cList of Object.values(this.credentials)) {
+          if (cList.length > 0) {
+            if (cList[0].user.name) {
+              return cList[0].user.name;
+            }
           }
         }
       }
       return this.$t("caption.personal_workspace");
     },
     profileAvatar() {
-      for (const cList of Object.values(this.credentials)) {
-        if (cList.length > 0) {
-          if (cList[0].user.avatar) {
-            return cList[0].user.avatar;
-          } else if (cList[0].user.name) {
-            return "https://www.gravatar.com/avatar/" + cList[0].user.name;
-          }
-        }
-      }
+      // for (const cList of Object.values(this.credentials)) {
+      //   if (cList.length > 0) {
+      //     if (cList[0].user.avatar) {
+      //       return cList[0].user.avatar;
+      //     } else if (cList[0].user.name) {
+      //       return "https://www.gravatar.com/avatar/" + cList[0].user.name;
+      //     }
+      //   }
+      // }
       return "https://www.gravatar.com/avatar/" + uuidv4() + "?d=robohash";
     },
   },
@@ -221,12 +206,23 @@ export default {
       const emptyCredentials = {};
       this.$store.commit("auth/setCredentials", emptyCredentials);
       this.$storageService.updateCredentials(emptyCredentials);
+      if (!this.$isElectron) {
+        this.$api
+          .post("/logout")
+          .then(() => {
+            this.$router.push({ path: "/" });
+          })
+          .catch((error) => {
+            console.error("Logout failed:", error);
+          });
+      }
     },
-    openSettingsDialog() {
-      this.settingsDialog = true;
-    },
-    openSettingWindow() {
-      this.$electronService.openSettingWindow();
+    handleSettingsClick() {
+      if (this.$isElectron) {
+        this.$electronService.openSettingWindow();
+      } else {
+        this.settingsDialog = true;
+      }
     },
   },
 };

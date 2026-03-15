@@ -2,7 +2,7 @@
   <v-text-field
     :placeholder="$tc('caption.search', 1)"
     class="rounded-lg"
-    :background-color="inputBg"
+    :background-color="$theme.inputBg"
     dense
     height="40px"
     flat
@@ -12,13 +12,12 @@
     @input="handleSearch"
   >
     <template v-slot:prepend-inner>
-      <img src="../assets/icon/search.svg" alt="search" class="icon" />
+      <img :src="require('@/assets/icon/search.svg?url')" alt="search" class="icon" />
     </template>
   </v-text-field>
 </template>
 
 <script>
-import theme from "../mixins/theme";
 export default {
   name: "SearchWrapper",
   components: {},
@@ -28,7 +27,6 @@ export default {
       search: "",
     };
   },
-  mixins: [theme],
   methods: {
     handleSearch(val) {
       this.$root.$emit("submit-search", val);

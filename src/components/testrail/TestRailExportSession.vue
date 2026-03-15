@@ -3,7 +3,7 @@
     <v-list-item-icon class="mr-4">
       <v-avatar size="24">
         <img
-          :src="require('../../assets/icon/testrail.png')"
+          :src="require('@/assets/icon/testrail.png?url')"
           width="24"
           alt="avatar"
         />
@@ -298,13 +298,6 @@ export default {
       itemLists: "sessionItems",
       credentials: "auth/credentials",
     }),
-    currentTheme() {
-      if (this.$vuetify.theme.dark) {
-        return this.$vuetify.theme.themes.dark;
-      } else {
-        return this.$vuetify.theme.themes.light;
-      }
-    },
     disableDiscard() {
       return (
         (this.selectProject && this.projectLoading) ||
