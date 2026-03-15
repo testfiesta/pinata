@@ -436,7 +436,11 @@ export default {
       fullCase: "fullCase",
     }),
     sessionDuration() {
-      return this.fullCase.duration ? Number(this.fullCase.duration) / 60 : 0;
+      if (!this.fullCase.duration) return "0:00";
+      const totalSeconds = Number(this.fullCase.duration);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     },
     isItemsExist() {
       return this.items.length > 0;

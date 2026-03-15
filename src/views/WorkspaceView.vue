@@ -69,7 +69,7 @@
   
 </template>
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters } from "vuex";
 import { SESSION_STATUSES, DEFAULT_FILE_TYPES } from "@/modules/constants";
 import ControlPanel from '@/components/ControlPanel.vue'
 import EndSessionDialog from "@/components/dialogs/EndSessionDialog.vue";
@@ -81,12 +81,6 @@ export default {
       sources: [],
       sidebarActive: false,
       sourcePickerDialog: false,
-      status: null,
-      interval: null,
-      timer: 0,
-      duration: 0,
-      isDuration: false,
-      durationConfirmDialog: false,
       sourceId: "",
       resetConfirmDialog: false,
       endSessionDialog: false,
@@ -98,32 +92,11 @@ export default {
     EndSessionDialog
   },
   watch: {
-    "$store.state.session.status": {
-      deep: true,
-      handler(newValue) {
-        this.status = newValue;
-        if (
-          this.status === SESSION_STATUSES.START ||
-          this.status === SESSION_STATUSES.RESUME ||
-          this.status === SESSION_STATUSES.PROCEED
-        ) {
-          this.startInterval();
-        } else {
-          this.stopInterval();
-        }
-      },
+    selectedItems: function (newValue) {
+      this.selected = newValue;
     },
-    "$store.state.session.timer": {
-      deep: true,
-      handler(newValue) {
-        this.timer = newValue;
-      },
-    },
-    "$store.state.case.duration": {
-      deep: true,
-      handler(newValue) {
-        this.duration = newValue;
-      },
+    eventType: function (newValue) {
+      this.eventName = newValue;
     },
   },
   computed: {
@@ -161,9 +134,6 @@ export default {
     },
   },
   methods: {
-    ...mapMutations({
-      updateSession: 'updateSession'
-    }),
     fetchSources() {
       if (this.$isElectron) {
         return this.$electronService.getMediaSource();
@@ -180,33 +150,6 @@ export default {
     },
     updateSelected(value) {
       this.selected = value;
-    },
-    updateStoreSession(isForce = false) {
-      this.$store.commit("updateSession", {
-        status: this.status,
-        timer: this.timer,
-        duration: this.duration,
-        isForce,
-      });
-    },
-    stopInterval() {
-      clearInterval(this.interval);
-      this.interval = null;
-      this.updateStoreSession();
-    },
-    startInterval() {
-      if (!this.interval) {
-        this.interval = setInterval(() => {
-          this.timer += 1;
-
-          this.updateStoreSession();
-          if (this.isDuration && this.duration <= 0) {
-            this.durationConfirmDialog = true;
-            this.isDuration = false;
-            this.stopInterval();
-          }
-        }, 1000);
-      }
     },
     endSession() {
       if (this.postSessionData.status) {
@@ -240,7 +183,7 @@ export default {
         tags: [],
         emoji: [],
         followUp: false,
-        timer_mark: this.timer,
+        timer_mark: this.session.timer,
         createdAt: Date.now(),
       };
       if (Object.keys(this.summary).length) {
@@ -262,9 +205,13 @@ export default {
       this.sourceId = "";
       this.ended = this.getCurrentDateTime;
       this.$store.commit("setSessionEnded", this.ended);
-      this.status = SESSION_STATUSES.END;
-      this.changeSessionStatus(SESSION_STATUSES.END);
-      this.stopInterval();
+      
+      // Update store status to END - ControlPanel's watcher will stop the interval
+      this.$store.commit("updateSession", { 
+        status: SESSION_STATUSES.END,
+        isForce: true 
+      });
+      this.changeSessionStatus(SESSION_STATUSES.END); 
       this.$root.$emit("handle-mindmap");
       this.finishSession();
       // await this.$router.push({ path: "/result" });
@@ -315,21 +262,12 @@ export default {
       this.summaryDialog = false;
     });
     
-    // Initialize status, timer and duration from store
-    this.status = this.$store.state.session.status;
-    this.timer = this.$store.state.session.timer;
-    this.duration = this.$store.state.case.duration;
-    if (this.duration > 0) {
-      this.isDuration = true;
-    }
-    
+    // If no active session, redirect to main
     if (
-      this.$store.state.session.status === SESSION_STATUSES.START ||
-      this.$store.state.session.status === SESSION_STATUSES.PROCEED ||
-      this.$store.state.session.status === SESSION_STATUSES.RESUME
+      this.$store.state.session.status !== SESSION_STATUSES.START &&
+      this.$store.state.session.status !== SESSION_STATUSES.PROCEED &&
+      this.$store.state.session.status !== SESSION_STATUSES.RESUME
     ) {
-      this.startInterval();
-    }else{
       return this.$router.push({name: 'main'})
     }
   },

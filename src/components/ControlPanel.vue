@@ -1089,8 +1089,11 @@ export default {
         this.interval = setInterval(() => {
           this.timer += 1;
 
-          this.updateStoreSession();
-          if (this.isDuration && this.duration <= 0) {
+          if (this.isDuration && this.duration > 0) {
+            this.duration -= 1;
+          }  
+          this.updateStoreSession();          
+          if (this.isDuration && this.duration <= 0) { 
             this.durationConfirmDialog = true;
             this.isDuration = false;
             this.stopInterval();
@@ -1162,6 +1165,7 @@ export default {
         // If the test session is not quick test session, create a new one
         if (!this.$store.state.session.quickTest) {
           console.log("Creating new session");
+          this.startInterval();
           await this.$storageService.createNewSession(data);
         }
 
